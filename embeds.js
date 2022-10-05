@@ -1,18 +1,11 @@
-import fetch from "node-fetch";
+import { getData, getTraitFields } from "./fetch.js";
 
 export const azukiEmbed = async function (id) {
   try {
-    const response = await fetch(
+    const data = await getData(
       `https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8CW/${id}`
     );
-    const data = await response.json();
-    const traitFields = data.attributes.map(function (trait) {
-      return {
-        name: `${trait.trait_type}`,
-        value: `${trait.value}`,
-        inline: true,
-      };
-    });
+    const traitFields = getTraitFields(data);
 
     return [
       {
@@ -41,17 +34,10 @@ export const azukiEmbed = async function (id) {
 
 export const beanzEmbed = async function (id) {
   try {
-    const response = await fetch(
+    const data = await getData(
       `https://ikzttp.mypinata.cloud/ipfs/QmPZKyuRw4nQTD6S6R5HaNAXwoQVMj8YydDmad3rC985WZ/${id}`
     );
-    const data = await response.json();
-    const traitFields = data.attributes.map(function (trait) {
-      return {
-        name: `${trait.trait_type}`,
-        value: `${trait.value}`,
-        inline: true,
-      };
-    });
+    const traitFields = await getTraitFields(data);
 
     return [
       {
