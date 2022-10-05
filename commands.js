@@ -6,7 +6,7 @@ export const commands = [
       {
         name: "id",
         description: "Type in the Azuki # you wish to view",
-        type: 3,
+        type: 10,
         required: true,
       },
     ],
@@ -18,7 +18,7 @@ export const commands = [
       {
         name: "id",
         description: "Type in the Beanz # you wish to view",
-        type: 3,
+        type: 10,
         required: true,
       },
     ],
