@@ -1,7 +1,13 @@
 import { config } from "dotenv";
 import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
 import { commands } from "./commands.js";
-import { azukiEmbed, beanzEmbed } from "./embeds.js";
+import {
+  azukiEmbed,
+  beanzEmbed,
+  blueEmbed,
+  redEmbed,
+  pairEmbed,
+} from "./embeds.js";
 
 config();
 
@@ -30,12 +36,17 @@ const rest = new REST({
 
 client.on("interactionCreate", async (interaction) => {
   try {
-    const id = interaction.options.get("id").value;
+    if (!interaction.isChatInputCommand()) return;
 
-    if (
-      interaction.isChatInputCommand() &&
-      interaction.commandName === "azuki"
-    ) {
+    const id =
+      interaction.commandName === "azuki" ||
+      interaction.commandName === "beanz" ||
+      interaction.commandName === "blue" ||
+      interaction.commandName === "red"
+        ? interaction.options.get("id").value
+        : "";
+
+    if (interaction.commandName === "azuki") {
       id >= 0 && id < 10000
         ? interaction.reply({
             embeds: await azukiEmbed(id),
@@ -45,16 +56,46 @@ client.on("interactionCreate", async (interaction) => {
           });
     }
 
-    if (
-      interaction.isChatInputCommand() &&
-      interaction.commandName === "beanz"
-    ) {
+    if (interaction.commandName === "beanz") {
       id >= 0 && id < 19950
         ? interaction.reply({
             embeds: await beanzEmbed(id),
           })
         : interaction.reply({
             content: `Beanz #${id} does not exist in the collection.`,
+          });
+    }
+
+    if (interaction.commandName === "blue") {
+      id >= 0 && id < 10000
+        ? interaction.reply({
+            embeds: blueEmbed(id),
+          })
+        : interaction.reply({
+            content: `Azuki #${id} does not exist in the collection.`,
+          });
+    }
+
+    if (interaction.commandName === "red") {
+      id >= 0 && id < 10000
+        ? interaction.reply({
+            embeds: redEmbed(id),
+          })
+        : interaction.reply({
+            content: `Azuki #${id} does not exist in the collection.`,
+          });
+    }
+
+    if (interaction.commandName === "pair") {
+      const azukiId = interaction.options.get("azuki-id").value;
+      const beanzId = interaction.options.get("beanz-id").value;
+
+      azukiId >= 0 && azukiId < 10000 && beanzId >= 0 && beanzId < 19950
+        ? interaction.reply({
+            embeds: pairEmbed(azukiId, beanzId),
+          })
+        : interaction.reply({
+            content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
           });
     }
   } catch (error) {
