@@ -1,7 +1,7 @@
 export const commands = [
   {
     name: "azuki",
-    description: "View Azuki Collection",
+    description: "View the Azuki collection",
     options: [
       {
         name: "id",
@@ -13,7 +13,7 @@ export const commands = [
   },
   {
     name: "beanz",
-    description: "View Beanz Collection",
+    description: "View the Beanz collection",
     options: [
       {
         name: "id",
@@ -64,5 +64,9 @@ export const commands = [
         required: true,
       },
     ],
+  },
+  {
+    name: "random",
+    description: "View a random Azuki/Beanz from the collection",
   },
 ];

@@ -61,6 +61,18 @@ client.on("interactionCreate", async (interaction) => {
 
       pairInteraction(interaction, azukiId, beanzId);
     }
+
+    if (interaction.commandName === "random") {
+      const rng = Math.random();
+
+      if (rng < 0.5) {
+        const id = Math.floor(Math.random() * 10000);
+        await azukiInteraction(interaction, id);
+      } else {
+        const id = Math.floor(Math.random() * 19950);
+        await beanzInteraction(interaction, id);
+      }
+    }
   } catch (error) {
     console.log(error.message);
   }
