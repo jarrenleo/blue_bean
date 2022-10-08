@@ -197,7 +197,6 @@ export const findEmbed = async function (name) {
 
     return `[Website](${data.externalUrl}) | `;
   };
-  console.log(data.image);
 
   return [
     {

@@ -78,7 +78,7 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.commandName === "find") {
       const name = interaction.options.get("name").value;
 
-      findInteraction(interaction, name);
+      await findInteraction(interaction, name);
     }
   } catch (error) {
     console.log(error.message);
