@@ -1,4 +1,4 @@
-import { getTraits, getLatestSale } from "./fetch.js";
+import { getTraits, getList, getOffer, getLastSale } from "./fetch.js";
 
 const contract = {
   azuki: "0xed5af388653567af2f388e6224dc7c4b3241c544",
@@ -24,79 +24,83 @@ const beanzURL = {
 };
 
 export const azukiEmbed = async function (id) {
-  try {
-    const [traits, latestSale] = await Promise.all([
-      getTraits(
-        `https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8CW/${id}`
-      ),
-      getLatestSale(
-        `https://api.reservoir.tools/sales/v4?token=${contract.azuki}:${id}`
-      ),
-    ]);
+  const [traits, list, offer, lastSale] = await Promise.all([
+    getTraits(
+      `https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8CW/${id}`
+    ),
+    getList(
+      `https://api.reservoir.tools/orders/asks/v3?token=${contract.azuki}:${id}&sortBy=price`
+    ),
+    getOffer(
+      `https://api.reservoir.tools/orders/bids/v4?token=${contract.azuki}:${id}&sortBy=price`
+    ),
+    getLastSale(
+      `https://api.reservoir.tools/sales/v4?token=${contract.azuki}:${id}`
+    ),
+  ]);
 
-    return [
-      {
-        color: 0xc13540,
-        author: {
-          name: `Azuki #${id}`,
-          icon_url: `${azukiURL.icon}`,
-        },
-        fields: [
-          ...traits,
-          {
-            name: "Links",
-            value: `[OpenSea](${azukiURL.opensea}/${id}) | [LooksRare](${azukiURL.looksrare}/${id}) | [X2Y2](${azukiURL.x2y2}/${id}) | [SudoSwap](${azukiURL.sudoswap}/${id}) | [Gem](${azukiURL.gem}/${id})`,
-          },
-        ],
-        image: {
-          url: `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
-        },
-        footer: {
-          text: `Last Sale: ${latestSale}`,
-        },
+  return [
+    {
+      color: 0xc13540,
+      author: {
+        name: `Azuki #${id}`,
+        icon_url: `${azukiURL.icon}`,
       },
-    ];
-  } catch (error) {
-    console.log(error.message);
-  }
+      fields: [
+        ...traits,
+        {
+          name: "Links",
+          value: `[OpenSea](${azukiURL.opensea}/${id}) | [LooksRare](${azukiURL.looksrare}/${id}) | [X2Y2](${azukiURL.x2y2}/${id}) | [SudoSwap](${azukiURL.sudoswap}/${id}) | [Gem](${azukiURL.gem}/${id})`,
+        },
+      ],
+      image: {
+        url: `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
+      },
+      footer: {
+        text: `List: ${list} | Offer: ${offer} | Last Sale: ${lastSale}`,
+      },
+    },
+  ];
 };
 
 export const beanzEmbed = async function (id) {
-  try {
-    const [traits, latestSale] = await Promise.all([
-      getTraits(
-        `https://ikzttp.mypinata.cloud/ipfs/QmPZKyuRw4nQTD6S6R5HaNAXwoQVMj8YydDmad3rC985WZ/${id}`
-      ),
-      getLatestSale(
-        `https://api.reservoir.tools/sales/v4?token=${contract.beanz}:${id}`
-      ),
-    ]);
+  const [traits, list, offer, lastSale] = await Promise.all([
+    getTraits(
+      `https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8CW/${id}`
+    ),
+    getList(
+      `https://api.reservoir.tools/orders/asks/v3?token=${contract.beanz}:${id}&sortBy=price`
+    ),
+    getOffer(
+      `https://api.reservoir.tools/orders/bids/v4?token=${contract.beanz}:${id}&sortBy=price`
+    ),
+    getLastSale(
+      `https://api.reservoir.tools/sales/v4?token=${contract.beanz}:${id}`
+    ),
+  ]);
 
-    return [
-      {
-        color: 0xc13540,
-        author: {
-          name: `Beanz #${id}`,
-          icon_url: `${beanzURL.icon}`,
-        },
-        fields: [
-          ...traits,
-          {
-            name: "Links",
-            value: `[OpenSea](${beanzURL.opensea}/${id}) | [LooksRare](${beanzURL.looksrare}/${id}) | [X2Y2](${beanzURL.x2y2}/${id}) | [SudoSwap](${beanzURL.sudoswap}/${id}) | [Gem](${beanzURL.gem}/${id})`,
-          },
-        ],
-        image: {
-          url: `https://ikzttp.mypinata.cloud/ipfs/QmTRuWHr7bpqscUWFmhXndzf5AdQqkekhqwgbyJCqKMHrL/${id}.png`,
-        },
-        footer: {
-          text: `Last Sale: ${latestSale}`,
-        },
+  return [
+    {
+      color: 0xc13540,
+      author: {
+        name: `Beanz #${id}`,
+        icon_url: `${beanzURL.icon}`,
       },
-    ];
-  } catch (error) {
-    console.log(error.message);
-  }
+      fields: [
+        ...traits,
+        {
+          name: "Links",
+          value: `[OpenSea](${beanzURL.opensea}/${id}) | [LooksRare](${beanzURL.looksrare}/${id}) | [X2Y2](${beanzURL.x2y2}/${id}) | [SudoSwap](${beanzURL.sudoswap}/${id}) | [Gem](${beanzURL.gem}/${id})`,
+        },
+      ],
+      image: {
+        url: `https://ikzttp.mypinata.cloud/ipfs/QmTRuWHr7bpqscUWFmhXndzf5AdQqkekhqwgbyJCqKMHrL/${id}.png`,
+      },
+      footer: {
+        text: `List: ${list} | Offer: ${offer} | Last Sale: ${lastSale}`,
+      },
+    },
+  ];
 };
 
 export const blueEmbed = function (id) {

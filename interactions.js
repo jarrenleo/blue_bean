@@ -15,31 +15,23 @@ const beanzIdRange = function (id) {
 };
 
 export const azukiInteraction = async function (interaction, id) {
-  try {
-    azukiIdRange(id)
-      ? interaction.reply({
-          embeds: await azukiEmbed(id),
-        })
-      : interaction.reply({
-          content: `Azuki #${id} does not exist in the collection.`,
-        });
-  } catch (error) {
-    console.log(error.message);
-  }
+  azukiIdRange(id)
+    ? interaction.reply({
+        embeds: await azukiEmbed(id),
+      })
+    : interaction.reply({
+        content: `Azuki #${id} does not exist in the collection.`,
+      });
 };
 
 export const beanzInteraction = async function (interaction, id) {
-  try {
-    beanzIdRange(id)
-      ? interaction.reply({
-          embeds: await beanzEmbed(id),
-        })
-      : interaction.reply({
-          content: `Beanz #${id} does not exist in the collection.`,
-        });
-  } catch (error) {
-    console.log(error.message);
-  }
+  beanzIdRange(id)
+    ? interaction.reply({
+        embeds: await beanzEmbed(id),
+      })
+    : interaction.reply({
+        content: `Beanz #${id} does not exist in the collection.`,
+      });
 };
 
 export const blueInteraction = function (interaction, id) {

@@ -3,44 +3,50 @@ import fetch from "node-fetch";
 
 config();
 const apiKey = process.env.RESERVOIR_API_KEY;
-
-export const getTraits = async function (url) {
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    const traits = data.attributes.map(function (trait) {
-      return {
-        name: `${trait.trait_type}`,
-        value: `${trait.value}`,
-        inline: true,
-      };
-    });
-
-    return traits;
-  } catch (error) {
-    console.log(error.message);
-  }
+const options = {
+  headers: {
+    accept: "*/*",
+    "x-api-key": `${apiKey}`,
+  },
 };
 
-export const getLatestSale = async function (url) {
-  try {
-    const response = await fetch(url, {
-      headers: {
-        accept: "*/*",
-        "x-api-key": `${apiKey}`,
-      },
-    });
-    const data = await response.json();
-    const latestSale = data.sales.at(0);
+const getData = async function (url, options) {
+  const response = await fetch(url, options);
+  return await response.json();
+};
 
-    if (latestSale === undefined) return "--";
+export const getTraits = async function (url) {
+  const data = await getData(url);
+  return data.attributes.map(function (trait) {
+    return {
+      name: `${trait.trait_type}`,
+      value: `${trait.value}`,
+      inline: true,
+    };
+  });
+};
 
-    return `${latestSale.price.amount.native} ${
-      latestSale.price.currency.symbol
-    } ($${Math.round(latestSale.price.amount.usd).toLocaleString("en-US")}) @ ${
-      latestSale.orderSource
-    }`;
-  } catch (error) {
-    console.log(error.message);
-  }
+const footerTemplate = function (data) {
+  const latestData = data.orders?.at(0) ?? data.sales?.at(0);
+
+  if (latestData === undefined) return "-";
+
+  return `${latestData.price.amount.native?.toFixed(2)} ${
+    latestData.price.currency.symbol
+  }`;
+};
+
+export const getList = async function (url) {
+  const data = await getData(url, options);
+  return footerTemplate(data);
+};
+
+export const getOffer = async function (url) {
+  const data = await getData(url, options);
+  return footerTemplate(data);
+};
+
+export const getLastSale = async function (url) {
+  const data = await getData(url, options);
+  return footerTemplate(data);
 };
