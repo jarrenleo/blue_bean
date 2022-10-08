@@ -26,7 +26,8 @@ export const getTraits = async function (url) {
   });
 };
 
-const footerTemplate = function (data) {
+export const getOrders = async function (url) {
+  const data = await getData(url, options);
   const latestData = data.orders?.at(0) ?? data.sales?.at(0);
 
   if (latestData === undefined) return "-";
@@ -34,19 +35,4 @@ const footerTemplate = function (data) {
   return `${latestData.price.amount.native?.toFixed(2)} ${
     latestData.price.currency.symbol
   }`;
-};
-
-export const getList = async function (url) {
-  const data = await getData(url, options);
-  return footerTemplate(data);
-};
-
-export const getOffer = async function (url) {
-  const data = await getData(url, options);
-  return footerTemplate(data);
-};
-
-export const getLastSale = async function (url) {
-  const data = await getData(url, options);
-  return footerTemplate(data);
 };

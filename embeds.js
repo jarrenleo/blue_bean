@@ -1,4 +1,4 @@
-import { getTraits, getList, getOffer, getLastSale } from "./fetch.js";
+import { getTraits, getOrders } from "./fetch.js";
 
 const contract = {
   azuki: "0xed5af388653567af2f388e6224dc7c4b3241c544",
@@ -24,17 +24,14 @@ const beanzURL = {
 };
 
 export const azukiEmbed = async function (id) {
-  const [traits, list, offer, lastSale] = await Promise.all([
+  const [traits, list, lastSale] = await Promise.all([
     getTraits(
       `https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8CW/${id}`
     ),
-    getList(
+    getOrders(
       `https://api.reservoir.tools/orders/asks/v3?token=${contract.azuki}:${id}&sortBy=price`
     ),
-    getOffer(
-      `https://api.reservoir.tools/orders/bids/v4?token=${contract.azuki}:${id}&sortBy=price`
-    ),
-    getLastSale(
+    getOrders(
       `https://api.reservoir.tools/sales/v4?token=${contract.azuki}:${id}`
     ),
   ]);
@@ -57,24 +54,21 @@ export const azukiEmbed = async function (id) {
         url: `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
       },
       footer: {
-        text: `List: ${list} | Offer: ${offer} | Last Sale: ${lastSale}`,
+        text: `Lowest List: ${list} | Last Sale: ${lastSale}`,
       },
     },
   ];
 };
 
 export const beanzEmbed = async function (id) {
-  const [traits, list, offer, lastSale] = await Promise.all([
+  const [traits, list, lastSale] = await Promise.all([
     getTraits(
-      `https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8CW/${id}`
+      `https://ikzttp.mypinata.cloud/ipfs/QmPZKyuRw4nQTD6S6R5HaNAXwoQVMj8YydDmad3rC985WZ/${id}`
     ),
-    getList(
+    getOrders(
       `https://api.reservoir.tools/orders/asks/v3?token=${contract.beanz}:${id}&sortBy=price`
     ),
-    getOffer(
-      `https://api.reservoir.tools/orders/bids/v4?token=${contract.beanz}:${id}&sortBy=price`
-    ),
-    getLastSale(
+    getOrders(
       `https://api.reservoir.tools/sales/v4?token=${contract.beanz}:${id}`
     ),
   ]);
@@ -97,7 +91,7 @@ export const beanzEmbed = async function (id) {
         url: `https://ikzttp.mypinata.cloud/ipfs/QmTRuWHr7bpqscUWFmhXndzf5AdQqkekhqwgbyJCqKMHrL/${id}.png`,
       },
       footer: {
-        text: `List: ${list} | Offer: ${offer} | Last Sale: ${lastSale}`,
+        text: `Lowest List: ${list} | Last Sale: ${lastSale}`,
       },
     },
   ];
