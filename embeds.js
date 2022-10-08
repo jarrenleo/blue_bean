@@ -1,4 +1,4 @@
-import { getTraits, getOrders } from "./fetch.js";
+import { getTraits, getOrders, getNFT } from "./fetch.js";
 
 const contract = {
   azuki: "0xed5af388653567af2f388e6224dc7c4b3241c544",
@@ -163,6 +163,99 @@ export const pairEmbed = function (azukiId, beanzId) {
       footer: {
         text: "Image may take some time to render",
       },
+    },
+  ];
+};
+
+export const findEmbed = async function (name) {
+  const [data] = await getNFT(
+    `https://api.reservoir.tools/collections/v5?name=${name}&limit=1`
+  );
+
+  const slug = data.slug;
+  const address = data.primaryContract;
+  const symbol = data.floorAsk.price.currency.symbol;
+  const verified =
+    data.openseaVerificationStatus === "verified" ||
+    data.openseaVerificationStatus === "approved"
+      ? "✅"
+      : "";
+  const royalties = data.royalties?.bps ? data.royalties.bps : 0;
+
+  const rank = function (day) {
+    if (data.rank[day] === null) return "-";
+
+    return data.rank[day];
+  };
+
+  const volume = function (day) {
+    return `${Math.round(data.volume[day]).toLocaleString("en-US")}`;
+  };
+
+  const website = function () {
+    if (data.externalUrl === null) return "";
+
+    return `[Website](${data.externalUrl}) | `;
+  };
+  console.log(data.image);
+
+  return [
+    {
+      color: 0x0267bc,
+      author: {
+        name: `${data.name} ${verified}`,
+      },
+      thumbnail: {
+        url: `${data.image}`,
+      },
+      fields: [
+        {
+          name: "Collection Size",
+          value: `${Number(data.tokenCount).toLocaleString("en-US")}`,
+          inline: true,
+        },
+        {
+          name: "Active Listings",
+          value: `${Number(data.onSaleCount).toLocaleString("en-US")}`,
+          inline: true,
+        },
+        {
+          name: "Royalties",
+          value: `${royalties / 100}%`,
+          inline: true,
+        },
+        {
+          name: "Floor Price",
+          value: `${data.floorAsk.price.amount.native.toFixed(2)} ${symbol}`,
+          inline: true,
+        },
+        {
+          name: "Rank (1 / 7 / 30 / All-Time)",
+          value: `${rank("1day")} / ${rank("7day")} / ${rank("30day")} / ${rank(
+            "allTime"
+          )}`,
+          inline: true,
+        },
+        {
+          name: "Volume (1 / 7 / 30 / All-Time)",
+          value: `${volume("1day")} ${symbol} / ${volume(
+            "7day"
+          )} ${symbol} / ${volume("30day")} ${symbol} / ${volume(
+            "allTime"
+          )} ${symbol}`,
+          inline: false,
+        },
+        {
+          name: "Contract Address",
+          value: `[${address}](https://etherscan.io/address/${address})`,
+          inline: false,
+        },
+        {
+          name: "Links",
+          value: `${website()}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${address}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [SudoSwap](https://sudoswap.xyz/#/browse/buy/${address}) | [Gem](https://www.gem.xyz/collection/${slug}/)`,
+          inline: false,
+        },
+      ],
     },
   ];
 };

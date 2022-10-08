@@ -7,6 +7,7 @@ import {
   blueInteraction,
   redInteraction,
   pairInteraction,
+  findInteraction,
 } from "./interactions.js";
 
 config();
@@ -72,6 +73,12 @@ client.on("interactionCreate", async (interaction) => {
         const id = Math.floor(Math.random() * 19950);
         await beanzInteraction(interaction, id);
       }
+    }
+
+    if (interaction.commandName === "find") {
+      const name = interaction.options.get("name").value;
+
+      findInteraction(interaction, name);
     }
   } catch (error) {
     console.log(error.message);

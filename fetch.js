@@ -36,3 +36,8 @@ export const getOrders = async function (url) {
     latestData.price.currency.symbol
   }`;
 };
+
+export const getNFT = async function (url) {
+  const data = await getData(url, options);
+  return data.collections;
+};

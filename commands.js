@@ -69,4 +69,16 @@ export const commands = [
     name: "random",
     description: "View a random Azuki/Beanz from the collection",
   },
+  {
+    name: "find",
+    description: "Find an NFT collection",
+    options: [
+      {
+        name: "name",
+        description: "Type in the collection name you wish to find",
+        type: 3,
+        required: true,
+      },
+    ],
+  },
 ];

@@ -4,6 +4,7 @@ import {
   blueEmbed,
   redEmbed,
   pairEmbed,
+  findEmbed,
 } from "./embeds.js";
 
 const azukiIdRange = function (id) {
@@ -62,4 +63,10 @@ export const pairInteraction = function (interaction, azukiId, beanzId) {
     : interaction.reply({
         content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
       });
+};
+
+export const findInteraction = async function (interaction, name) {
+  interaction.reply({
+    embeds: await findEmbed(name),
+  });
 };
