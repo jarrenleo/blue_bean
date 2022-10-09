@@ -25,6 +25,7 @@ const beanzURL = {
 
 const alignTraits = function (traits) {
   const paddingLength = 3 - (traits.length % 3);
+  if (paddingLength === 3) return traits;
   const padding = new Array(paddingLength).fill({
     name: "\u200b",
     value: "\u200b",
