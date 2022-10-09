@@ -11,7 +11,6 @@ import {
 } from "./interactions.js";
 
 config();
-
 const discordToken = process.env.DISCORD_TOKEN;
 const AppId = process.env.APP_ID;
 const GuildId = process.env.GUILD_ID;

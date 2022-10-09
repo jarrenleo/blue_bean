@@ -23,16 +23,15 @@ const beanzURL = {
   gem: `https://www.gem.xyz/asset/${contract.beanz}`,
 };
 
-function padTraits(traits) {
-  // Determines the number of traits and pads the array with blank fields to a multiple of 3
-  let padLen = 3 - (traits.length % 3);
-  var padding = new Array(padLen).fill({
-    name: '\u200b',
-    value: '\u200b',
+const alignTraits = function (traits) {
+  const paddingLength = 3 - (traits.length % 3);
+  const padding = new Array(paddingLength).fill({
+    name: "\u200b",
+    value: "\u200b",
     inline: true,
-  })
+  });
   return traits.concat(padding);
-}
+};
 
 export const azukiEmbed = async function (id) {
   const [traits, list, lastSale] = await Promise.all([
@@ -55,7 +54,7 @@ export const azukiEmbed = async function (id) {
         icon_url: `${azukiURL.icon}`,
       },
       fields: [
-        ...padTraits(traits),
+        ...alignTraits(traits),
         {
           name: "Links",
           value: `[OpenSea](${azukiURL.opensea}/${id}) | [LooksRare](${azukiURL.looksrare}/${id}) | [X2Y2](${azukiURL.x2y2}/${id}) | [SudoSwap](${azukiURL.sudoswap}/${id}) | [Gem](${azukiURL.gem}/${id})`,
@@ -92,7 +91,7 @@ export const beanzEmbed = async function (id) {
         icon_url: `${beanzURL.icon}`,
       },
       fields: [
-        ...padTraits(traits),
+        ...alignTraits(traits),
         {
           name: "Links",
           value: `[OpenSea](${beanzURL.opensea}/${id}) | [LooksRare](${beanzURL.looksrare}/${id}) | [X2Y2](${beanzURL.x2y2}/${id}) | [SudoSwap](${beanzURL.sudoswap}/${id}) | [Gem](${beanzURL.gem}/${id})`,
@@ -186,6 +185,8 @@ export const findEmbed = async function (name) {
   const slug = data.slug;
   const address = data.primaryContract;
   const symbol = data.floorAsk.price.currency.symbol;
+  const website =
+    data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
   const verified =
     data.openseaVerificationStatus === "verified" ||
     data.openseaVerificationStatus === "approved"
@@ -201,12 +202,6 @@ export const findEmbed = async function (name) {
 
   const volume = function (day) {
     return `${Math.round(data.volume[day]).toLocaleString("en-US")}`;
-  };
-
-  const website = function () {
-    if (data.externalUrl === null) return "";
-
-    return `[Website](${data.externalUrl}) | `;
   };
 
   return [
@@ -262,7 +257,7 @@ export const findEmbed = async function (name) {
         },
         {
           name: "Links",
-          value: `${website()}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${address}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [SudoSwap](https://sudoswap.xyz/#/browse/buy/${address}) | [Gem](https://www.gem.xyz/collection/${slug}/)`,
+          value: `${website}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${address}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [SudoSwap](https://sudoswap.xyz/#/browse/buy/${address}) | [Gem](https://www.gem.xyz/collection/${slug}/)`,
           inline: false,
         },
       ],

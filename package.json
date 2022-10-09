@@ -1,6 +1,6 @@
 {
   "name": "lycorispublic",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Discord bot to view the Azuki/Beanz collection",
   "main": "app.js",
   "type": "module",
