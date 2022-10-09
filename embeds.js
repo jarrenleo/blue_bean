@@ -23,6 +23,17 @@ const beanzURL = {
   gem: `https://www.gem.xyz/asset/${contract.beanz}`,
 };
 
+function padTraits(traits) {
+  // Determines the number of traits and pads the array with blank fields to a multiple of 3
+  let padLen = 3 - (traits.length % 3);
+  var padding = new Array(padLen).fill({
+    name: '\u200b',
+    value: '\u200b',
+    inline: true,
+  })
+  return traits.concat(padding);
+}
+
 export const azukiEmbed = async function (id) {
   const [traits, list, lastSale] = await Promise.all([
     getTraits(
@@ -44,7 +55,7 @@ export const azukiEmbed = async function (id) {
         icon_url: `${azukiURL.icon}`,
       },
       fields: [
-        ...traits,
+        ...padTraits(traits),
         {
           name: "Links",
           value: `[OpenSea](${azukiURL.opensea}/${id}) | [LooksRare](${azukiURL.looksrare}/${id}) | [X2Y2](${azukiURL.x2y2}/${id}) | [SudoSwap](${azukiURL.sudoswap}/${id}) | [Gem](${azukiURL.gem}/${id})`,
@@ -81,7 +92,7 @@ export const beanzEmbed = async function (id) {
         icon_url: `${beanzURL.icon}`,
       },
       fields: [
-        ...traits,
+        ...padTraits(traits),
         {
           name: "Links",
           value: `[OpenSea](${beanzURL.opensea}/${id}) | [LooksRare](${beanzURL.looksrare}/${id}) | [X2Y2](${beanzURL.x2y2}/${id}) | [SudoSwap](${beanzURL.sudoswap}/${id}) | [Gem](${beanzURL.gem}/${id})`,
