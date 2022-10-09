@@ -1,4 +1,4 @@
-import { getTraits, getOrders, getCollection } from "./fetch.js";
+import { getTraits, getOrders, getCollection, getOwners } from "./fetch.js";
 
 const contract = {
   azuki: "0xed5af388653567af2f388e6224dc7c4b3241c544",
@@ -182,12 +182,17 @@ export const findEmbed = async function (name) {
   const [data] = await getCollection(
     `https://api.reservoir.tools/collections/v5?name=${name}&limit=1`
   );
-  const [dailySaleCount] = await getCollection(
-    `https://api.reservoir.tools/collections/daily-volumes/v1?id=${data.primaryContract}&limit=1`
-  );
+  const address = data.primaryContract;
+  const [uniqueOwners, [dailySaleCount]] = await Promise.all([
+    getOwners(
+      `https://api.reservoir.tools/collections/${address}/owners-distribution/v1`
+    ),
+    getCollection(
+      `https://api.reservoir.tools/collections/daily-volumes/v1?id=${address}&limit=1`
+    ),
+  ]);
 
   const slug = data.slug;
-  const address = data.primaryContract;
   const size = Number(data.tokenCount);
   const onSale = Number(data.onSaleCount);
   const symbol = data.floorAsk.price.currency.symbol;
@@ -234,13 +239,16 @@ export const findEmbed = async function (name) {
           inline: true,
         },
         {
-          name: "Daily Sale Count",
-          value: `${dailySaleCount.sales_count}`,
+          name: "Unique Owners",
+          value: `${uniqueOwners.toLocaleString("en-US")} (${(
+            (uniqueOwners / size) *
+            100
+          ).toFixed(1)}%)`,
           inline: true,
         },
         {
-          name: "\u200b",
-          value: "\u200b",
+          name: "Daily Sale Count",
+          value: `${dailySaleCount.sales_count.toLocaleString("en-US")}`,
           inline: true,
         },
         {

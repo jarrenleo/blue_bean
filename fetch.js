@@ -41,3 +41,12 @@ export const getCollection = async function (url) {
   const data = await getData(url, options);
   return data.collections;
 };
+
+export const getOwners = async function (url) {
+  let uniqueOwners = 0;
+  const data = await getData(url, options);
+
+  data.ownersDistribution.forEach((data) => (uniqueOwners += data.ownerCount));
+
+  return uniqueOwners;
+};
