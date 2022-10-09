@@ -70,3 +70,9 @@ export const findInteraction = async function (interaction, name) {
     embeds: await findEmbed(name),
   });
 };
+
+export const nhentaiInteraction = async function (interaction, nhentaiId) {
+    interaction.reply({
+      content: `https://nhentai.net/g/${nhentaiId}`
+    })
+};

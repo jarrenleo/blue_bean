@@ -8,6 +8,7 @@ import {
   redInteraction,
   pairInteraction,
   findInteraction,
+  nhentaiInteraction,
 } from "./interactions.js";
 
 config();
@@ -78,6 +79,11 @@ client.on("interactionCreate", async (interaction) => {
       const name = interaction.options.get("name").value;
 
       await findInteraction(interaction, name);
+    }
+
+    if (interaction.commandName === "nhentai") {
+      const nhentaiId = interaction.options.get("nhentai-id").value;
+      await nhentaiInteraction(interaction, nhentaiId);
     }
   } catch (error) {
     console.log(error.message);

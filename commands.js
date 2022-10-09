@@ -81,4 +81,16 @@ export const commands = [
       },
     ],
   },
+  {
+    name: "nhentai",
+    description: "Get the full link for a nhentai sauce 😘",
+    options: [
+      {
+        name: "nhentai-id",
+        description: "Type in the nhentai # you'd like to get a link for",
+        type: 10,
+        required: true,
+      }
+    ],
+  },
 ];
