@@ -5,22 +5,16 @@ const contract = {
   beanz: "0x306b1ea3ecdf94ab739f1910bbda052ed4a9f949",
 };
 
-const azukiURL = {
-  icon: "https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT?auto=format&w=1920",
-  opensea: `https://opensea.io/assets/ethereum/${contract.azuki}`,
-  looksrare: `https://looksrare.org/collections/${contract.azuki}`,
-  x2y2: `https://x2y2.io/eth/${contract.azuki}`,
-  sudoswap: `https://sudoswap.xyz/#/item/${contract.azuki}`,
-  gem: `https://www.gem.xyz/asset/${contract.azuki}`,
-};
-
-const beanzURL = {
-  icon: "https://i.seadn.io/gae/_R4fuC4QGYd14-KwX2bD1wf-AWjDF2VMabfqWFJhIgiN2FnAUpnD5PLdJORrhQ8gly7KcjhQZZpuzYVPF7CDSzsqmDh97z84j2On?auto=format&w=1920",
-  opensea: `https://opensea.io/assets/ethereum/${contract.beanz}`,
-  looksrare: `https://looksrare.org/collections/${contract.beanz}`,
-  x2y2: `https://x2y2.io/eth/${contract.beanz}`,
-  sudoswap: `https://sudoswap.xyz/#/item/${contract.beanz}`,
-  gem: `https://www.gem.xyz/asset/${contract.beanz}`,
+const url = {
+  azukiIcon:
+    "https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT?auto=format&w=1920",
+  beanzIcon:
+    "https://i.seadn.io/gae/_R4fuC4QGYd14-KwX2bD1wf-AWjDF2VMabfqWFJhIgiN2FnAUpnD5PLdJORrhQ8gly7KcjhQZZpuzYVPF7CDSzsqmDh97z84j2On?auto=format&w=1920",
+  opensea: "https://opensea.io/assets/ethereum",
+  looksrare: "https://looksrare.org/collections",
+  x2y2: "https://x2y2.io/eth",
+  sudoswap: "https://sudoswap.xyz/#/item",
+  gem: "https://www.gem.xyz/asset",
 };
 
 const alignTraits = function (traits) {
@@ -52,13 +46,13 @@ export const azukiEmbed = async function (id) {
       color: 0xc13540,
       author: {
         name: `Azuki #${id}`,
-        icon_url: `${azukiURL.icon}`,
+        icon_url: `${url.azukiIcon}`,
       },
       fields: [
         ...alignTraits(traits),
         {
           name: "Links",
-          value: `[OpenSea](${azukiURL.opensea}/${id}) | [LooksRare](${azukiURL.looksrare}/${id}) | [X2Y2](${azukiURL.x2y2}/${id}) | [SudoSwap](${azukiURL.sudoswap}/${id}) | [Gem](${azukiURL.gem}/${id})`,
+          value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id})`,
         },
       ],
       image: {
@@ -89,13 +83,13 @@ export const beanzEmbed = async function (id) {
       color: 0xc13540,
       author: {
         name: `Beanz #${id}`,
-        icon_url: `${beanzURL.icon}`,
+        icon_url: `${url.beanzIcon}`,
       },
       fields: [
         ...alignTraits(traits),
         {
           name: "Links",
-          value: `[OpenSea](${beanzURL.opensea}/${id}) | [LooksRare](${beanzURL.looksrare}/${id}) | [X2Y2](${beanzURL.x2y2}/${id}) | [SudoSwap](${beanzURL.sudoswap}/${id}) | [Gem](${beanzURL.gem}/${id})`,
+          value: `[OpenSea](${url.opensea}/${contract.beanz}/${id}) | [LooksRare](${url.looksrare}/${contract.beanz}/${id}) | [X2Y2](${url.x2y2}/${contract.beanz}/${id}) | [SudoSwap](${url.sudoswap}/${contract.beanz}/${id}) | [Gem](${url.gem}/${contract.beanz}/${id})`,
         },
       ],
       image: {
@@ -114,12 +108,12 @@ export const blueEmbed = function (id) {
       color: 0xc13540,
       author: {
         name: `Azuki #${id} in Blue Twin Tiger Jacket`,
-        icon_url: `${azukiURL.icon}`,
+        icon_url: `${url.azukiIcon}`,
       },
       fields: [
         {
           name: "Links",
-          value: `[OpenSea](${azukiURL.opensea}/${id}) | [LooksRare](${azukiURL.looksrare}/${id}) | [X2Y2](${azukiURL.x2y2}/${id}) | [SudoSwap](${azukiURL.sudoswap}/${id}) | [Gem](${azukiURL.gem}/${id})`,
+          value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id})`,
         },
       ],
       image: {
@@ -135,12 +129,12 @@ export const redEmbed = function (id) {
       color: 0xc13540,
       author: {
         name: `Azuki #${id} in Red Twin Tiger Jacket`,
-        icon_url: `${azukiURL.icon}`,
+        icon_url: `${url.azukiIcon}`,
       },
       fields: [
         {
           name: "Links",
-          value: `[OpenSea](${azukiURL.opensea}/${id}) | [LooksRare](${azukiURL.looksrare}/${id}) | [X2Y2](${azukiURL.x2y2}/${id}) | [SudoSwap](${azukiURL.sudoswap}/${id}) | [Gem](${azukiURL.gem}/${id})`,
+          value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id})`,
         },
       ],
       image: {
@@ -156,16 +150,16 @@ export const pairEmbed = function (azukiId, beanzId) {
       color: 0xc13540,
       author: {
         name: `Azuki #${azukiId} | Beanz #${beanzId}`,
-        icon_url: `${azukiURL.icon}`,
+        icon_url: `${url.azukiIcon}`,
       },
       fields: [
         {
           name: "Links to Azuki",
-          value: `[OpenSea](${azukiURL.opensea}/${azukiId}) | [LooksRare](${azukiURL.looksrare}/${azukiId}) | [X2Y2](${azukiURL.x2y2}/${azukiId}) | [SudoSwap](${azukiURL.sudoswap}/${azukiId}) | [Gem](${azukiURL.gem}/${azukiId})`,
+          value: `[OpenSea](${url.opensea}/${contract.azuki}/${azukiId}) | [LooksRare](${url.looksrare}/${contract.azuki}/${azukiId}) | [X2Y2](${url.x2y2}/${contract.azuki}/${azukiId}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${azukiId}) | [Gem](${url.gem}/${contract.azuki}/${azukiId})`,
         },
         {
           name: "Links to Beanz",
-          value: `[OpenSea](${beanzURL.opensea}/${beanzId}) | [LooksRare](${beanzURL.looksrare}/${beanzId}) | [X2Y2](${beanzURL.x2y2}/${beanzId}) | [SudoSwap](${beanzURL.sudoswap}/${beanzId}) | [Gem](${beanzURL.gem}/${beanzId})`,
+          value: `[OpenSea](${url.opensea}/${contract.beanz}/${beanzId}) | [LooksRare](${url.looksrare}/${contract.beanz}/${beanzId}) | [X2Y2](${url.x2y2}/${contract.beanz}/${beanzId}) | [SudoSwap](${url.sudoswap}/${contract.beanz}/${beanzId}) | [Gem](${url.gem}/${contract.beanz}/${beanzId})`,
         },
       ],
       image: {
