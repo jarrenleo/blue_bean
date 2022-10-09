@@ -37,7 +37,7 @@ export const getOrders = async function (url) {
   }`;
 };
 
-export const getNFT = async function (url) {
+export const getCollection = async function (url) {
   const data = await getData(url, options);
   return data.collections;
 };

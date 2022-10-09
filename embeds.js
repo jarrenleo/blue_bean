@@ -1,4 +1,4 @@
-import { getTraits, getOrders, getNFT } from "./fetch.js";
+import { getTraits, getOrders, getCollection } from "./fetch.js";
 
 const contract = {
   azuki: "0xed5af388653567af2f388e6224dc7c4b3241c544",
@@ -179,27 +179,22 @@ export const pairEmbed = function (azukiId, beanzId) {
 };
 
 export const findEmbed = async function (name) {
-  const [data] = await getNFT(
+  const [data] = await getCollection(
     `https://api.reservoir.tools/collections/v5?name=${name}&limit=1`
+  );
+  const [dailySaleCount] = await getCollection(
+    `https://api.reservoir.tools/collections/daily-volumes/v1?id=${data.primaryContract}&limit=1`
   );
 
   const slug = data.slug;
   const address = data.primaryContract;
+  const size = Number(data.tokenCount);
+  const onSale = Number(data.onSaleCount);
   const symbol = data.floorAsk.price.currency.symbol;
   const website =
     data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
-  const verified =
-    data.openseaVerificationStatus === "verified" ||
-    data.openseaVerificationStatus === "approved"
-      ? "✅"
-      : "";
+  const verified = data.openseaVerificationStatus === "verified" ? "✅" : "";
   const royalties = data.royalties?.bps ? data.royalties.bps : 0;
-
-  const rank = function (day) {
-    if (data.rank[day] === null) return "-";
-
-    return data.rank[day];
-  };
 
   const volume = function (day) {
     return `${Math.round(data.volume[day]).toLocaleString("en-US")}`;
@@ -217,12 +212,15 @@ export const findEmbed = async function (name) {
       fields: [
         {
           name: "Collection Size",
-          value: `${Number(data.tokenCount).toLocaleString("en-US")}`,
+          value: `${size.toLocaleString("en-US")}`,
           inline: true,
         },
         {
           name: "Active Listings",
-          value: `${Number(data.onSaleCount).toLocaleString("en-US")}`,
+          value: `${onSale.toLocaleString("en-US")} (${(
+            (onSale / size) *
+            100
+          ).toFixed(1)}%)`,
           inline: true,
         },
         {
@@ -236,10 +234,13 @@ export const findEmbed = async function (name) {
           inline: true,
         },
         {
-          name: "Rank (1 / 7 / 30 / All-Time)",
-          value: `${rank("1day")} / ${rank("7day")} / ${rank("30day")} / ${rank(
-            "allTime"
-          )}`,
+          name: "Daily Sale Count",
+          value: `${dailySaleCount.sales_count}`,
+          inline: true,
+        },
+        {
+          name: "\u200b",
+          value: "\u200b",
           inline: true,
         },
         {
@@ -259,7 +260,6 @@ export const findEmbed = async function (name) {
         {
           name: "Links",
           value: `${website}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${address}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [SudoSwap](https://sudoswap.xyz/#/browse/buy/${address}) | [Gem](https://www.gem.xyz/collection/${slug}/)`,
-          inline: false,
         },
       ],
     },
