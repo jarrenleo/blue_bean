@@ -1,3 +1,4 @@
+console.log("hi");
 export const commands = [
   {
     name: "azuki",

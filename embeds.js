@@ -1,5 +1,5 @@
 import { getData, getOrders, getOwners } from "./fetch.js";
-
+console.log('hi');
 const contract = {
   azuki: "0xed5af388653567af2f388e6224dc7c4b3241c544",
   beanz: "0x306b1ea3ecdf94ab739f1910bbda052ed4a9f949",

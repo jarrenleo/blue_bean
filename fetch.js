@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import fetch from "node-fetch";
-
+console.log("hi");
 config();
 const apiKey = process.env.RESERVOIR_API_KEY;
 const options = {
