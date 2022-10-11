@@ -9,7 +9,7 @@ import {
   redInteraction,
   pairInteraction,
 } from "./interactions.js";
-console.log("hi");
+
 config();
 const discordToken = process.env.DISCORD_TOKEN;
 const AppId = process.env.APP_ID;
