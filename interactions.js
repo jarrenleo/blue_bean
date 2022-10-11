@@ -6,7 +6,7 @@ import {
   redEmbed,
   pairEmbed,
 } from "./embeds.js";
-console.log("hi");
+
 const azukiIdRange = function (id) {
   return id >= 0 && id < 10000;
 };
