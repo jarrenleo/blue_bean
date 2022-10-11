@@ -30,18 +30,16 @@ const promiseHelper = async function (contract, id) {
 const sortTraits = function (token) {
   const traits = token.attributes;
   const traitFields = traits.map(function (trait) {
-    const formatKey = function (key) {
-      const lowercase = key.toLowerCase();
-      const split = lowercase.split(" ");
-      for (let i = 0; i < split.length; i++) {
-        split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
-      }
-
-      return split.join(" ");
+    const capitaliseKey = function (key) {
+      return key
+        .toLowerCase()
+        .split(" ")
+        .map((keyword) => keyword.charAt(0).toUpperCase() + keyword.slice(1))
+        .join(" ");
     };
 
     return {
-      name: `${formatKey(trait.key)}`,
+      name: `${capitaliseKey(trait.key)}`,
       value: `${trait.value}`,
       inline: true,
     };
