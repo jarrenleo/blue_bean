@@ -1,10 +1,10 @@
 import {
   azukiEmbed,
   beanzEmbed,
+  findEmbed,
   blueEmbed,
   redEmbed,
   pairEmbed,
-  findEmbed,
 } from "./embeds.js";
 
 const azukiIdRange = function (id) {

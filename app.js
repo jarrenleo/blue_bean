@@ -4,10 +4,10 @@ import { commands } from "./commands.js";
 import {
   azukiInteraction,
   beanzInteraction,
+  findInteraction,
   blueInteraction,
   redInteraction,
   pairInteraction,
-  findInteraction,
 } from "./interactions.js";
 
 config();

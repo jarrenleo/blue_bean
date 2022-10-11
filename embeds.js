@@ -218,7 +218,7 @@ export const findEmbed = async function (name, id) {
       ];
     }
 
-    if (id) {
+    if (id >= 0) {
       const [[tokenData], list, lastSale] = await promiseHelper(address, id);
       const token = tokenData?.token;
       if (token === undefined)
