@@ -24,6 +24,28 @@ export const commands = [
     ],
   },
   {
+    name: "random",
+    description: "View a random Azuki/Beanz from the collection",
+  },
+  {
+    name: "find",
+    description: "Find an NFT collection",
+    options: [
+      {
+        name: "name",
+        description: "Type in the collection name you wish to find",
+        type: 3,
+        required: true,
+      },
+      {
+        name: "id",
+        description: "Type in the token # you wish to find",
+        type: 10,
+        required: false,
+      },
+    ],
+  },
+  {
     name: "blue",
     description: "Equip Azuki with blue twin tiger jacket",
     options: [
@@ -61,22 +83,6 @@ export const commands = [
         name: "beanz-id",
         description: "Type in the Beanz # you wish to pair",
         type: 10,
-        required: true,
-      },
-    ],
-  },
-  {
-    name: "random",
-    description: "View a random Azuki/Beanz from the collection",
-  },
-  {
-    name: "find",
-    description: "Find an NFT collection",
-    options: [
-      {
-        name: "name",
-        description: "Type in the collection name you wish to find",
-        type: 3,
         required: true,
       },
     ],

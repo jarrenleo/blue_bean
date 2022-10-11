@@ -36,13 +36,16 @@ const rest = new REST({
 
 client.on("interactionCreate", async (interaction) => {
   try {
-    if (!interaction.isChatInputCommand()) return;
+    if (interaction.isChatInputCommand() && interaction.commandName)
+      await interaction.deferReply();
+
     const id =
       interaction.commandName === "azuki" ||
       interaction.commandName === "beanz" ||
+      interaction.commandName === "find" ||
       interaction.commandName === "blue" ||
       interaction.commandName === "red"
-        ? interaction.options.get("id").value
+        ? interaction.options.get("id")?.value
         : "";
 
     if (interaction.commandName === "azuki")
@@ -50,17 +53,6 @@ client.on("interactionCreate", async (interaction) => {
 
     if (interaction.commandName === "beanz")
       await beanzInteraction(interaction, id);
-
-    if (interaction.commandName === "blue") blueInteraction(interaction, id);
-
-    if (interaction.commandName === "red") redInteraction(interaction, id);
-
-    if (interaction.commandName === "pair") {
-      const azukiId = interaction.options.get("azuki-id").value;
-      const beanzId = interaction.options.get("beanz-id").value;
-
-      pairInteraction(interaction, azukiId, beanzId);
-    }
 
     if (interaction.commandName === "random") {
       const rng = Math.random();
@@ -76,8 +68,19 @@ client.on("interactionCreate", async (interaction) => {
 
     if (interaction.commandName === "find") {
       const name = interaction.options.get("name").value;
+      await findInteraction(interaction, name, id);
+    }
 
-      await findInteraction(interaction, name);
+    if (interaction.commandName === "blue")
+      await blueInteraction(interaction, id);
+
+    if (interaction.commandName === "red")
+      await redInteraction(interaction, id);
+
+    if (interaction.commandName === "pair") {
+      const azukiId = interaction.options.get("azuki-id").value;
+      const beanzId = interaction.options.get("beanz-id").value;
+      await pairInteraction(interaction, azukiId, beanzId);
     }
   } catch (error) {
     console.log(error.message);

@@ -10,24 +10,20 @@ const options = {
   },
 };
 
-const getData = async function (url, options) {
+const fetchData = async function (url, options) {
   const response = await fetch(url, options);
   return await response.json();
 };
 
-export const getTraits = async function (url) {
-  const data = await getData(url);
-  return data.attributes.map(function (trait) {
-    return {
-      name: `${trait.trait_type}`,
-      value: `${trait.value}`,
-      inline: true,
-    };
-  });
+export const getData = async function (url, options) {
+  const data = await fetchData(url, options);
+  const updatedData = data.tokens ?? data.collections;
+
+  return updatedData;
 };
 
 export const getOrders = async function (url) {
-  const data = await getData(url, options);
+  const data = await fetchData(url, options);
   const latestData = data.orders?.at(0) ?? data.sales?.at(0);
 
   if (latestData === undefined) return "-";
@@ -37,14 +33,9 @@ export const getOrders = async function (url) {
   }`;
 };
 
-export const getCollection = async function (url) {
-  const data = await getData(url, options);
-  return data.collections;
-};
-
 export const getOwners = async function (url) {
   let uniqueOwners = 0;
-  const data = await getData(url, options);
+  const data = await fetchData(url, options);
 
   data.ownersDistribution.forEach((data) => (uniqueOwners += data.ownerCount));
 

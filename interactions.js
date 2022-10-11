@@ -17,56 +17,62 @@ const beanzIdRange = function (id) {
 
 export const azukiInteraction = async function (interaction, id) {
   azukiIdRange(id)
-    ? interaction.reply({
+    ? await interaction.editReply({
         embeds: await azukiEmbed(id),
       })
-    : interaction.reply({
+    : await interaction.editReply({
         content: `Azuki #${id} does not exist in the collection.`,
       });
 };
 
 export const beanzInteraction = async function (interaction, id) {
   beanzIdRange(id)
-    ? interaction.reply({
+    ? await interaction.editReply({
         embeds: await beanzEmbed(id),
       })
-    : interaction.reply({
+    : await interaction.editReply({
         content: `Beanz #${id} does not exist in the collection.`,
       });
 };
 
-export const blueInteraction = function (interaction, id) {
+export const findInteraction = async function (interaction, name, id) {
+  try {
+    await interaction.editReply({
+      embeds: await findEmbed(name, id),
+    });
+  } catch (error) {
+    await interaction.editReply({
+      content: `${error.message}`,
+    });
+  }
+};
+
+export const blueInteraction = async function (interaction, id) {
   azukiIdRange(id)
-    ? interaction.reply({
+    ? await interaction.editReply({
         embeds: blueEmbed(id),
       })
-    : interaction.reply({
+    : await interaction.editReply({
         content: `Azuki #${id} does not exist in the collection.`,
       });
 };
 
-export const redInteraction = function (interaction, id) {
+export const redInteraction = async function (interaction, id) {
   azukiIdRange(id)
-    ? interaction.reply({
+    ? await interaction.editReply({
         embeds: redEmbed(id),
       })
-    : interaction.reply({
+    : await interaction.editReply({
         content: `Azuki #${id} does not exist in the collection.`,
       });
 };
 
-export const pairInteraction = function (interaction, azukiId, beanzId) {
+export const pairInteraction = async function (interaction, azukiId, beanzId) {
   azukiIdRange(azukiId) && beanzIdRange(beanzId)
-    ? interaction.reply({
+    ? await interaction.editReply({
         embeds: pairEmbed(azukiId, beanzId),
       })
-    : interaction.reply({
+    : await interaction.editReply({
         content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
       });
-};
-
-export const findInteraction = async function (interaction, name) {
-  interaction.reply({
-    embeds: await findEmbed(name),
-  });
 };
