@@ -44,7 +44,7 @@ const sortTraits = function (token) {
       inline: true,
     };
   });
-
+  console.log(test);
   const paddingLength = 3 - (traits.length % 3);
   if (paddingLength === 3) return traitFields;
   const padding = new Array(paddingLength).fill({
