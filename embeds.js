@@ -1,4 +1,4 @@
-import { getData, getOrders, getOwners } from "./fetch.js";
+import { getData, getOrders, getOwners, refreshToken } from "./fetch.js";
 
 const contract = {
   azuki: "0xed5af388653567af2f388e6224dc7c4b3241c544",
@@ -27,8 +27,7 @@ const promiseHelper = async function (contract, id) {
   ]);
 };
 
-const sortTraits = function (token) {
-  const traits = token.attributes;
+const sortTraits = function (traits) {
   const traitFields = traits.map(function (trait) {
     const capitaliseKey = function (key) {
       return key
@@ -68,7 +67,7 @@ export const azukiEmbed = async function (id) {
         icon_url: `${token.collection.image}`,
       },
       fields: [
-        ...sortTraits(token),
+        ...sortTraits(token.attributes),
         {
           name: "Links",
           value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id})`,
@@ -97,7 +96,7 @@ export const beanzEmbed = async function (id) {
         icon_url: `${token.collection.image}`,
       },
       fields: [
-        ...sortTraits(token),
+        ...sortTraits(token.attributes),
         {
           name: "Links",
           value: `[OpenSea](${url.opensea}/${contract.beanz}/${id}) | [LooksRare](${url.looksrare}/${contract.beanz}/${id}) | [X2Y2](${url.x2y2}/${contract.beanz}/${id}) | [SudoSwap](${url.sudoswap}/${contract.beanz}/${id}) | [Gem](${url.gem}/${contract.beanz}/${id})`,
@@ -120,8 +119,8 @@ export const findEmbed = async function (name, id) {
     );
 
     const address = data?.primaryContract;
-    if (address === undefined)
-      throw new Error("NFT collection does not exist.");
+    if (!address)
+      throw new Error("Collection not found. Please try another keyword.");
 
     if (id === undefined) {
       const [uniqueOwners, [dailySaleCount]] = await Promise.all([
@@ -221,10 +220,26 @@ export const findEmbed = async function (name, id) {
     if (id >= 0) {
       const [[tokenData], list, lastSale] = await promiseHelper(address, id);
       const token = tokenData?.token;
-      if (token === undefined)
+      if (!token)
         throw new Error(
           `${data.name} #${id} does not exist in the collection.`
         );
+
+      const image = token?.image;
+      const attributes = token.attributes;
+      if (!image || !attributes.length) {
+        const response = await refreshToken(
+          "https://api.reservoir.tools/tokens/refresh/v1",
+          address,
+          id
+        );
+
+        if (response.status === 200)
+          throw new Error(
+            `Metadata not found for ${data.name} #${id}. A metadata refresh has been requested. Please try again in a few minutes.`
+          );
+      }
+
       const isFlagged = token.isFlagged ? "⚠️" : "";
       const rarity = token.rarityRank !== null ? `#${token.rarityRank}` : "-";
 
@@ -236,14 +251,14 @@ export const findEmbed = async function (name, id) {
             icon_url: `${token.collection.image}`,
           },
           fields: [
-            ...sortTraits(token),
+            ...sortTraits(attributes),
             {
               name: "Links",
               value: `[OpenSea](${url.opensea}/${token.contract}/${id}) | [LooksRare](${url.looksrare}/${token.contract}/${id}) | [X2Y2](${url.x2y2}/${token.contract}/${id}) | [SudoSwap](${url.sudoswap}/${token.contract}/${id}) | [Gem](${url.gem}/${token.contract}/${id})`,
             },
           ],
           image: {
-            url: `${token.image}`,
+            url: `${image}`,
           },
           footer: {
             text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}`,

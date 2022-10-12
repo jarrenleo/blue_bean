@@ -6,6 +6,7 @@ const apiKey = process.env.RESERVOIR_API_KEY;
 const options = {
   headers: {
     accept: "*/*",
+    "content-type": "application/json",
     "x-api-key": `${apiKey}`,
   },
 };
@@ -26,7 +27,7 @@ export const getOrders = async function (url) {
   const data = await fetchData(url, options);
   const latestData = data.orders?.at(0) ?? data.sales?.at(0);
 
-  if (latestData === undefined) return "-";
+  if (!latestData) return "-";
 
   return `${latestData.price.amount.native?.toFixed(2)} ${
     latestData.price.currency.symbol
@@ -40,4 +41,14 @@ export const getOwners = async function (url) {
   data.ownersDistribution.forEach((data) => (uniqueOwners += data.ownerCount));
 
   return uniqueOwners;
+};
+
+export const refreshToken = async function (url, contract, id) {
+  return await fetch(url, {
+    method: "POST",
+    ...options,
+    body: JSON.stringify({
+      token: `${contract}:${id}`,
+    }),
+  });
 };
