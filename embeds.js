@@ -114,13 +114,21 @@ export const beanzEmbed = async function (id) {
 
 export const findEmbed = async function (name, id) {
   try {
-    const [data] = await getData(
+    let data;
+
+    [data] = await getData(
       `https://api.reservoir.tools/collections/v5?name=${name}&limit=1`
     );
 
-    const address = data?.primaryContract;
-    if (!address)
+    if (!data)
+      [data] = await getData(
+        `https://api.reservoir.tools/collections/v5?slug=${name}&limit=1`
+      );
+
+    if (!data)
       throw new Error("Collection not found. Please try another keyword.");
+
+    const address = data?.primaryContract;
 
     if (id === undefined) {
       const [uniqueOwners, [dailySaleCount]] = await Promise.all([
