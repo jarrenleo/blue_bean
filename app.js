@@ -37,19 +37,23 @@ const rest = new REST({
 let collectionData;
 
 client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isAutocomplete()) return;
+  try {
+    if (!interaction.isAutocomplete()) return;
 
-  if (interaction.commandName === "find") {
-    const focusedValue = interaction.options.getFocused();
-    if (focusedValue) {
-      collectionData = await getData(
-        `https://api.reservoir.tools/collections/v5?name=${focusedValue}&limit=5`
-      );
-      const choices = collectionData.map((result) => result.name);
-      await interaction.respond(
-        choices.map((choice) => ({ name: choice, value: choice }))
-      );
+    if (interaction.commandName === "find") {
+      const focusedValue = interaction.options.getFocused();
+      if (focusedValue) {
+        collectionData = await getData(
+          `https://api.reservoir.tools/collections/v5?name=${focusedValue}&limit=5`
+        );
+        const choices = collectionData.map((result) => result.name);
+        await interaction.respond(
+          choices.map((choice) => ({ name: choice, value: choice }))
+        );
+      }
     }
+  } catch (error) {
+    console.log(error.message);
   }
 });
 
