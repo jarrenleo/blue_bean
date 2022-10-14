@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
 import { commands } from "./commands.js";
+import { getData } from "./fetch.js";
 import {
   azukiInteraction,
   beanzInteraction,
@@ -12,8 +13,7 @@ import {
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
-const AppId = process.env.APP_ID;
-const GuildId = process.env.GUILD_ID;
+const clientId = process.env.CLIENT_ID;
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -26,7 +26,7 @@ const rest = new REST({
 
 (async () => {
   try {
-    await rest.put(Routes.applicationGuildCommands(AppId, GuildId), {
+    await rest.put(Routes.applicationCommands(clientId), {
       body: commands,
     });
   } catch (error) {
@@ -34,10 +34,29 @@ const rest = new REST({
   }
 })();
 
+let collectionData;
+
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isAutocomplete()) return;
+
+  if (interaction.commandName === "find") {
+    const focusedValue = interaction.options.getFocused();
+    if (focusedValue) {
+      collectionData = await getData(
+        `https://api.reservoir.tools/collections/v5?name=${focusedValue}&limit=5`
+      );
+      const choices = collectionData.map((result) => result.name);
+      await interaction.respond(
+        choices.map((choice) => ({ name: choice, value: choice }))
+      );
+    }
+  }
+});
+
 client.on("interactionCreate", async (interaction) => {
   try {
-    if (interaction.isChatInputCommand() && interaction.commandName)
-      await interaction.deferReply();
+    if (!interaction.isChatInputCommand()) return;
+    if (interaction.commandName) await interaction.deferReply();
 
     const id =
       interaction.commandName === "azuki" ||
@@ -68,7 +87,7 @@ client.on("interactionCreate", async (interaction) => {
 
     if (interaction.commandName === "find") {
       const name = interaction.options.get("name").value;
-      await findInteraction(interaction, name, id);
+      await findInteraction(interaction, collectionData, name, id);
     }
 
     if (interaction.commandName === "blue")

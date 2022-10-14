@@ -35,10 +35,17 @@ export const beanzInteraction = async function (interaction, id) {
       });
 };
 
-export const findInteraction = async function (interaction, name, id) {
+export const findInteraction = async function (
+  interaction,
+  collectionData,
+  name,
+  id
+) {
   try {
+    const data = collectionData.find((result) => result.name === name);
+
     await interaction.editReply({
-      embeds: await findEmbed(name, id),
+      embeds: await findEmbed(data, id),
     });
   } catch (error) {
     await interaction.editReply({

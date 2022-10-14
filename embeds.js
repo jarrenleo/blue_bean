@@ -112,22 +112,8 @@ export const beanzEmbed = async function (id) {
   ];
 };
 
-export const findEmbed = async function (name, id) {
+export const findEmbed = async function (data, id) {
   try {
-    let data;
-
-    [data] = await getData(
-      `https://api.reservoir.tools/collections/v5?name=${name}&limit=1`
-    );
-
-    if (!data)
-      [data] = await getData(
-        `https://api.reservoir.tools/collections/v5?slug=${name}&limit=1`
-      );
-
-    if (!data)
-      throw new Error("Collection not found. Please try another keyword.");
-
     const address = data?.primaryContract;
 
     if (id === undefined) {
@@ -144,6 +130,9 @@ export const findEmbed = async function (name, id) {
       const size = Number(data.tokenCount);
       const onSale = Number(data.onSaleCount);
       const symbol = data.floorAsk.price.currency.symbol;
+      const dailySale = dailySaleCount?.sales_count
+        ? dailySaleCount.sales_count
+        : "0";
       const website =
         data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
       const verified =
@@ -199,7 +188,7 @@ export const findEmbed = async function (name, id) {
             },
             {
               name: "Daily Sale Count",
-              value: `${dailySaleCount.sales_count.toLocaleString("en-US")}`,
+              value: `${dailySale.toLocaleString("en-US")}`,
               inline: true,
             },
             {
