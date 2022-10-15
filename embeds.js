@@ -319,15 +319,15 @@ export const pairEmbed = async function (azukiId, beanzId) {
 };
 
 export const etcEmbed = async function (interaction, id) {
+  const [data] = await getData(
+    `https://api.reservoir.tools/tokens/v5?tokens=${contract.azuki}:${id}`
+  );
+
   const imageUrl = {
     blue: `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png`,
     red: `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png`,
     wallpaper: `https://azk.imgix.net/big_azukis/a-${id}.png`,
   };
-
-  const [data] = await getData(
-    `https://api.reservoir.tools/tokens/v5?tokens=${contract.azuki}:${id}`
-  );
 
   return [
     {
