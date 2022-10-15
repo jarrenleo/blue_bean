@@ -49,7 +49,7 @@ export const findInteraction = async function (interaction, data, name, id) {
 export const pairInteraction = async function (interaction, azukiId, beanzId) {
   azukiIdRange(azukiId) && beanzIdRange(beanzId)
     ? await interaction.editReply({
-        embeds: pairEmbed(azukiId, beanzId),
+        embeds: await pairEmbed(azukiId, beanzId),
       })
     : await interaction.editReply({
         content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,

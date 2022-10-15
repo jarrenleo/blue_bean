@@ -97,7 +97,7 @@ export const beanzEmbed = async function (id) {
         name: `Beanz #${id} ${isFlagged}`,
         icon_url: `${token.collection.image}`,
       },
-      description: `[Azuki Collector's Profile](${url.azukiProfile}/${token.owner})`,
+      description: `[Beanz Collector's Profile](${url.azukiProfile}/${token.owner})`,
       fields: [
         ...sortTraits(token.attributes),
         {
@@ -280,7 +280,16 @@ export const findEmbed = async function (data, name, id) {
   }
 };
 
-export const pairEmbed = function (azukiId, beanzId) {
+export const pairEmbed = async function (azukiId, beanzId) {
+  const [[azukiData], [beanzData]] = await Promise.all([
+    getData(
+      `https://api.reservoir.tools/tokens/v5?tokens=${contract.azuki}:${azukiId}`
+    ),
+    getData(
+      `https://api.reservoir.tools/tokens/v5?tokens=${contract.beanz}:${beanzId}`
+    ),
+  ]);
+
   return [
     {
       color: 0xc13540,
@@ -288,6 +297,7 @@ export const pairEmbed = function (azukiId, beanzId) {
         name: `Azuki #${azukiId} | Beanz #${beanzId}`,
         icon_url: `${url.azukiIcon}`,
       },
+      description: `[Azuki Collector's Profile](${url.azukiProfile}/${azukiData.token.owner}) | [Beanz Collector's Profile](${url.azukiProfile}/${beanzData.token.owner})`,
       fields: [
         {
           name: "Links to Azuki",

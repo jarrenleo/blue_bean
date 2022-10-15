@@ -64,12 +64,9 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.commandName) await interaction.deferReply();
 
     const id =
-      interaction.commandName === "azuki" ||
-      interaction.commandName === "beanz" ||
-      interaction.commandName === "find" ||
-      interaction.commandName === "blue" ||
-      interaction.commandName === "red" ||
-      interaction.commandName === "wallpaper"
+      interaction.commandName &&
+      interaction.commandName !== "random" &&
+      interaction.commandName !== "pair"
         ? interaction.options.get("id")?.value
         : "";
 
