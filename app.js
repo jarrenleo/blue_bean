@@ -7,9 +7,7 @@ import {
   beanzInteraction,
   findInteraction,
   pairInteraction,
-  blueInteraction,
-  redInteraction,
-  wallpaperInteraction,
+  etcInteraction,
 } from "./interactions.js";
 
 config();
@@ -93,7 +91,6 @@ client.on("interactionCreate", async (interaction) => {
       const data = collectionData
         ? collectionData.find((result) => result.name === name)
         : "";
-
       await findInteraction(interaction, data, name, id);
     }
 
@@ -103,14 +100,12 @@ client.on("interactionCreate", async (interaction) => {
       await pairInteraction(interaction, azukiId, beanzId);
     }
 
-    if (interaction.commandName === "blue")
-      await blueInteraction(interaction, id);
-
-    if (interaction.commandName === "red")
-      await redInteraction(interaction, id);
-
-    if (interaction.commandName === "wallpaper")
-      await wallpaperInteraction(interaction, id);
+    if (
+      interaction.commandName === "blue" ||
+      interaction.commandName === "red" ||
+      interaction.commandName === "wallpaper"
+    )
+      await etcInteraction(interaction, id);
   } catch (error) {
     console.log(error);
   }

@@ -56,39 +56,10 @@ export const pairInteraction = async function (interaction, azukiId, beanzId) {
       });
 };
 
-export const blueInteraction = async function (interaction, id) {
+export const etcInteraction = async function (interaction, id) {
   azukiIdRange(id)
     ? await interaction.editReply({
-        embeds: await etcEmbed(
-          id,
-          `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png`
-        ),
-      })
-    : await interaction.editReply({
-        content: `Azuki #${id} does not exist in the collection.`,
-      });
-};
-
-export const redInteraction = async function (interaction, id) {
-  azukiIdRange(id)
-    ? await interaction.editReply({
-        embeds: await etcEmbed(
-          id,
-          `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png`
-        ),
-      })
-    : await interaction.editReply({
-        content: `Azuki #${id} does not exist in the collection.`,
-      });
-};
-
-export const wallpaperInteraction = async function (interaction, id) {
-  azukiIdRange(id)
-    ? await interaction.editReply({
-        embeds: await etcEmbed(
-          id,
-          `https://azk.imgix.net/big_azukis/a-${id}.png`
-        ),
+        embeds: await etcEmbed(interaction.commandName, id),
       })
     : await interaction.editReply({
         content: `Azuki #${id} does not exist in the collection.`,
