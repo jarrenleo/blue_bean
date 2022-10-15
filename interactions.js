@@ -2,9 +2,8 @@ import {
   azukiEmbed,
   beanzEmbed,
   findEmbed,
-  blueEmbed,
-  redEmbed,
   pairEmbed,
+  etcEmbed,
 } from "./embeds.js";
 
 const azukiIdRange = function (id) {
@@ -35,43 +34,16 @@ export const beanzInteraction = async function (interaction, id) {
       });
 };
 
-export const findInteraction = async function (
-  interaction,
-  collectionData,
-  name,
-  id
-) {
+export const findInteraction = async function (interaction, data, name, id) {
   try {
-    const data = collectionData.find((result) => result.name === name);
-
     await interaction.editReply({
-      embeds: await findEmbed(data, id),
+      embeds: await findEmbed(data, name, id),
     });
   } catch (error) {
     await interaction.editReply({
       content: `${error.message}`,
     });
   }
-};
-
-export const blueInteraction = async function (interaction, id) {
-  azukiIdRange(id)
-    ? await interaction.editReply({
-        embeds: blueEmbed(id),
-      })
-    : await interaction.editReply({
-        content: `Azuki #${id} does not exist in the collection.`,
-      });
-};
-
-export const redInteraction = async function (interaction, id) {
-  azukiIdRange(id)
-    ? await interaction.editReply({
-        embeds: redEmbed(id),
-      })
-    : await interaction.editReply({
-        content: `Azuki #${id} does not exist in the collection.`,
-      });
 };
 
 export const pairInteraction = async function (interaction, azukiId, beanzId) {
@@ -81,5 +53,44 @@ export const pairInteraction = async function (interaction, azukiId, beanzId) {
       })
     : await interaction.editReply({
         content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
+      });
+};
+
+export const blueInteraction = async function (interaction, id) {
+  azukiIdRange(id)
+    ? await interaction.editReply({
+        embeds: await etcEmbed(
+          id,
+          `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png`
+        ),
+      })
+    : await interaction.editReply({
+        content: `Azuki #${id} does not exist in the collection.`,
+      });
+};
+
+export const redInteraction = async function (interaction, id) {
+  azukiIdRange(id)
+    ? await interaction.editReply({
+        embeds: await etcEmbed(
+          id,
+          `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png`
+        ),
+      })
+    : await interaction.editReply({
+        content: `Azuki #${id} does not exist in the collection.`,
+      });
+};
+
+export const wallpaperInteraction = async function (interaction, id) {
+  azukiIdRange(id)
+    ? await interaction.editReply({
+        embeds: await etcEmbed(
+          id,
+          `https://azk.imgix.net/big_azukis/a-${id}.png`
+        ),
+      })
+    : await interaction.editReply({
+        content: `Azuki #${id} does not exist in the collection.`,
       });
 };

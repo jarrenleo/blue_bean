@@ -8,6 +8,7 @@ const contract = {
 const url = {
   azukiIcon:
     "https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT?auto=format&w=1920",
+  azukiProfile: "https://www.azuki.com/collector",
   opensea: "https://opensea.io/assets/ethereum",
   looksrare: "https://looksrare.org/collections",
   x2y2: "https://x2y2.io/eth",
@@ -66,6 +67,7 @@ export const azukiEmbed = async function (id) {
         name: `Azuki #${id} ${isFlagged}`,
         icon_url: `${token.collection.image}`,
       },
+      description: `[Azuki Collector's Profile](${url.azukiProfile}/${token.owner})`,
       fields: [
         ...sortTraits(token.attributes),
         {
@@ -95,6 +97,7 @@ export const beanzEmbed = async function (id) {
         name: `Beanz #${id} ${isFlagged}`,
         icon_url: `${token.collection.image}`,
       },
+      description: `[Azuki Collector's Profile](${url.azukiProfile}/${token.owner})`,
       fields: [
         ...sortTraits(token.attributes),
         {
@@ -112,9 +115,18 @@ export const beanzEmbed = async function (id) {
   ];
 };
 
-export const findEmbed = async function (data, id) {
+export const findEmbed = async function (data, name, id) {
   try {
+    if (!data)
+      [data] = await getData(
+        `https://api.reservoir.tools/collections/v5?name=${name}&limit=1`
+      );
+
     const address = data?.primaryContract;
+    if (!address)
+      throw new Error(
+        "Collection not found. Please use suggested options that best match your query."
+      );
 
     if (id === undefined) {
       const [uniqueOwners, [dailySaleCount]] = await Promise.all([
@@ -268,48 +280,6 @@ export const findEmbed = async function (data, id) {
   }
 };
 
-export const blueEmbed = function (id) {
-  return [
-    {
-      color: 0xc13540,
-      author: {
-        name: `Azuki #${id} in Blue Twin Tiger Jacket`,
-        icon_url: `${url.azukiIcon}`,
-      },
-      fields: [
-        {
-          name: "Links",
-          value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id})`,
-        },
-      ],
-      image: {
-        url: `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png`,
-      },
-    },
-  ];
-};
-
-export const redEmbed = function (id) {
-  return [
-    {
-      color: 0xc13540,
-      author: {
-        name: `Azuki #${id} in Red Twin Tiger Jacket`,
-        icon_url: `${url.azukiIcon}`,
-      },
-      fields: [
-        {
-          name: "Links",
-          value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id})`,
-        },
-      ],
-      image: {
-        url: `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png`,
-      },
-    },
-  ];
-};
-
 export const pairEmbed = function (azukiId, beanzId) {
   return [
     {
@@ -333,6 +303,32 @@ export const pairEmbed = function (azukiId, beanzId) {
       },
       footer: {
         text: "Image may take some time to render",
+      },
+    },
+  ];
+};
+
+export const etcEmbed = async function (id, imageUrl) {
+  const [data] = await getData(
+    `https://api.reservoir.tools/tokens/v5?tokens=${contract.azuki}:${id}`
+  );
+
+  return [
+    {
+      color: 0xc13540,
+      author: {
+        name: `Azuki #${id}`,
+        icon_url: `${url.azukiIcon}`,
+      },
+      description: `[Azuki Collector's Profile](${url.azukiProfile}/${data.token.owner})`,
+      fields: [
+        {
+          name: "Links",
+          value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id})`,
+        },
+      ],
+      image: {
+        url: `${imageUrl}`,
       },
     },
   ];

@@ -48,6 +48,24 @@ export const commands = [
     ],
   },
   {
+    name: "pair",
+    description: "Pair your Azuki and Beanz",
+    options: [
+      {
+        name: "azuki-id",
+        description: "Type in the Azuki # you wish to pair",
+        type: 10,
+        required: true,
+      },
+      {
+        name: "beanz-id",
+        description: "Type in the Beanz # you wish to pair",
+        type: 10,
+        required: true,
+      },
+    ],
+  },
+  {
     name: "blue",
     description: "Equip Azuki with blue twin tiger jacket",
     options: [
@@ -72,18 +90,12 @@ export const commands = [
     ],
   },
   {
-    name: "pair",
-    description: "Pair your Azuki and Beanz",
+    name: "wallpaper",
+    description: "View the Azuki wallpaper",
     options: [
       {
-        name: "azuki-id",
-        description: "Type in the Azuki # you wish to pair",
-        type: 10,
-        required: true,
-      },
-      {
-        name: "beanz-id",
-        description: "Type in the Beanz # you wish to pair",
+        name: "id",
+        description: "Type in the Azuki # you wish to view",
         type: 10,
         required: true,
       },

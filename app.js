@@ -6,9 +6,10 @@ import {
   azukiInteraction,
   beanzInteraction,
   findInteraction,
+  pairInteraction,
   blueInteraction,
   redInteraction,
-  pairInteraction,
+  wallpaperInteraction,
 } from "./interactions.js";
 
 config();
@@ -53,7 +54,7 @@ client.on("interactionCreate", async (interaction) => {
       }
     }
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
   }
 });
 
@@ -67,7 +68,8 @@ client.on("interactionCreate", async (interaction) => {
       interaction.commandName === "beanz" ||
       interaction.commandName === "find" ||
       interaction.commandName === "blue" ||
-      interaction.commandName === "red"
+      interaction.commandName === "red" ||
+      interaction.commandName === "wallpaper"
         ? interaction.options.get("id")?.value
         : "";
 
@@ -91,7 +93,17 @@ client.on("interactionCreate", async (interaction) => {
 
     if (interaction.commandName === "find") {
       const name = interaction.options.get("name").value;
-      await findInteraction(interaction, collectionData, name, id);
+      const data = collectionData
+        ? collectionData.find((result) => result.name === name)
+        : "";
+
+      await findInteraction(interaction, data, name, id);
+    }
+
+    if (interaction.commandName === "pair") {
+      const azukiId = interaction.options.get("azuki-id").value;
+      const beanzId = interaction.options.get("beanz-id").value;
+      await pairInteraction(interaction, azukiId, beanzId);
     }
 
     if (interaction.commandName === "blue")
@@ -100,12 +112,9 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.commandName === "red")
       await redInteraction(interaction, id);
 
-    if (interaction.commandName === "pair") {
-      const azukiId = interaction.options.get("azuki-id").value;
-      const beanzId = interaction.options.get("beanz-id").value;
-      await pairInteraction(interaction, azukiId, beanzId);
-    }
+    if (interaction.commandName === "wallpaper")
+      await wallpaperInteraction(interaction, id);
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
   }
 });
