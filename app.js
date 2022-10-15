@@ -23,14 +23,10 @@ const rest = new REST({
   version: "10",
 }).setToken(discordToken);
 
-(async () => {
-  try {
-    await rest.put(Routes.applicationCommands(clientId), {
-      body: commands,
-    });
-  } catch (error) {
-    console.log(error.message);
-  }
+(async function () {
+  await rest.put(Routes.applicationCommands(clientId), {
+    body: commands,
+  });
 })();
 
 let collectionData;
