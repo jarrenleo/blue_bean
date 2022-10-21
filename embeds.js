@@ -8,6 +8,8 @@ const contract = {
 const url = {
   azukiIcon:
     "https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT?auto=format&w=1920",
+  beanzIcon:
+    "https://i.seadn.io/gae/_R4fuC4QGYd14-KwX2bD1wf-AWjDF2VMabfqWFJhIgiN2FnAUpnD5PLdJORrhQ8gly7KcjhQZZpuzYVPF7CDSzsqmDh97z84j2On?auto=format&w=1920",
   azukiProfile: "https://www.azuki.com/collector",
   opensea: "https://opensea.io/assets/ethereum",
   looksrare: "https://looksrare.org/collections",
@@ -65,7 +67,7 @@ export const azukiEmbed = async function (id) {
       color: 0xc13540,
       author: {
         name: `Azuki #${id} ${isFlagged}`,
-        icon_url: `${token.collection.image}`,
+        icon_url: `${url.azukiIcon}`,
       },
       description: `[Azuki Collector's Profile](${url.azukiProfile}/${token.owner})`,
       fields: [
@@ -95,7 +97,7 @@ export const beanzEmbed = async function (id) {
       color: 0xc13540,
       author: {
         name: `Beanz #${id} ${isFlagged}`,
-        icon_url: `${token.collection.image}`,
+        icon_url: `${url.beanzIcon}`,
       },
       description: `[Beanz Collector's Profile](${url.azukiProfile}/${token.owner})`,
       fields: [
@@ -319,32 +321,58 @@ export const pairEmbed = async function (azukiId, beanzId) {
 };
 
 export const etcEmbed = async function (interaction, id) {
-  const [data] = await getData(
-    `https://api.reservoir.tools/tokens/v5?tokens=${contract.azuki}:${id}`
-  );
-
-  const imageUrl = {
-    blue: `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png`,
-    red: `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png`,
-    wallpaper: `https://azk.imgix.net/big_azukis/a-${id}.png`,
+  const options = {
+    blue: {
+      name: "Azuki",
+      icon: `${url.azukiIcon}`,
+      contract: `${contract.azuki}`,
+      url: `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png`,
+    },
+    red: {
+      name: "Azuki",
+      icon: `${url.azukiIcon}`,
+      contract: `${contract.azuki}`,
+      url: `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png`,
+    },
+    selfie: {
+      name: "Beanz",
+      icon: `${url.beanzIcon}`,
+      contract: `${contract.beanz}`,
+      url: `https://azkimg.imgix.net/images_squareface/final-${id}.png`,
+    },
+    wallpaper: {
+      name: "Azuki",
+      icon: `${url.azukiIcon}`,
+      contract: `${contract.azuki}`,
+      url: `https://azk.imgix.net/big_azukis/a-${id}.png`,
+    },
   };
+
+  const name = options[`${interaction}`].name;
+  const icon = options[`${interaction}`].icon;
+  const etcContract = options[`${interaction}`].contract;
+  const imageUrl = options[`${interaction}`].url;
+
+  const [data] = await getData(
+    `https://api.reservoir.tools/tokens/v5?tokens=${etcContract}:${id}`
+  );
 
   return [
     {
       color: 0xc13540,
       author: {
-        name: `Azuki #${id}`,
-        icon_url: `${url.azukiIcon}`,
+        name: `${name} #${id}`,
+        icon_url: `${icon}`,
       },
-      description: `[Azuki Collector's Profile](${url.azukiProfile}/${data.token.owner})`,
+      description: `[${name} Collector's Profile](${url.azukiProfile}/${data.token.owner})`,
       fields: [
         {
           name: "Links",
-          value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id})`,
+          value: `[OpenSea](${url.opensea}/${etcContract}/${id}) | [LooksRare](${url.looksrare}/${etcContract}/${id}) | [X2Y2](${url.x2y2}/${etcContract}/${id}) | [SudoSwap](${url.sudoswap}/${etcContract}/${id}) | [Gem](${url.gem}/${etcContract}/${id})`,
         },
       ],
       image: {
-        url: `${imageUrl[`${interaction}`]}`,
+        url: `${imageUrl}`,
       },
     },
   ];

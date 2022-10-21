@@ -57,11 +57,15 @@ export const pairInteraction = async function (interaction, azukiId, beanzId) {
 };
 
 export const etcInteraction = async function (interaction, id) {
-  azukiIdRange(id)
+  const range =
+    interaction.commandName !== "selfie" ? azukiIdRange(id) : beanzIdRange(id);
+  const elseName = interaction.commandName !== "selfie" ? "Azuki" : "Beanz";
+
+  range
     ? await interaction.editReply({
         embeds: await etcEmbed(interaction.commandName, id),
       })
     : await interaction.editReply({
-        content: `Azuki #${id} does not exist in the collection.`,
+        content: `${elseName} #${id} does not exist in the collection.`,
       });
 };

@@ -67,7 +67,7 @@ export const commands = [
   },
   {
     name: "blue",
-    description: "Equip Azuki with blue twin tiger jacket",
+    description: "View Azuki with blue twin tiger jacket",
     options: [
       {
         name: "id",
@@ -79,11 +79,23 @@ export const commands = [
   },
   {
     name: "red",
-    description: "Equip Azuki with red twin tiger jacket",
+    description: "View Azuki with red twin tiger jacket",
     options: [
       {
         name: "id",
         description: "Type in the Azuki # you wish to view",
+        type: 10,
+        required: true,
+      },
+    ],
+  },
+  {
+    name: "selfie",
+    description: "View the Beanz selfie mode",
+    options: [
+      {
+        name: "id",
+        description: "Type in the Beanz # you wish to view",
         type: 10,
         required: true,
       },

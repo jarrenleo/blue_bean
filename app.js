@@ -99,6 +99,7 @@ client.on("interactionCreate", async (interaction) => {
     if (
       interaction.commandName === "blue" ||
       interaction.commandName === "red" ||
+      interaction.commandName === "selfie" ||
       interaction.commandName === "wallpaper"
     )
       await etcInteraction(interaction, id);
