@@ -14,8 +14,9 @@ const url = {
   opensea: "https://opensea.io/assets/ethereum",
   looksrare: "https://looksrare.org/collections",
   x2y2: "https://x2y2.io/eth",
-  sudoswap: "https://sudoswap.xyz/#/item",
+  sudo: "https://sudoswap.xyz/#/item",
   gem: "https://www.gem.xyz/asset",
+  blur: "https://blur.io/",
 };
 
 const promiseHelper = async function (contract, id) {
@@ -74,7 +75,7 @@ export const azukiEmbed = async function (id) {
         ...sortTraits(token.attributes),
         {
           name: "Links",
-          value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id})`,
+          value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [Sudo](${url.sudo}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract.azuki})`,
         },
       ],
       image: {
@@ -104,7 +105,7 @@ export const beanzEmbed = async function (id) {
         ...sortTraits(token.attributes),
         {
           name: "Links",
-          value: `[OpenSea](${url.opensea}/${contract.beanz}/${id}) | [LooksRare](${url.looksrare}/${contract.beanz}/${id}) | [X2Y2](${url.x2y2}/${contract.beanz}/${id}) | [SudoSwap](${url.sudoswap}/${contract.beanz}/${id}) | [Gem](${url.gem}/${contract.beanz}/${id})`,
+          value: `[OpenSea](${url.opensea}/${contract.beanz}/${id}) | [LooksRare](${url.looksrare}/${contract.beanz}/${id}) | [X2Y2](${url.x2y2}/${contract.beanz}/${id}) | [Sudo](${url.sudo}/${contract.beanz}/${id}) | [Gem](${url.gem}/${contract.beanz}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract.beanz})`,
         },
       ],
       image: {
@@ -221,7 +222,7 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Links",
-              value: `${website}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${address}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [SudoSwap](https://sudoswap.xyz/#/browse/buy/${address}) | [Gem](https://www.gem.xyz/collection/${slug}/)`,
+              value: `${website}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${address}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [Sudo](https://sudoswap.xyz/#/browse/buy/${address}) | [Gem](https://www.gem.xyz/collection/${slug}/) | [Blur](https://blur.io/collection/${slug})`,
             },
           ],
         },
@@ -265,7 +266,7 @@ export const findEmbed = async function (data, name, id) {
             ...sortTraits(attributes),
             {
               name: "Links",
-              value: `[OpenSea](${url.opensea}/${token.contract}/${id}) | [LooksRare](${url.looksrare}/${token.contract}/${id}) | [X2Y2](${url.x2y2}/${token.contract}/${id}) | [SudoSwap](${url.sudoswap}/${token.contract}/${id}) | [Gem](${url.gem}/${token.contract}/${id})`,
+              value: `[OpenSea](${url.opensea}/${token.contract}/${id}) | [LooksRare](${url.looksrare}/${token.contract}/${id}) | [X2Y2](${url.x2y2}/${token.contract}/${id}) | [Sudo](${url.sudo}/${token.contract}/${id}) | [Gem](${url.gem}/${token.contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${token.contract})`,
             },
           ],
           image: {
@@ -303,11 +304,11 @@ export const pairEmbed = async function (azukiId, beanzId) {
       fields: [
         {
           name: "Links to Azuki",
-          value: `[OpenSea](${url.opensea}/${contract.azuki}/${azukiId}) | [LooksRare](${url.looksrare}/${contract.azuki}/${azukiId}) | [X2Y2](${url.x2y2}/${contract.azuki}/${azukiId}) | [SudoSwap](${url.sudoswap}/${contract.azuki}/${azukiId}) | [Gem](${url.gem}/${contract.azuki}/${azukiId})`,
+          value: `[OpenSea](${url.opensea}/${contract.azuki}/${azukiId}) | [LooksRare](${url.looksrare}/${contract.azuki}/${azukiId}) | [X2Y2](${url.x2y2}/${contract.azuki}/${azukiId}) | [Sudo](${url.sudo}/${contract.azuki}/${azukiId}) | [Gem](${url.gem}/${contract.azuki}/${azukiId}) | [Blur](${url.blur}/${azukiData.token.owner}?contractAddress=${contract.azuki})`,
         },
         {
           name: "Links to Beanz",
-          value: `[OpenSea](${url.opensea}/${contract.beanz}/${beanzId}) | [LooksRare](${url.looksrare}/${contract.beanz}/${beanzId}) | [X2Y2](${url.x2y2}/${contract.beanz}/${beanzId}) | [SudoSwap](${url.sudoswap}/${contract.beanz}/${beanzId}) | [Gem](${url.gem}/${contract.beanz}/${beanzId})`,
+          value: `[OpenSea](${url.opensea}/${contract.beanz}/${beanzId}) | [LooksRare](${url.looksrare}/${contract.beanz}/${beanzId}) | [X2Y2](${url.x2y2}/${contract.beanz}/${beanzId}) | [Sudo](${url.sudo}/${contract.beanz}/${beanzId}) | [Gem](${url.gem}/${contract.beanz}/${beanzId}) | [Blur](${url.blur}/${beanzData.token.owner}?contractAddress=${contract.beanz})`,
         },
       ],
       image: {
@@ -368,7 +369,7 @@ export const etcEmbed = async function (interaction, id) {
       fields: [
         {
           name: "Links",
-          value: `[OpenSea](${url.opensea}/${etcContract}/${id}) | [LooksRare](${url.looksrare}/${etcContract}/${id}) | [X2Y2](${url.x2y2}/${etcContract}/${id}) | [SudoSwap](${url.sudoswap}/${etcContract}/${id}) | [Gem](${url.gem}/${etcContract}/${id})`,
+          value: `[OpenSea](${url.opensea}/${etcContract}/${id}) | [LooksRare](${url.looksrare}/${etcContract}/${id}) | [X2Y2](${url.x2y2}/${etcContract}/${id}) | [Sudo](${url.sudo}/${etcContract}/${id}) | [Gem](${url.gem}/${etcContract}/${id}) | [Blur](${url.blur}/${data.token.owner}?contractAddress=${etcContract})`,
         },
       ],
       image: {
