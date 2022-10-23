@@ -1,6 +1,6 @@
 {
   "name": "lycoris-public",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "description": "Discord bot to view NFTs",
   "main": "app.js",
   "type": "module",

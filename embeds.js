@@ -1,66 +1,14 @@
-import { getData, getOrders, getOwners, refreshToken } from "./fetch.js";
-
-const contract = {
-  azuki: "0xed5af388653567af2f388e6224dc7c4b3241c544",
-  beanz: "0x306b1ea3ecdf94ab739f1910bbda052ed4a9f949",
-};
-
-const url = {
-  azukiIcon:
-    "https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT?auto=format&w=1920",
-  beanzIcon:
-    "https://i.seadn.io/gae/_R4fuC4QGYd14-KwX2bD1wf-AWjDF2VMabfqWFJhIgiN2FnAUpnD5PLdJORrhQ8gly7KcjhQZZpuzYVPF7CDSzsqmDh97z84j2On?auto=format&w=1920",
-  azukiProfile: "https://www.azuki.com/collector",
-  opensea: "https://opensea.io/assets/ethereum",
-  looksrare: "https://looksrare.org/collections",
-  x2y2: "https://x2y2.io/eth",
-  sudo: "https://sudoswap.xyz/#/item",
-  gem: "https://www.gem.xyz/asset",
-  blur: "https://blur.io/",
-};
-
-const promiseHelper = async function (contract, id) {
-  return await Promise.all([
-    getData(
-      `https://api.reservoir.tools/tokens/v5?tokens=${contract}:${id}&includeAttributes=true`
-    ),
-    getOrders(
-      `https://api.reservoir.tools/orders/asks/v3?token=${contract}:${id}&sortBy=price`
-    ),
-    getOrders(`https://api.reservoir.tools/sales/v4?token=${contract}:${id}`),
-  ]);
-};
-
-const sortTraits = function (traits) {
-  const traitFields = traits.map(function (trait) {
-    const capitaliseKey = function (key) {
-      return key
-        .toLowerCase()
-        .split(" ")
-        .map((keyword) => keyword.charAt(0).toUpperCase() + keyword.slice(1))
-        .join(" ");
-    };
-
-    return {
-      name: `${capitaliseKey(trait.key)}`,
-      value: `${trait.value}`,
-      inline: true,
-    };
-  });
-
-  const paddingLength = 3 - (traits.length % 3);
-  if (paddingLength === 3) return traitFields;
-  const padding = new Array(paddingLength).fill({
-    name: "\u200b",
-    value: "\u200b",
-    inline: true,
-  });
-  return traitFields.concat(padding);
-};
+import { getData, getOwners, refreshToken } from "./fetch.js";
+import {
+  contract,
+  url,
+  promiseHelper,
+  sortTraits,
+  tokenLinks,
+} from "./helpers.js";
 
 export const azukiEmbed = async function (id) {
-  const [[tokenData], list, lastSale] = await promiseHelper(contract.azuki, id);
-  const token = tokenData.token;
+  const [[{ token }], list, lastSale] = await promiseHelper(contract.azuki, id);
   const isFlagged = token.isFlagged ? "⚠️" : "";
 
   return [
@@ -75,7 +23,7 @@ export const azukiEmbed = async function (id) {
         ...sortTraits(token.attributes),
         {
           name: "Links",
-          value: `[OpenSea](${url.opensea}/${contract.azuki}/${id}) | [LooksRare](${url.looksrare}/${contract.azuki}/${id}) | [X2Y2](${url.x2y2}/${contract.azuki}/${id}) | [Sudo](${url.sudo}/${contract.azuki}/${id}) | [Gem](${url.gem}/${contract.azuki}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract.azuki})`,
+          value: tokenLinks(contract.azuki, id, token.owner),
         },
       ],
       image: {
@@ -89,8 +37,7 @@ export const azukiEmbed = async function (id) {
 };
 
 export const beanzEmbed = async function (id) {
-  const [[tokenData], list, lastSale] = await promiseHelper(contract.beanz, id);
-  const token = tokenData.token;
+  const [[{ token }], list, lastSale] = await promiseHelper(contract.beanz, id);
   const isFlagged = token.isFlagged ? "⚠️" : "";
 
   return [
@@ -105,7 +52,7 @@ export const beanzEmbed = async function (id) {
         ...sortTraits(token.attributes),
         {
           name: "Links",
-          value: `[OpenSea](${url.opensea}/${contract.beanz}/${id}) | [LooksRare](${url.looksrare}/${contract.beanz}/${id}) | [X2Y2](${url.x2y2}/${contract.beanz}/${id}) | [Sudo](${url.sudo}/${contract.beanz}/${id}) | [Gem](${url.gem}/${contract.beanz}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract.beanz})`,
+          value: tokenLinks(contract.beanz, id, token.owner),
         },
       ],
       image: {
@@ -266,7 +213,7 @@ export const findEmbed = async function (data, name, id) {
             ...sortTraits(attributes),
             {
               name: "Links",
-              value: `[OpenSea](${url.opensea}/${token.contract}/${id}) | [LooksRare](${url.looksrare}/${token.contract}/${id}) | [X2Y2](${url.x2y2}/${token.contract}/${id}) | [Sudo](${url.sudo}/${token.contract}/${id}) | [Gem](${url.gem}/${token.contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${token.contract})`,
+              value: tokenLinks(token.contract, id, token.owner),
             },
           ],
           image: {
@@ -304,11 +251,11 @@ export const pairEmbed = async function (azukiId, beanzId) {
       fields: [
         {
           name: "Links to Azuki",
-          value: `[OpenSea](${url.opensea}/${contract.azuki}/${azukiId}) | [LooksRare](${url.looksrare}/${contract.azuki}/${azukiId}) | [X2Y2](${url.x2y2}/${contract.azuki}/${azukiId}) | [Sudo](${url.sudo}/${contract.azuki}/${azukiId}) | [Gem](${url.gem}/${contract.azuki}/${azukiId}) | [Blur](${url.blur}/${azukiData.token.owner}?contractAddress=${contract.azuki})`,
+          value: tokenLinks(contract.azuki, azukiId, azukiData.token.owner),
         },
         {
           name: "Links to Beanz",
-          value: `[OpenSea](${url.opensea}/${contract.beanz}/${beanzId}) | [LooksRare](${url.looksrare}/${contract.beanz}/${beanzId}) | [X2Y2](${url.x2y2}/${contract.beanz}/${beanzId}) | [Sudo](${url.sudo}/${contract.beanz}/${beanzId}) | [Gem](${url.gem}/${contract.beanz}/${beanzId}) | [Blur](${url.blur}/${beanzData.token.owner}?contractAddress=${contract.beanz})`,
+          value: tokenLinks(contract.beanz, beanzId, beanzData.token.owner),
         },
       ],
       image: {
@@ -369,7 +316,7 @@ export const etcEmbed = async function (interaction, id) {
       fields: [
         {
           name: "Links",
-          value: `[OpenSea](${url.opensea}/${etcContract}/${id}) | [LooksRare](${url.looksrare}/${etcContract}/${id}) | [X2Y2](${url.x2y2}/${etcContract}/${id}) | [Sudo](${url.sudo}/${etcContract}/${id}) | [Gem](${url.gem}/${etcContract}/${id}) | [Blur](${url.blur}/${data.token.owner}?contractAddress=${etcContract})`,
+          value: tokenLinks(etcContract, id, data.token.owner),
         },
       ],
       image: {
