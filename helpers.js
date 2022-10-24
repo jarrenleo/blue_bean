@@ -63,7 +63,11 @@ export const tokenLinks = function (contract, id, owner) {
 };
 
 export const roundPrice = function (price) {
-  return !Number.isInteger(price) ? price.toFixed(2) : price.toFixed(0);
+  if (Number.isInteger(price)) return price;
+
+  return price.toFixed(2).toString().endsWith("0")
+    ? price.toFixed(1)
+    : price.toFixed(2);
 };
 
 export const toPercentage = function (numerator, denominator) {
