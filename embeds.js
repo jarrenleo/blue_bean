@@ -139,7 +139,7 @@ export const findEmbed = async function (data, name, id) {
               name: "Floor Price",
               value: `${roundPrice(
                 data.floorAsk.price.amount.native,
-                1
+                2
               )} ${symbol}`,
               inline: true,
             },
