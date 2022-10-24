@@ -61,3 +61,11 @@ export const sortTraits = function (traits) {
 export const tokenLinks = function (contract, id, owner) {
   return `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Gem](${url.gem}/${contract}/${id}) | [Blur](${url.blur}/${owner}?contractAddress=${contract})`;
 };
+
+export const roundPrice = function (price) {
+  return !Number.isInteger(price) ? price.toFixed(2) : price.toFixed(0);
+};
+
+export const toPercentage = function (numerator, denominator) {
+  return ((numerator / denominator) * 100).toFixed(1);
+};

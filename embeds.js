@@ -5,6 +5,8 @@ import {
   promiseHelper,
   sortTraits,
   tokenLinks,
+  roundPrice,
+  toPercentage,
 } from "./helpers.js";
 
 export const azukiEmbed = async function (id) {
@@ -122,10 +124,10 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Active Listings",
-              value: `${onSale.toLocaleString("en-US")} (${(
-                (onSale / size) *
-                100
-              ).toFixed(1)}%)`,
+              value: `${onSale.toLocaleString("en-US")} (${toPercentage(
+                onSale,
+                size
+              )}%)`,
               inline: true,
             },
             {
@@ -135,17 +137,17 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Floor Price",
-              value: `${data.floorAsk.price.amount.native.toFixed(
-                2
+              value: `${roundPrice(
+                data.floorAsk.price.amount.native
               )} ${symbol}`,
               inline: true,
             },
             {
               name: "Unique Owners",
-              value: `${uniqueOwners.toLocaleString("en-US")} (${(
-                (uniqueOwners / size) *
-                100
-              ).toFixed(1)}%)`,
+              value: `${uniqueOwners.toLocaleString("en-US")} (${toPercentage(
+                uniqueOwners,
+                size
+              )}%)`,
               inline: true,
             },
             {
