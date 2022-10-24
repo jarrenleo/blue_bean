@@ -5,7 +5,6 @@ import {
   promiseHelper,
   sortTraits,
   tokenLinks,
-  roundPrice,
   toPercentage,
 } from "./helpers.js";
 
@@ -137,8 +136,8 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Floor Price",
-              value: `${roundPrice(
-                data.floorAsk.price.amount.native
+              value: `${parseFloat(
+                data.floorAsk.price.amount.native.toFixed(2)
               )} ${symbol}`,
               inline: true,
             },

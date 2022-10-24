@@ -1,6 +1,5 @@
 import { config } from "dotenv";
 import fetch from "node-fetch";
-import { roundPrice } from "./helpers.js";
 
 config();
 const apiKey = process.env.RESERVOIR_API_KEY;
@@ -30,7 +29,7 @@ export const getOrders = async function (url) {
 
   if (!latestData) return "-";
 
-  return `${roundPrice(latestData.price.amount.native)} ${
+  return `${parseFloat(latestData.price.amount.native.toFixed(2))} ${
     latestData.price.currency.symbol
   }`;
 };
