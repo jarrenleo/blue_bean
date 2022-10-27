@@ -22,7 +22,7 @@ export const azukiEmbed = async function (id) {
       },
       description: `[Azuki Collector's Profile](${url.azukiProfile}/${token.owner})`,
       fields: [
-        ...sortTraits(token.attributes),
+        ...sortTraits(token.attributes, 10000),
         {
           name: "Links",
           value: tokenLinks(contract.azuki, id, token.owner),
@@ -51,7 +51,7 @@ export const beanzEmbed = async function (id) {
       },
       description: `[Beanz Collector's Profile](${url.azukiProfile}/${token.owner})`,
       fields: [
-        ...sortTraits(token.attributes),
+        ...sortTraits(token.attributes, 19950),
         {
           name: "Links",
           value: tokenLinks(contract.beanz, id, token.owner),
@@ -213,7 +213,7 @@ export const findEmbed = async function (data, name, id) {
             icon_url: `${token.collection.image}`,
           },
           fields: [
-            ...sortTraits(attributes),
+            ...sortTraits(attributes, Number(data.tokenCount)),
             {
               name: "Links",
               value: tokenLinks(token.contract, id, token.owner),

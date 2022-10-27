@@ -31,7 +31,7 @@ export const promiseHelper = async function (contract, id) {
   ]);
 };
 
-export const sortTraits = function (traits) {
+export const sortTraits = function (traits, size) {
   const traitFields = traits.map(function (trait) {
     const capitaliseKey = function (key) {
       return key
@@ -41,9 +41,13 @@ export const sortTraits = function (traits) {
         .join(" ");
     };
 
+    const traitPercent = toPercentage(trait.tokenCount, size)
+      ? `(${toPercentage(trait.tokenCount, size)}%)`
+      : "";
+
     return {
       name: `${capitaliseKey(trait.key)}`,
-      value: `${trait.value}`,
+      value: `${trait.value} ${traitPercent}`,
       inline: true,
     };
   });
