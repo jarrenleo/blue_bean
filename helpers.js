@@ -47,7 +47,7 @@ export const sortTraits = function (traits, size) {
 
     return {
       name: `${capitaliseKey(trait.key)}`,
-      value: `${trait.value} ${traitPercent}`,
+      value: `${trait.value}\n${traitPercent}`,
       inline: true,
     };
   });
