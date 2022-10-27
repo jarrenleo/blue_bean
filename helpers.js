@@ -47,7 +47,10 @@ export const sortTraits = function (traits, size) {
 
     return {
       name: `${capitaliseKey(trait.key)}`,
-      value: `${trait.value}\n${traitPercent}`,
+      value: `${trait.value}\n${traitPercent} | ${roundPrice(
+        trait.floorAskPrice,
+        2
+      )} ETH`,
       inline: true,
     };
   });
