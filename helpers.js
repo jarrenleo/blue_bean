@@ -50,7 +50,7 @@ export const sortTraits = function (traits, size) {
       value: `${trait.value}\n${traitPercent} | ${roundPrice(
         trait.floorAskPrice,
         2
-      )} ETH`,
+      )} Ξ`,
       inline: true,
     };
   });

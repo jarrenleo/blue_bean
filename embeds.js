@@ -93,7 +93,6 @@ export const findEmbed = async function (data, name, id) {
       const slug = data.slug;
       const size = Number(data.tokenCount);
       const onSale = Number(data.onSaleCount);
-      const symbol = data.floorAsk.price.currency.symbol;
       const dailySale = dailySaleCount?.sales_count
         ? dailySaleCount.sales_count
         : "0";
@@ -137,10 +136,7 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Floor Price",
-              value: `${roundPrice(
-                data.floorAsk.price.amount.native,
-                2
-              )} ${symbol}`,
+              value: `${roundPrice(data.floorAsk.price.amount.native, 2)} Ξ`,
               inline: true,
             },
             {
@@ -158,11 +154,9 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Volume (1 / 7 / 30 / All-Time)",
-              value: `${volume("1day")} ${symbol} / ${volume(
-                "7day"
-              )} ${symbol} / ${volume("30day")} ${symbol} / ${volume(
-                "allTime"
-              )} ${symbol}`,
+              value: `${volume("1day")} Ξ / ${volume("7day")} Ξ / ${volume(
+                "30day"
+              )} Ξ / ${volume("allTime")} Ξ`,
               inline: false,
             },
             {
