@@ -71,6 +71,7 @@ export const tokenLinks = function (contract, id, owner) {
 
 export const roundPrice = function (price, decimal) {
   if (Number.isInteger(price)) return price;
+  if (price.toString().startsWith("0")) decimal += 1;
   return parseFloat(price.toFixed(decimal));
 };
 
