@@ -6,7 +6,7 @@ import {
   sortTraits,
   tokenLinks,
   roundPrice,
-  toPercentage,
+  toPercent,
 } from "./helpers.js";
 
 export const azukiEmbed = async function (id) {
@@ -123,7 +123,7 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Active Listings",
-              value: `${onSale.toLocaleString("en-US")} (${toPercentage(
+              value: `${onSale.toLocaleString("en-US")} (${toPercent(
                 onSale,
                 size
               )}%)`,
@@ -141,7 +141,7 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Unique Owners",
-              value: `${uniqueOwners.toLocaleString("en-US")} (${toPercentage(
+              value: `${uniqueOwners.toLocaleString("en-US")} (${toPercent(
                 uniqueOwners,
                 size
               )}%)`,
@@ -189,7 +189,6 @@ export const findEmbed = async function (data, name, id) {
           address,
           id
         );
-
         if (response.status === 200)
           throw new Error(
             `Metadata not found for ${data.name} #${id}. A metadata refresh has been requested. Please try again in a few minutes.`
@@ -265,7 +264,7 @@ export const pairEmbed = async function (azukiId, beanzId) {
   ];
 };
 
-export const etcEmbed = async function (interaction, id) {
+export const othersEmbed = async function (interaction, id) {
   const options = {
     blue: {
       name: "Azuki",
@@ -295,11 +294,11 @@ export const etcEmbed = async function (interaction, id) {
 
   const name = options[`${interaction}`].name;
   const icon = options[`${interaction}`].icon;
-  const etcContract = options[`${interaction}`].contract;
+  const othersContract = options[`${interaction}`].contract;
   const imageUrl = options[`${interaction}`].url;
 
   const [data] = await getData(
-    `https://api.reservoir.tools/tokens/v5?tokens=${etcContract}:${id}`
+    `https://api.reservoir.tools/tokens/v5?tokens=${othersContract}:${id}`
   );
 
   return [
@@ -313,7 +312,7 @@ export const etcEmbed = async function (interaction, id) {
       fields: [
         {
           name: "Links",
-          value: tokenLinks(etcContract, id, data.token.owner),
+          value: tokenLinks(othersContract, id, data.token.owner),
         },
       ],
       image: {

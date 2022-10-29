@@ -7,7 +7,7 @@ import {
   beanzInteraction,
   findInteraction,
   pairInteraction,
-  etcInteraction,
+  othersInteraction,
 } from "./interactions.js";
 
 config();
@@ -102,7 +102,7 @@ client.on("interactionCreate", async (interaction) => {
       interaction.commandName === "selfie" ||
       interaction.commandName === "wallpaper"
     )
-      await etcInteraction(interaction, id);
+      await othersInteraction(interaction, id);
   } catch (error) {
     console.log(error);
   }

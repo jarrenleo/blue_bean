@@ -3,12 +3,11 @@ import fetch from "node-fetch";
 import { roundPrice } from "./helpers.js";
 
 config();
-const apiKey = process.env.RESERVOIR_API_KEY;
 const options = {
   headers: {
     accept: "*/*",
     "content-type": "application/json",
-    "x-api-key": `${apiKey}`,
+    "x-api-key": `${process.env.RESERVOIR_API_KEY}`,
   },
 };
 
@@ -20,7 +19,6 @@ const fetchData = async function (url, options) {
 export const getData = async function (url, options) {
   const data = await fetchData(url, options);
   const updatedData = data.tokens ?? data.collections;
-
   return updatedData;
 };
 
@@ -29,16 +27,14 @@ export const getOrders = async function (url) {
   const latestData = data.orders?.at(0) ?? data.sales?.at(0);
 
   if (!latestData) return "-";
-
   return `${roundPrice(latestData.price.amount.native, 2)} Ξ`;
 };
 
 export const getOwners = async function (url) {
   let uniqueOwners = 0;
+
   const data = await fetchData(url, options);
-
   data.ownersDistribution.forEach((data) => (uniqueOwners += data.ownerCount));
-
   return uniqueOwners;
 };
 

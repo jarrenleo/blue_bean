@@ -3,7 +3,7 @@ import {
   beanzEmbed,
   findEmbed,
   pairEmbed,
-  etcEmbed,
+  othersEmbed,
 } from "./embeds.js";
 
 const azukiIdRange = function (id) {
@@ -56,14 +56,14 @@ export const pairInteraction = async function (interaction, azukiId, beanzId) {
       });
 };
 
-export const etcInteraction = async function (interaction, id) {
+export const othersInteraction = async function (interaction, id) {
   const range =
     interaction.commandName !== "selfie" ? azukiIdRange(id) : beanzIdRange(id);
   const elseName = interaction.commandName !== "selfie" ? "Azuki" : "Beanz";
 
   range
     ? await interaction.editReply({
-        embeds: await etcEmbed(interaction.commandName, id),
+        embeds: await othersEmbed(interaction.commandName, id),
       })
     : await interaction.editReply({
         content: `${elseName} #${id} does not exist in the collection.`,

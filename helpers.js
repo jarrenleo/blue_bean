@@ -41,16 +41,16 @@ export const sortTraits = function (traits, size) {
         .join(" ");
     };
 
-    const traitPercent = toPercentage(trait.tokenCount, size)
-      ? `(${toPercentage(trait.tokenCount, size)}%)`
+    const traitPrice = trait.floorAskPrice
+      ? ` | ${roundPrice(trait.floorAskPrice, 2)} Ξ`
       : "";
 
     return {
       name: `${capitaliseKey(trait.key)}`,
-      value: `${trait.value}\n${traitPercent} | ${roundPrice(
-        trait.floorAskPrice,
-        2
-      )} Ξ`,
+      value: `${trait.value}\n(${toPercent(
+        trait.tokenCount,
+        size
+      )}%)${traitPrice}`,
       inline: true,
     };
   });
@@ -69,12 +69,12 @@ export const tokenLinks = function (contract, id, owner) {
   return `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Gem](${url.gem}/${contract}/${id}) | [Blur](${url.blur}/${owner}?contractAddress=${contract})`;
 };
 
-export const roundPrice = function (price, decimal) {
+export const roundPrice = function (price, dp) {
   if (Number.isInteger(price)) return price;
-  if (price.toString().startsWith("0")) decimal += 1;
-  return parseFloat(price.toFixed(decimal));
+  if (price < 1) dp += 1;
+  return parseFloat(price.toFixed(dp));
 };
 
-export const toPercentage = function (numerator, denominator) {
+export const toPercent = function (numerator, denominator) {
   return roundPrice((numerator / denominator) * 100, 1);
 };
