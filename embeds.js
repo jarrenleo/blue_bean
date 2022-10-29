@@ -226,97 +226,44 @@ export const findEmbed = async function (data, name, id) {
   }
 };
 
-export const pairEmbed = async function (azukiId, beanzId) {
-  const [[azukiData], [beanzData]] = await Promise.all([
-    getData(
-      `https://api.reservoir.tools/tokens/v5?tokens=${contract.azuki}:${azukiId}`
-    ),
-    getData(
-      `https://api.reservoir.tools/tokens/v5?tokens=${contract.beanz}:${beanzId}`
-    ),
-  ]);
-
-  return [
-    {
-      color: 0xc13540,
-      author: {
-        name: `Azuki #${azukiId} | Beanz #${beanzId}`,
-        icon_url: `${url.azukiIcon}`,
-      },
-      description: `[Azuki Collector's Profile](${url.azukiProfile}/${azukiData.token.owner}) | [Beanz Collector's Profile](${url.azukiProfile}/${beanzData.token.owner})`,
-      fields: [
-        {
-          name: "Links to Azuki",
-          value: tokenLinks(contract.azuki, azukiId, azukiData.token.owner),
-        },
-        {
-          name: "Links to Beanz",
-          value: tokenLinks(contract.beanz, beanzId, beanzData.token.owner),
-        },
-      ],
-      image: {
-        url: `https://azukiimagemaker.vercel.app/api/pairbeanz-prod?azukiId=${azukiId}&beanzId=${beanzId}`,
-      },
-      footer: {
-        text: "Image may take some time to render",
-      },
-    },
-  ];
-};
-
-export const othersEmbed = async function (interaction, id) {
+export const othersEmbed = async function (commandName, azukiId, beanzId) {
   const options = {
-    blue: {
-      name: "Azuki",
+    "blue-jacket": {
+      name: `Azuki #${azukiId}`,
       icon: `${url.azukiIcon}`,
-      contract: `${contract.azuki}`,
-      url: `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png`,
+      url: `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${azukiId}.png`,
     },
-    red: {
-      name: "Azuki",
+    "red-jacket": {
+      name: `Azuki #${azukiId}`,
       icon: `${url.azukiIcon}`,
-      contract: `${contract.azuki}`,
-      url: `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png`,
-    },
-    selfie: {
-      name: "Beanz",
-      icon: `${url.beanzIcon}`,
-      contract: `${contract.beanz}`,
-      url: `https://azkimg.imgix.net/images_squareface/final-${id}.png`,
+      url: `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${azukiId}.png`,
     },
     wallpaper: {
-      name: "Azuki",
+      name: `Azuki #${azukiId}`,
       icon: `${url.azukiIcon}`,
-      contract: `${contract.azuki}`,
-      url: `https://azk.imgix.net/big_azukis/a-${id}.png`,
+      url: `https://azk.imgix.net/big_azukis/a-${azukiId}.png`,
+    },
+    selfie: {
+      name: `Beanz #${beanzId}`,
+      icon: `${url.beanzIcon}`,
+      url: `https://azkimg.imgix.net/images_squareface/final-${beanzId}.png`,
+    },
+    pair: {
+      name: `Azuki #${azukiId} | Beanz #${beanzId}`,
+      icon: `${url.azukiIcon}`,
+      url: `https://azukiimagemaker.vercel.app/api/pairbeanz-prod?azukiId=${azukiId}&beanzId=${beanzId}`,
     },
   };
 
-  const name = options[`${interaction}`].name;
-  const icon = options[`${interaction}`].icon;
-  const othersContract = options[`${interaction}`].contract;
-  const imageUrl = options[`${interaction}`].url;
-
-  const [data] = await getData(
-    `https://api.reservoir.tools/tokens/v5?tokens=${othersContract}:${id}`
-  );
-
   return [
     {
-      color: 0xc13540,
+      color: 0x0267bc,
       author: {
-        name: `${name} #${id}`,
-        icon_url: `${icon}`,
+        name: `${options[`${commandName}`].name}`,
+        icon_url: `${options[`${commandName}`].icon}`,
       },
-      description: `[${name} Collector's Profile](${url.azukiProfile}/${data.token.owner})`,
-      fields: [
-        {
-          name: "Links",
-          value: tokenLinks(othersContract, id, data.token.owner),
-        },
-      ],
       image: {
-        url: `${imageUrl}`,
+        url: `${options[`${commandName}`].url}`,
       },
     },
   ];

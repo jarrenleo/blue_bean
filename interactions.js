@@ -1,10 +1,4 @@
-import {
-  azukiEmbed,
-  beanzEmbed,
-  findEmbed,
-  pairEmbed,
-  othersEmbed,
-} from "./embeds.js";
+import { azukiEmbed, beanzEmbed, findEmbed, othersEmbed } from "./embeds.js";
 
 const azukiIdRange = function (id) {
   return id >= 0 && id < 10000;
@@ -46,26 +40,29 @@ export const findInteraction = async function (interaction, data, name, id) {
   }
 };
 
-export const pairInteraction = async function (interaction, azukiId, beanzId) {
-  azukiIdRange(azukiId) && beanzIdRange(beanzId)
-    ? await interaction.editReply({
-        embeds: await pairEmbed(azukiId, beanzId),
-      })
-    : await interaction.editReply({
-        content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
-      });
-};
+export const othersInteraction = async function (
+  interaction,
+  azukiId,
+  beanzId
+) {
+  let range, othersReply;
 
-export const othersInteraction = async function (interaction, id) {
-  const range =
-    interaction.commandName !== "selfie" ? azukiIdRange(id) : beanzIdRange(id);
-  const elseName = interaction.commandName !== "selfie" ? "Azuki" : "Beanz";
+  if (interaction.commandName === "selfie") {
+    range = beanzIdRange(beanzId);
+    othersReply = `Beanz #${beanzId} does not exist in the collection.`;
+  } else if (interaction.commandName === "pair") {
+    range = azukiIdRange(azukiId) && beanzIdRange(beanzId);
+    othersReply = `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`;
+  } else {
+    range = azukiIdRange(azukiId);
+    othersReply = `Azuki #${azukiId} does not exist in the collection.`;
+  }
 
   range
     ? await interaction.editReply({
-        embeds: await othersEmbed(interaction.commandName, id),
+        embeds: await othersEmbed(interaction.commandName, azukiId, beanzId),
       })
     : await interaction.editReply({
-        content: `${elseName} #${id} does not exist in the collection.`,
+        content: othersReply,
       });
 };

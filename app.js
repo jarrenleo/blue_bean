@@ -6,7 +6,6 @@ import {
   azukiInteraction,
   beanzInteraction,
   findInteraction,
-  pairInteraction,
   othersInteraction,
 } from "./interactions.js";
 
@@ -90,19 +89,21 @@ client.on("interactionCreate", async (interaction) => {
       await findInteraction(interaction, data, name, id);
     }
 
-    if (interaction.commandName === "pair") {
-      const azukiId = interaction.options.get("azuki-id").value;
-      const beanzId = interaction.options.get("beanz-id").value;
-      await pairInteraction(interaction, azukiId, beanzId);
-    }
-
     if (
-      interaction.commandName === "blue" ||
-      interaction.commandName === "red" ||
-      interaction.commandName === "selfie" ||
+      interaction.commandName === "blue-jacket" ||
+      interaction.commandName === "red-jacket" ||
       interaction.commandName === "wallpaper"
     )
       await othersInteraction(interaction, id);
+
+    if (interaction.commandName === "selfie")
+      await othersInteraction(interaction, null, id);
+
+    if (interaction.commandName === "pair") {
+      const azukiId = interaction.options.get("azuki-id").value;
+      const beanzId = interaction.options.get("beanz-id").value;
+      await othersInteraction(interaction, azukiId, beanzId);
+    }
   } catch (error) {
     console.log(error);
   }
