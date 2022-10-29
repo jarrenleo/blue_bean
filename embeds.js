@@ -15,7 +15,7 @@ export const azukiEmbed = async function (id) {
 
   return [
     {
-      color: 0xc13540,
+      color: 0x0267bc,
       author: {
         name: `Azuki #${id} ${isFlagged}`,
         icon_url: `${url.azukiIcon}`,
@@ -44,7 +44,7 @@ export const beanzEmbed = async function (id) {
 
   return [
     {
-      color: 0xc13540,
+      color: 0x0267bc,
       author: {
         name: `Beanz #${id} ${isFlagged}`,
         icon_url: `${url.beanzIcon}`,
