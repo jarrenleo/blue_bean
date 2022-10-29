@@ -42,7 +42,7 @@ export const sortTraits = function (traits, size) {
     };
 
     const traitPrice = trait.floorAskPrice
-      ? ` | ${roundPrice(trait.floorAskPrice, 2)} Ξ`
+      ? `${roundPrice(trait.floorAskPrice, 2)} Ξ`
       : "";
 
     return {
@@ -50,7 +50,7 @@ export const sortTraits = function (traits, size) {
       value: `${trait.value}\n(${toPercent(
         trait.tokenCount,
         size
-      )}%)${traitPrice}`,
+      )}%)\n${traitPrice}`,
       inline: true,
     };
   });
