@@ -20,7 +20,7 @@ export const azukiEmbed = async function (id) {
         name: `Azuki #${id} ${isFlagged}`,
         icon_url: `${url.azukiIcon}`,
       },
-      description: `[Azuki Collector's Profile](${url.azukiProfile}/${token.owner})`,
+      description: `[Azuki Collector's Profile](${url.profile}/${token.owner})`,
       fields: [
         ...sortTraits(token.attributes, 10000),
         {
@@ -49,7 +49,7 @@ export const beanzEmbed = async function (id) {
         name: `Beanz #${id} ${isFlagged}`,
         icon_url: `${url.beanzIcon}`,
       },
-      description: `[Beanz Collector's Profile](${url.azukiProfile}/${token.owner})`,
+      description: `[Beanz Collector's Profile](${url.profile}/${token.owner})`,
       fields: [
         ...sortTraits(token.attributes, 19950),
         {
@@ -99,7 +99,9 @@ export const findEmbed = async function (data, name, id) {
       const website =
         data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
       const verified =
-        data.openseaVerificationStatus === "verified" ? "✅" : "";
+        data.openseaVerificationStatus === "verified"
+          ? "<a:check:662368326193905704>"
+          : "";
       const royalties = data.royalties?.bps ? data.royalties.bps : 0;
 
       const volume = function (day) {
@@ -109,9 +111,7 @@ export const findEmbed = async function (data, name, id) {
       return [
         {
           color: 0x0267bc,
-          author: {
-            name: `${data.name} ${verified}`,
-          },
+          title: `${data.name} ${verified}`,
           thumbnail: {
             url: `${data.image}`,
           },
@@ -136,7 +136,10 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Floor Price",
-              value: `${roundPrice(data.floorAsk.price.amount.native, 2)} Ξ`,
+              value: `${url.ethEmoji}${roundPrice(
+                data.floorAsk.price.amount.native,
+                2
+              )}`,
               inline: true,
             },
             {
@@ -154,9 +157,11 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Volume (1 / 7 / 30 / All-Time)",
-              value: `${volume("1day")} Ξ / ${volume("7day")} Ξ / ${volume(
-                "30day"
-              )} Ξ / ${volume("allTime")} Ξ`,
+              value: `${url.ethEmoji}${volume("1day")} / ${
+                url.ethEmoji
+              }${volume("7day")} / ${url.ethEmoji}${volume("30day")} / ${
+                url.ethEmoji
+              }${volume("allTime")}`,
               inline: false,
             },
             {

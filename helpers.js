@@ -6,11 +6,12 @@ export const contract = {
 };
 
 export const url = {
+  ethEmoji: "<:eth:1036195593728557106>",
   azukiIcon:
     "https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT?auto=format&w=1920",
   beanzIcon:
     "https://i.seadn.io/gae/_R4fuC4QGYd14-KwX2bD1wf-AWjDF2VMabfqWFJhIgiN2FnAUpnD5PLdJORrhQ8gly7KcjhQZZpuzYVPF7CDSzsqmDh97z84j2On?auto=format&w=1920",
-  azukiProfile: "https://www.azuki.com/collector",
+  profile: "https://www.azuki.com/collector",
   opensea: "https://opensea.io/assets/ethereum",
   looksrare: "https://looksrare.org/collections",
   x2y2: "https://x2y2.io/eth",
@@ -42,7 +43,7 @@ export const sortTraits = function (traits, size) {
     };
 
     const traitPrice = trait.floorAskPrice
-      ? `${roundPrice(trait.floorAskPrice, 2)} Ξ`
+      ? `${url.ethEmoji}${roundPrice(trait.floorAskPrice, 2)}`
       : "";
 
     return {

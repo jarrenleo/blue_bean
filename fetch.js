@@ -27,7 +27,7 @@ export const getOrders = async function (url) {
   const latestData = data.orders?.at(0) ?? data.sales?.at(0);
 
   if (!latestData) return "-";
-  return `${roundPrice(latestData.price.amount.native, 2)} Ξ`;
+  return `⟠ ${roundPrice(latestData.price.amount.native, 2)}`;
 };
 
 export const getOwners = async function (url) {
