@@ -165,8 +165,12 @@ export const findEmbed = async function (data, name, id) {
               inline: false,
             },
             {
-              name: "Links",
+              name: "Marketplace",
               value: `${website}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${address}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [Sudo](https://sudoswap.xyz/#/browse/buy/${address}) | [Gem](https://www.gem.xyz/collection/${slug}/) | [Blur](https://blur.io/collection/${slug})`,
+            },
+            {
+              name: "Tools",
+              value: `[AlphaSharks](https://vue.alphasharks.io/collection/${address}) | [NFTFlip](https://review.nftflip.ai/collection/${address}) | [NFTNerds](https://nftnerds.ai/collection/${address})`,
             },
           ],
         },
