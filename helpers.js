@@ -67,7 +67,7 @@ export const sortTraits = function (traits, size) {
 };
 
 export const tokenLinks = function (contract, id, owner) {
-  return `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Gem](${url.gem}/${contract}/${id}) | [Blur](${url.blur}/${owner}?contractAddress=${contract})`;
+  return `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`;
 };
 
 export const roundPrice = function (price, dp) {

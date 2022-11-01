@@ -100,7 +100,7 @@ export const findEmbed = async function (data, name, id) {
         data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
       const verified =
         data.openseaVerificationStatus === "verified"
-          ? "<a:check:662368326193905704>"
+          ? "<a:verified:1036933625289134100>"
           : "";
       const royalties = data.royalties?.bps ? data.royalties.bps : 0;
 
@@ -157,11 +157,11 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Volume (1 / 7 / 30 / All-Time)",
-              value: `${url.ethEmoji}${volume("1day")} / ${
-                url.ethEmoji
-              }${volume("7day")} / ${url.ethEmoji}${volume("30day")} / ${
-                url.ethEmoji
-              }${volume("allTime")}`,
+              value: `${url.ethEmoji}${volume("1day")} /${url.ethEmoji}${volume(
+                "7day"
+              )} /${url.ethEmoji}${volume("30day")} /${url.ethEmoji}${volume(
+                "allTime"
+              )}`,
               inline: false,
             },
             {
@@ -171,7 +171,7 @@ export const findEmbed = async function (data, name, id) {
             },
             {
               name: "Marketplace",
-              value: `${website}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${address}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [Sudo](https://sudoswap.xyz/#/browse/buy/${address}) | [Gem](https://www.gem.xyz/collection/${slug}/) | [Blur](https://blur.io/collection/${slug})`,
+              value: `${website}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${address}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [Sudo](https://sudoswap.xyz/#/browse/buy/${address}) | [Blur](https://blur.io/collection/${slug}) | [Gem](https://www.gem.xyz/collection/${slug}/)`,
             },
             {
               name: "Tools",
