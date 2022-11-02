@@ -2,109 +2,105 @@ import { getData, getOwners, refreshToken } from "./fetch.js";
 import { url, sortTraits, roundPrice, toPercent } from "./helpers.js";
 
 export const collectionEmbed = async function (data, contract) {
-  try {
-    const [uniqueOwners, [dailySaleCount]] = await Promise.all([
-      getOwners(
-        `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
-      ),
-      getData(
-        `https://api.reservoir.tools/collections/daily-volumes/v1?id=${contract}&limit=1`
-      ),
-    ]);
+  const [uniqueOwners, [dailySaleCount]] = await Promise.all([
+    getOwners(
+      `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
+    ),
+    getData(
+      `https://api.reservoir.tools/collections/daily-volumes/v1?id=${contract}&limit=1`
+    ),
+  ]);
 
-    const slug = data.slug;
-    const size = Number(data.tokenCount);
-    const listed = Number(data.onSaleCount);
-    const verified =
-      data.openseaVerificationStatus === "verified"
-        ? "<a:verified:1036933625289134100>"
-        : "";
-    const royalties = data.royalties?.bps ? data.royalties.bps : 0;
-    const dailySale = dailySaleCount?.sales_count
-      ? dailySaleCount.sales_count
-      : "-";
-    const website =
-      data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
-    const discord =
-      data.discordUrl !== null ? `[Discord](${data.discordUrl}) | ` : "";
+  const slug = data.slug;
+  const size = Number(data.tokenCount);
+  const listed = Number(data.onSaleCount);
+  const verified =
+    data.openseaVerificationStatus === "verified"
+      ? "<a:verified:1036933625289134100>"
+      : "";
+  const royalties = data.royalties?.bps ? data.royalties.bps : 0;
+  const dailySale = dailySaleCount?.sales_count
+    ? dailySaleCount.sales_count
+    : "-";
+  const website =
+    data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
+  const discord =
+    data.discordUrl !== null ? `[Discord](${data.discordUrl}) | ` : "";
 
-    const volume = function (day) {
-      return `${Math.round(data.volume[day]).toLocaleString("en-US")}`;
-    };
+  const volume = function (day) {
+    return `${Math.round(data.volume[day]).toLocaleString("en-US")}`;
+  };
 
-    return [
-      {
-        color: 0x0267bc,
-        title: `${data.name} ${verified}`,
-        thumbnail: {
-          url: `${data.image}`,
-        },
-        fields: [
-          {
-            name: "Collection Size",
-            value: `${size.toLocaleString("en-US")}`,
-            inline: true,
-          },
-          {
-            name: "Active Listings",
-            value: `${listed.toLocaleString("en-US")} (${toPercent(
-              listed,
-              size
-            )}%)`,
-            inline: true,
-          },
-          {
-            name: "Royalties",
-            value: `${royalties / 100}%`,
-            inline: true,
-          },
-          {
-            name: "Floor Price",
-            value: `${url.eth}${roundPrice(
-              data.floorAsk.price.amount.native,
-              2
-            )}`,
-            inline: true,
-          },
-          {
-            name: "Unique Owners",
-            value: `${uniqueOwners.toLocaleString("en-US")} (${toPercent(
-              uniqueOwners,
-              size
-            )}%)`,
-            inline: true,
-          },
-          {
-            name: "Daily Sale Count",
-            value: `${dailySale.toLocaleString("en-US")}`,
-            inline: true,
-          },
-          {
-            name: "Volume (1 / 7 / 30 / All-Time)",
-            value: `${url.eth}${volume("1day")} /${url.eth}${volume("7day")} /${
-              url.eth
-            }${volume("30day")} /${url.eth}${volume("allTime")}`,
-            inline: false,
-          },
-          {
-            name: "Contract Address",
-            value: `[${contract}](https://etherscan.io/address/${contract})`,
-            inline: false,
-          },
-          {
-            name: "Collection Links",
-            value: `${website}${discord}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${contract}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [Sudo](https://sudoswap.xyz/#/browse/buy/${contract}) | [Blur](https://blur.io/collection/${slug}) | [Gem](https://www.gem.xyz/collection/${slug}/)`,
-          },
-          {
-            name: "Tools",
-            value: `[AlphaSharks](https://vue.alphasharks.io/collection/${contract}) | [NFTFlip](https://review.nftflip.ai/collection/${contract}) | [NFTNerds](https://nftnerds.ai/collection/${contract})`,
-          },
-        ],
+  return [
+    {
+      color: 0x0267bc,
+      title: `${data.name} ${verified}`,
+      thumbnail: {
+        url: `${data.image}`,
       },
-    ];
-  } catch {
-    throw Error(error.message);
-  }
+      fields: [
+        {
+          name: "Collection Size",
+          value: `${size.toLocaleString("en-US")}`,
+          inline: true,
+        },
+        {
+          name: "Active Listings",
+          value: `${listed.toLocaleString("en-US")} (${toPercent(
+            listed,
+            size
+          )}%)`,
+          inline: true,
+        },
+        {
+          name: "Royalties",
+          value: `${royalties / 100}%`,
+          inline: true,
+        },
+        {
+          name: "Floor Price",
+          value: `${url.eth}${roundPrice(
+            data.floorAsk.price.amount.native,
+            2
+          )}`,
+          inline: true,
+        },
+        {
+          name: "Unique Owners",
+          value: `${uniqueOwners.toLocaleString("en-US")} (${toPercent(
+            uniqueOwners,
+            size
+          )}%)`,
+          inline: true,
+        },
+        {
+          name: "Daily Sale Count",
+          value: `${dailySale.toLocaleString("en-US")}`,
+          inline: true,
+        },
+        {
+          name: "Volume (1 / 7 / 30 / All-Time)",
+          value: `${url.eth}${volume("1day")} /${url.eth}${volume("7day")} /${
+            url.eth
+          }${volume("30day")} /${url.eth}${volume("allTime")}`,
+          inline: false,
+        },
+        {
+          name: "Contract Address",
+          value: `[${contract}](https://etherscan.io/address/${contract})`,
+          inline: false,
+        },
+        {
+          name: "Collection Links",
+          value: `${website}${discord}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${contract}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [Sudo](https://sudoswap.xyz/#/browse/buy/${contract}) | [Blur](https://blur.io/collection/${slug}) | [Gem](https://www.gem.xyz/collection/${slug}/)`,
+        },
+        {
+          name: "Tools",
+          value: `[AlphaSharks](https://vue.alphasharks.io/collection/${contract}) | [NFTFlip](https://review.nftflip.ai/collection/${contract}) | [NFTNerds](https://nftnerds.ai/collection/${contract})`,
+        },
+      ],
+    },
+  ];
 };
 
 export const tokenEmbed = async function (commandName, data, id, contract) {
