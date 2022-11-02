@@ -1,4 +1,5 @@
-import { azukiEmbed, beanzEmbed, findEmbed, othersEmbed } from "./embeds.js";
+import { getData } from "./fetch.js";
+import { collectionEmbed, othersEmbed, tokenEmbed } from "./embeds.js";
 
 const azukiIdRange = function (id) {
   return id >= 0 && id < 10000;
@@ -8,30 +9,26 @@ const beanzIdRange = function (id) {
   return id >= 0 && id < 19950;
 };
 
-export const azukiInteraction = async function (interaction, id) {
-  azukiIdRange(id)
-    ? await interaction.editReply({
-        embeds: await azukiEmbed(id),
-      })
-    : await interaction.editReply({
-        content: `Azuki #${id} does not exist in the collection.`,
-      });
-};
-
-export const beanzInteraction = async function (interaction, id) {
-  beanzIdRange(id)
-    ? await interaction.editReply({
-        embeds: await beanzEmbed(id),
-      })
-    : await interaction.editReply({
-        content: `Beanz #${id} does not exist in the collection.`,
-      });
-};
-
-export const findInteraction = async function (interaction, data, name, id) {
+export const mainInteraction = async function (interaction, data, name, id) {
   try {
+    if (!data)
+      [data] = await getData(
+        `https://api.reservoir.tools/collections/v5?name=${name}&limit=1`
+      );
+
+    const contract = data?.primaryContract;
+    if (!contract)
+      throw new Error(
+        "Collection not found. Please use suggested options that best match your query."
+      );
+
+    const embedChoice =
+      id === undefined
+        ? collectionEmbed(data, contract)
+        : tokenEmbed(interaction.commandName, data, id, contract);
+
     await interaction.editReply({
-      embeds: await findEmbed(data, name, id),
+      embeds: await embedChoice,
     });
   } catch (error) {
     await interaction.editReply({

@@ -1,6 +1,5 @@
 import { config } from "dotenv";
 import fetch from "node-fetch";
-import { roundPrice } from "./helpers.js";
 
 config();
 const options = {
@@ -20,14 +19,6 @@ export const getData = async function (url, options) {
   const data = await fetchData(url, options);
   const updatedData = data.tokens ?? data.collections;
   return updatedData;
-};
-
-export const getOrders = async function (url) {
-  const data = await fetchData(url, options);
-  const latestData = data.orders?.at(0) ?? data.sales?.at(0);
-
-  if (!latestData) return "-";
-  return `⟠ ${roundPrice(latestData.price.amount.native, 2)}`;
 };
 
 export const getOwners = async function (url) {

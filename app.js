@@ -2,12 +2,7 @@ import { config } from "dotenv";
 import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
 import { commands } from "./commands.js";
 import { getData } from "./fetch.js";
-import {
-  azukiInteraction,
-  beanzInteraction,
-  findInteraction,
-  othersInteraction,
-} from "./interactions.js";
+import { mainInteraction, othersInteraction } from "./interactions.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
@@ -61,23 +56,24 @@ client.on("interactionCreate", async (interaction) => {
       interaction.commandName !== "random" &&
       interaction.commandName !== "pair"
         ? interaction.options.get("id")?.value
-        : "";
+        : null;
 
-    if (interaction.commandName === "azuki")
-      await azukiInteraction(interaction, id);
-
-    if (interaction.commandName === "beanz")
-      await beanzInteraction(interaction, id);
+    if (
+      interaction.commandName === "azuki" ||
+      interaction.commandName === "beanz"
+    )
+      await mainInteraction(interaction, null, interaction.commandName, id);
 
     if (interaction.commandName === "random") {
+      let id;
       const rng = Math.random();
 
       if (rng < 0.5) {
-        const id = Math.floor(Math.random() * 10000);
-        await azukiInteraction(interaction, id);
+        id = Math.floor(Math.random() * 10000);
+        await mainInteraction(interaction, null, "azuki", id);
       } else {
-        const id = Math.floor(Math.random() * 19950);
-        await beanzInteraction(interaction, id);
+        id = Math.floor(Math.random() * 19950);
+        await mainInteraction(interaction, null, "beanz", id);
       }
     }
 
@@ -85,8 +81,8 @@ client.on("interactionCreate", async (interaction) => {
       const name = interaction.options.get("name").value;
       const data = collectionData
         ? collectionData.find((result) => result.name === name)
-        : "";
-      await findInteraction(interaction, data, name, id);
+        : null;
+      await mainInteraction(interaction, data, name, id);
     }
 
     if (
