@@ -1,8 +1,13 @@
 import { config } from "dotenv";
-import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
+import { Client, GatewayIntentBits, REST, Routes, Events } from "discord.js";
 import { commands } from "./commands.js";
 import { getData } from "./fetch.js";
-import { mainInteraction, othersInteraction } from "./interactions.js";
+import {
+  azukiInteraction,
+  beanzInteraction,
+  pairInteraction,
+  findInteraction,
+} from "./interactions.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
@@ -17,7 +22,7 @@ const rest = new REST({
   version: "10",
 }).setToken(discordToken);
 
-(async function () {
+(async () => {
   await rest.put(Routes.applicationCommands(clientId), {
     body: commands,
   });
@@ -30,10 +35,10 @@ client.on("interactionCreate", async (interaction) => {
     if (!interaction.isAutocomplete()) return;
 
     if (interaction.commandName === "find") {
-      const focusedValue = interaction.options.getFocused();
-      if (focusedValue) {
+      const focusedText = interaction.options.getFocused();
+      if (focusedText) {
         collectionData = await getData(
-          `https://api.reservoir.tools/collections/v5?name=${focusedValue}&limit=5`
+          `https://api.reservoir.tools/collections/v5?name=${focusedText}&limit=5`
         );
         const choices = collectionData.map((result) => result.name);
         await interaction.respond(
@@ -58,11 +63,11 @@ client.on("interactionCreate", async (interaction) => {
         ? interaction.options.get("id")?.value
         : null;
 
-    if (
-      interaction.commandName === "azuki" ||
-      interaction.commandName === "beanz"
-    )
-      await mainInteraction(interaction, null, interaction.commandName, id);
+    if (interaction.commandName === "azuki")
+      await azukiInteraction(interaction, id);
+
+    if (interaction.commandName === "beanz")
+      await beanzInteraction(interaction, id);
 
     if (interaction.commandName === "random") {
       let id;
@@ -70,11 +75,17 @@ client.on("interactionCreate", async (interaction) => {
 
       if (rng < 0.5) {
         id = Math.floor(Math.random() * 10000);
-        await mainInteraction(interaction, null, "azuki", id);
+        await azukiInteraction(interaction, id);
       } else {
         id = Math.floor(Math.random() * 19950);
-        await mainInteraction(interaction, null, "beanz", id);
+        await beanzInteraction(interaction, id);
       }
+    }
+
+    if (interaction.commandName === "pair") {
+      const azukiId = interaction.options.get("azuki-id").value;
+      const beanzId = interaction.options.get("beanz-id").value;
+      await pairInteraction(interaction, azukiId, beanzId);
     }
 
     if (interaction.commandName === "find") {
@@ -82,24 +93,25 @@ client.on("interactionCreate", async (interaction) => {
       const data = collectionData
         ? collectionData.find((result) => result.name === name)
         : null;
-      await mainInteraction(interaction, data, name, id);
+      await findInteraction(interaction, data, name, id);
     }
+  } catch (error) {
+    console.log(error);
+  }
+});
 
-    if (
-      interaction.commandName === "blue-jacket" ||
-      interaction.commandName === "red-jacket" ||
-      interaction.commandName === "wallpaper"
-    )
-      await othersInteraction(interaction, id);
+client.on(Events.InteractionCreate, async (interaction) => {
+  try {
+    if (!interaction.isButton()) return;
+    if (interaction.customId) interaction.deferUpdate();
 
-    if (interaction.commandName === "selfie")
-      await othersInteraction(interaction, null, id);
+    const [{ data }] = interaction.message.embeds;
+    const i = data.author.name.indexOf("#") + 1;
+    const id = Number(data.author.name.slice(i));
 
-    if (interaction.commandName === "pair") {
-      const azukiId = interaction.options.get("azuki-id").value;
-      const beanzId = interaction.options.get("beanz-id").value;
-      await othersInteraction(interaction, azukiId, beanzId);
-    }
+    interaction.customId !== "beanz" && interaction.customId !== "selfie"
+      ? await azukiInteraction(interaction, id)
+      : await beanzInteraction(interaction, id);
   } catch (error) {
     console.log(error);
   }

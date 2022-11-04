@@ -10,7 +10,7 @@ const options = {
   },
 };
 
-const fetchData = async function (url, options) {
+const fetchData = async (url, options) => {
   const response = await fetch(url, options);
   return await response.json();
 };
@@ -21,15 +21,14 @@ export const getData = async function (url, options) {
   return updatedData;
 };
 
-export const getOwners = async function (url) {
+export const getOwners = async (url) => {
   let uniqueOwners = 0;
-
   const data = await fetchData(url, options);
   data.ownersDistribution.forEach((data) => (uniqueOwners += data.ownerCount));
   return uniqueOwners;
 };
 
-export const refreshToken = async function (url, contract, id) {
+export const refreshToken = async (url, contract, id) => {
   return await fetch(url, {
     method: "POST",
     ...options,

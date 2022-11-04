@@ -1,7 +1,120 @@
 import { getData, getOwners, refreshToken } from "./fetch.js";
-import { url, sortTraits, roundPrice, toPercent } from "./helpers.js";
+import {
+  url,
+  azukiInfo,
+  beanzInfo,
+  tokenHelper,
+  sortTraits,
+  roundPrice,
+  toPercent,
+} from "./helpers.js";
 
-export const collectionEmbed = async function (data, contract) {
+export const azukiEmbed = async (id, interaction) => {
+  const [token, isFlagged, rarity, list, lastSale] = await tokenHelper(
+    azukiInfo.contract,
+    id
+  );
+
+  const options = {
+    azuki: `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
+    "blue-jacket": `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png
+        `,
+    "red-jacket": `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png
+        `,
+    wallpaper: `https://azk.imgix.net/big_azukis/a-${id}.png
+        `,
+  };
+
+  return [
+    {
+      color: 0x0267bc,
+      author: {
+        name: `Azuki #${id} ${isFlagged}`,
+        icon_url: `${azukiInfo.icon}`,
+      },
+      description: `[Azuki Collector's Profile](${url.profile}/${token.owner})`,
+      fields: [
+        ...sortTraits(token.attributes, 10000),
+        {
+          name: "Links",
+          value: `[OpenSea](${url.opensea}/${azukiInfo.contract}/${id}) | [LooksRare](${url.looksrare}/${azukiInfo.contract}/${id}) | [X2Y2](${url.x2y2}/${azukiInfo.contract}/${id}) | [Sudo](${url.sudo}/${azukiInfo.contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${azukiInfo.contract}) | [Gem](${url.gem}/${azukiInfo.contract}/${id})`,
+        },
+      ],
+      image: {
+        url: `${options[`${interaction}`]}`,
+      },
+      footer: {
+        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}`,
+      },
+    },
+  ];
+};
+
+export const beanzEmbed = async (id, interaction) => {
+  const [token, isFlagged, rarity, list, lastSale] = await tokenHelper(
+    beanzInfo.contract,
+    id
+  );
+
+  const options = {
+    beanz: `https://ikzttp.mypinata.cloud/ipfs/QmTRuWHr7bpqscUWFmhXndzf5AdQqkekhqwgbyJCqKMHrL/${id}.png`,
+    selfie: `https://azkimg.imgix.net/images_squareface/final-${id}.png`,
+  };
+
+  return [
+    {
+      color: 0x0267bc,
+      author: {
+        name: `Beanz #${id} ${isFlagged}`,
+        icon_url: `${beanzInfo.icon}`,
+      },
+      description: `[Beanz Collector's Profile](${url.profile}/${token.owner})`,
+      fields: [
+        ...sortTraits(token.attributes, 19950),
+        {
+          name: "Links",
+          value: `[OpenSea](${url.opensea}/${beanzInfo.contract}/${id}) | [LooksRare](${url.looksrare}/${beanzInfo.contract}/${id}) | [X2Y2](${url.x2y2}/${beanzInfo.contract}/${id}) | [Sudo](${url.sudo}/${beanzInfo.contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${beanzInfo.contract}) | [Gem](${url.gem}/${beanzInfo.contract}/${id})`,
+        },
+      ],
+      image: {
+        url: `${options[`${interaction}`]}`,
+      },
+      footer: {
+        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}`,
+      },
+    },
+  ];
+};
+
+export const pairEmbed = async (azukiId, beanzId) => {
+  const [[azukiData], [beanzData]] = await Promise.all([
+    getData(
+      `https://api.reservoir.tools/tokens/v5?tokens=${azukiInfo.contract}:${azukiId}&includeAttributes=true`
+    ),
+    getData(
+      `https://api.reservoir.tools/tokens/v5?tokens=${beanzInfo.contract}:${beanzId}&includeAttributes=true`
+    ),
+  ]);
+
+  return [
+    {
+      color: 0x0267bc,
+      author: {
+        name: `Azuki #${azukiId} | Beanz #${beanzId}`,
+        icon_url: `${azukiInfo.icon}`,
+      },
+      description: `[Azuki Collector's Profile](${url.profile}/${azukiData.token.owner}) | [Bean Collector's Profile](${url.profile}/${beanzData.token.owner})`,
+      image: {
+        url: `https://azukiimagemaker.vercel.app/api/pairbeanz-prod?azukiId=${azukiId}&beanzId=${beanzId}`,
+      },
+      footer: {
+        text: "Image may take some time to render",
+      },
+    },
+  ];
+};
+
+export const collectionEmbed = async (data, contract) => {
   const [uniqueOwners, [dailySaleCount]] = await Promise.all([
     getOwners(
       `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
@@ -103,23 +216,15 @@ export const collectionEmbed = async function (data, contract) {
   ];
 };
 
-export const tokenEmbed = async function (commandName, data, id, contract) {
+export const tokenEmbed = async (data, id, contract) => {
   try {
-    const [tokenData] = await getData(
-      `https://api.reservoir.tools/tokens/v5?tokens=${contract}:${id}&includeAttributes=true`
+    const [token, isFlagged, rarity, list, lastSale] = await tokenHelper(
+      contract,
+      id,
+      data.name
     );
 
-    const token = tokenData?.token;
-    if (!token)
-      throw new Error(`${data.name} #${id} does not exist in the collection.`);
-
-    let image = token?.image;
-
-    if (commandName === "azuki")
-      image = `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`;
-    if (commandName === "beanz")
-      image = `https://ikzttp.mypinata.cloud/ipfs/QmTRuWHr7bpqscUWFmhXndzf5AdQqkekhqwgbyJCqKMHrL/${id}.png`;
-
+    const image = token?.image;
     const attributes = token.attributes;
     if (!image || !attributes.length) {
       const response = await refreshToken(
@@ -132,17 +237,6 @@ export const tokenEmbed = async function (commandName, data, id, contract) {
           `Metadata not found for ${data.name} #${id}. A metadata refresh has been requested. Please try again in a few minutes.`
         );
     }
-
-    const isFlagged = token.isFlagged ? "⚠️" : "";
-    const rarity = token.rarityRank !== null ? `#${token.rarityRank}` : "-";
-    const list =
-      tokenData.market.floorAsk.price !== null
-        ? `⟠ ${roundPrice(tokenData.market.floorAsk.price.amount.native, 2)}`
-        : "-";
-    const lastSale =
-      token.lastSell.value !== null
-        ? `⟠ ${roundPrice(token.lastSell.value, 2)}`
-        : "-";
 
     return [
       {
@@ -169,47 +263,4 @@ export const tokenEmbed = async function (commandName, data, id, contract) {
   } catch (error) {
     throw Error(error.message);
   }
-};
-
-export const othersEmbed = async function (commandName, azukiId, beanzId) {
-  const options = {
-    "blue-jacket": {
-      name: `Azuki #${azukiId}`,
-      icon: `${url.azukiIcon}`,
-      url: `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${azukiId}.png`,
-    },
-    "red-jacket": {
-      name: `Azuki #${azukiId}`,
-      icon: `${url.azukiIcon}`,
-      url: `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${azukiId}.png`,
-    },
-    wallpaper: {
-      name: `Azuki #${azukiId}`,
-      icon: `${url.azukiIcon}`,
-      url: `https://azk.imgix.net/big_azukis/a-${azukiId}.png`,
-    },
-    selfie: {
-      name: `Beanz #${beanzId}`,
-      icon: `${url.beanzIcon}`,
-      url: `https://azkimg.imgix.net/images_squareface/final-${beanzId}.png`,
-    },
-    pair: {
-      name: `Azuki #${azukiId} | Beanz #${beanzId}`,
-      icon: `${url.azukiIcon}`,
-      url: `https://azukiimagemaker.vercel.app/api/pairbeanz-prod?azukiId=${azukiId}&beanzId=${beanzId}`,
-    },
-  };
-
-  return [
-    {
-      color: 0x0267bc,
-      author: {
-        name: `${options[`${commandName}`].name}`,
-        icon_url: `${options[`${commandName}`].icon}`,
-      },
-      image: {
-        url: `${options[`${commandName}`].url}`,
-      },
-    },
-  ];
 };
