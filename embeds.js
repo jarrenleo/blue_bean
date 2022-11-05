@@ -89,10 +89,10 @@ export const beanzEmbed = async (id, interaction) => {
 export const pairEmbed = async (azukiId, beanzId) => {
   const [[azukiData], [beanzData]] = await Promise.all([
     getData(
-      `https://api.reservoir.tools/tokens/v5?tokens=${azukiInfo.contract}:${azukiId}&includeAttributes=true`
+      `https://api.reservoir.tools/tokens/v5?tokens=${azukiInfo.contract}:${azukiId}`
     ),
     getData(
-      `https://api.reservoir.tools/tokens/v5?tokens=${beanzInfo.contract}:${beanzId}&includeAttributes=true`
+      `https://api.reservoir.tools/tokens/v5?tokens=${beanzInfo.contract}:${beanzId}`
     ),
   ]);
 

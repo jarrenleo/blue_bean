@@ -9,7 +9,6 @@ import {
 import { azukiButton, beanzButton } from "./buttons.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
-
 const beanzIdRange = (id) => id >= 0 && id < 19950;
 
 export const azukiInteraction = async (interaction, id) => {

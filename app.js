@@ -103,11 +103,11 @@ client.on("interactionCreate", async (interaction) => {
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
     if (!interaction.isButton()) return;
-    if (interaction.customId) interaction.deferUpdate();
+    if (interaction.customId) await interaction.deferUpdate();
 
     const [{ data }] = interaction.message.embeds;
     const i = data.author.name.indexOf("#") + 1;
-    const id = Number(data.author.name.slice(i));
+    const id = data.author.name.slice(i);
 
     interaction.customId !== "beanz" && interaction.customId !== "selfie"
       ? await azukiInteraction(interaction, id)
