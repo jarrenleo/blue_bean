@@ -51,7 +51,7 @@ export const azukiEmbed = async (id, interaction) => {
         url: `${options[`${interaction}`]}`,
       },
       footer: {
-        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld} day(s)`,
+        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`,
       },
     },
   ];
@@ -94,7 +94,7 @@ export const beanzEmbed = async (id, interaction) => {
         url: `${options[`${interaction}`]}`,
       },
       footer: {
-        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld} day(s)`,
+        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`,
       },
     },
   ];
@@ -276,7 +276,7 @@ export const tokenEmbed = async (data, id, contract) => {
           url: `${image}`,
         },
         footer: {
-          text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld} day(s)`,
+          text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`,
         },
       },
     ];

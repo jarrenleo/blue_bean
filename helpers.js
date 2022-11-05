@@ -59,7 +59,7 @@ export const tokenHelper = async (contract, id, name) => {
     const walletsHeld = filter.size;
 
     const time = Date.now() - transfers.at(0).timestamp * 1000;
-    const lastHeld = Number.parseInt(time / 1000 / 60 / 60 / 24);
+    const lastHeld = sortTime(time);
 
     return [
       token,
@@ -108,6 +108,16 @@ export const sortTraits = (traits, size) => {
     inline: true,
   });
   return traitFields.concat(padding);
+};
+
+export const sortTime = (time) => {
+  const days = time / 1000 / 60 / 60 / 24;
+
+  if (time >= 31556952000) return `${(days / 365).toFixed(1)} year(s)`;
+  if (time >= 2629800000) return `${(days / 30.4375).toFixed(0)} month(s)`;
+  if (time >= 86400000) return `${days.toFixed(0)} day(s)`;
+  if (time >= 3600000) return `${(days * 24).toFixed(0)} hour(s)`;
+  if (time >= 60000) return `${(days * 24 * 60).toFixed(0)} minute(s)`;
 };
 
 export const roundPrice = (price, dp) => {
