@@ -17,9 +17,9 @@ export const azukiEmbed = async (id, interaction) => {
 
   const options = {
     azuki: `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
-    "blue-jacket": `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png
+    blue: `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png
         `,
-    "red-jacket": `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png
+    red: `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png
         `,
     wallpaper: `https://azk.imgix.net/big_azukis/a-${id}.png
         `,

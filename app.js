@@ -36,6 +36,7 @@ client.on("interactionCreate", async (interaction) => {
 
     if (interaction.commandName === "find") {
       const focusedText = interaction.options.getFocused();
+
       if (focusedText) {
         collectionData = await getData(
           `https://api.reservoir.tools/collections/v5?name=${focusedText}&limit=5`
@@ -65,7 +66,6 @@ client.on("interactionCreate", async (interaction) => {
 
     if (interaction.commandName === "azuki")
       await azukiInteraction(interaction, id);
-
     if (interaction.commandName === "beanz")
       await beanzInteraction(interaction, id);
 
@@ -106,8 +106,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.customId) await interaction.deferUpdate();
 
     const [{ data }] = interaction.message.embeds;
-    const i = data.author.name.indexOf("#") + 1;
-    const id = data.author.name.slice(i);
+    const name = data.author.name;
+    const id = name.split(" ").at(1).slice(1);
 
     interaction.customId !== "beanz" && interaction.customId !== "selfie"
       ? await azukiInteraction(interaction, id)

@@ -7,11 +7,11 @@ export const azukiButton = () => [
       .setLabel("Azuki")
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
-      .setCustomId("blue-jacket")
+      .setCustomId("blue")
       .setLabel("Blue Jacket")
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
-      .setCustomId("red-jacket")
+      .setCustomId("red")
       .setLabel("Red Jacket")
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
