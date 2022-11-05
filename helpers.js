@@ -113,11 +113,44 @@ export const sortTraits = (traits, size) => {
 export const sortTime = (time) => {
   const days = time / 86400000;
 
-  if (time >= 31556952000) return `${(days / 365).toFixed(1)} year(s)`;
-  if (time >= 2629800000) return `${(days / 30.4375).toFixed(0)} month(s)`;
-  if (time >= 86400000) return `${days.toFixed(0)} day(s)`;
-  if (time >= 3600000) return `${(days * 24).toFixed(0)} hour(s)`;
-  if (time >= 60000) return `${(days * 24 * 60).toFixed(0)} minute(s)`;
+  const options = [
+    {
+      name: "year(s)",
+      time: 31556952000,
+      conversion: days / 365,
+    },
+    {
+      name: "month(s)",
+      time: 2629800000,
+      conversion: days / 30.4375,
+    },
+    {
+      name: "week(s)",
+      time: 604800000,
+      conversion: days / 7,
+    },
+    {
+      name: "day(s)",
+      time: 86400000,
+      conversion: days,
+    },
+    {
+      name: "hour(s)",
+      time: 3600000,
+      conversion: days * 24,
+    },
+    {
+      name: "minute(s)",
+      time: 60000,
+      conversion: days * 1440,
+    },
+  ];
+
+  const dp = time < 31556952000 ? 0 : 1;
+
+  for (const i of options) {
+    if (time >= i.time) return `${i.conversion.toFixed(dp)} ${i.name}`;
+  }
 };
 
 export const roundPrice = (price, dp) => {
