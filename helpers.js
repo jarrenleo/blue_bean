@@ -111,7 +111,7 @@ export const sortTraits = (traits, size) => {
 };
 
 export const sortTime = (time) => {
-  const days = time / 1000 / 60 / 60 / 24;
+  const days = time / 86400000;
 
   if (time >= 31556952000) return `${(days / 365).toFixed(1)} year(s)`;
   if (time >= 2629800000) return `${(days / 30.4375).toFixed(0)} month(s)`;
