@@ -10,10 +10,17 @@ import {
 } from "./helpers.js";
 
 export const azukiEmbed = async (id, interaction) => {
-  const [token, isFlagged, rarity, list, lastSale] = await tokenHelper(
-    azukiInfo.contract,
-    id
-  );
+  const [
+    token,
+    isFlagged,
+    rarity,
+    list,
+    lastSale,
+    links,
+    saleCount,
+    walletsHeld,
+    lastHeld,
+  ] = await tokenHelper(azukiInfo.contract, id);
 
   const options = {
     azuki: `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
@@ -37,24 +44,31 @@ export const azukiEmbed = async (id, interaction) => {
         ...sortTraits(token.attributes, 10000),
         {
           name: "Links",
-          value: `[OpenSea](${url.opensea}/${azukiInfo.contract}/${id}) | [LooksRare](${url.looksrare}/${azukiInfo.contract}/${id}) | [X2Y2](${url.x2y2}/${azukiInfo.contract}/${id}) | [Sudo](${url.sudo}/${azukiInfo.contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${azukiInfo.contract}) | [Gem](${url.gem}/${azukiInfo.contract}/${id})`,
+          value: `${links}`,
         },
       ],
       image: {
         url: `${options[`${interaction}`]}`,
       },
       footer: {
-        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}`,
+        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld} day(s)`,
       },
     },
   ];
 };
 
 export const beanzEmbed = async (id, interaction) => {
-  const [token, isFlagged, rarity, list, lastSale] = await tokenHelper(
-    beanzInfo.contract,
-    id
-  );
+  const [
+    token,
+    isFlagged,
+    rarity,
+    list,
+    lastSale,
+    links,
+    saleCount,
+    walletsHeld,
+    lastHeld,
+  ] = await tokenHelper(beanzInfo.contract, id);
 
   const options = {
     beanz: `https://ikzttp.mypinata.cloud/ipfs/QmTRuWHr7bpqscUWFmhXndzf5AdQqkekhqwgbyJCqKMHrL/${id}.png`,
@@ -73,14 +87,14 @@ export const beanzEmbed = async (id, interaction) => {
         ...sortTraits(token.attributes, 19950),
         {
           name: "Links",
-          value: `[OpenSea](${url.opensea}/${beanzInfo.contract}/${id}) | [LooksRare](${url.looksrare}/${beanzInfo.contract}/${id}) | [X2Y2](${url.x2y2}/${beanzInfo.contract}/${id}) | [Sudo](${url.sudo}/${beanzInfo.contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${beanzInfo.contract}) | [Gem](${url.gem}/${beanzInfo.contract}/${id})`,
+          value: `${links}`,
         },
       ],
       image: {
         url: `${options[`${interaction}`]}`,
       },
       footer: {
-        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}`,
+        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld} day(s)`,
       },
     },
   ];
@@ -218,11 +232,17 @@ export const collectionEmbed = async (data, contract) => {
 
 export const tokenEmbed = async (data, id, contract) => {
   try {
-    const [token, isFlagged, rarity, list, lastSale] = await tokenHelper(
-      contract,
-      id,
-      data.name
-    );
+    const [
+      token,
+      isFlagged,
+      rarity,
+      list,
+      lastSale,
+      links,
+      saleCount,
+      walletsHeld,
+      lastHeld,
+    ] = await tokenHelper(contract, id, data.name);
 
     const image = token?.image;
     const attributes = token.attributes;
@@ -249,14 +269,14 @@ export const tokenEmbed = async (data, id, contract) => {
           ...sortTraits(attributes, Number(data.tokenCount)),
           {
             name: "Links",
-            value: `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`,
+            value: `${links}`,
           },
         ],
         image: {
           url: `${image}`,
         },
         footer: {
-          text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}`,
+          text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld} day(s)`,
         },
       },
     ];

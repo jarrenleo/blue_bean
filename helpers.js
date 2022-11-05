@@ -23,9 +23,14 @@ export const beanzInfo = {
 
 export const tokenHelper = async (contract, id, name) => {
   try {
-    const [tokenData] = await getData(
-      `https://api.reservoir.tools/tokens/v5?tokens=${contract}:${id}&includeAttributes=true`
-    );
+    const [[tokenData], transfers] = await Promise.all([
+      getData(
+        `https://api.reservoir.tools/tokens/v5?tokens=${contract}:${id}&includeAttributes=true`
+      ),
+      getData(
+        `https://api.reservoir.tools/transfers/v2?token=${contract}:${id}`
+      ),
+    ]);
 
     const token = tokenData?.token;
     if (!token)
@@ -42,7 +47,31 @@ export const tokenHelper = async (contract, id, name) => {
         ? `⟠ ${roundPrice(token.lastSell.value, 2)}`
         : "-";
 
-    return [token, isFlagged, rarity, list, lastSale];
+    const links = `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`;
+
+    let saleCount = 0;
+    const filter = new Set();
+
+    transfers.forEach((transfer) => {
+      if (transfer.price) saleCount += 1;
+      filter.add(transfer.to);
+    });
+    const walletsHeld = filter.size;
+
+    const time = Date.now() - transfers.at(0).timestamp * 1000;
+    const lastHeld = Number.parseInt(time / 1000 / 60 / 60 / 24);
+
+    return [
+      token,
+      isFlagged,
+      rarity,
+      list,
+      lastSale,
+      links,
+      saleCount,
+      walletsHeld,
+      lastHeld,
+    ];
   } catch (error) {
     throw Error(error.message);
   }

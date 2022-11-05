@@ -17,7 +17,7 @@ const fetchData = async (url, options) => {
 
 export const getData = async function (url, options) {
   const data = await fetchData(url, options);
-  const updatedData = data.tokens ?? data.collections;
+  const updatedData = data.tokens ?? data.collections ?? data.transfers;
   return updatedData;
 };
 
