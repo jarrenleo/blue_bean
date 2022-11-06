@@ -47,8 +47,6 @@ export const tokenHelper = async (contract, id, name) => {
         ? `⟠ ${toRound(token.lastSell.value, 2)}`
         : "-";
 
-    const links = `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`;
-
     let saleCount = 0;
     const filter = new Set();
 
@@ -61,17 +59,11 @@ export const tokenHelper = async (contract, id, name) => {
     const time = Date.now() - transfers.at(0).timestamp * 1000;
     const lastHeld = sortTime(time);
 
-    return [
-      token,
-      isFlagged,
-      rarity,
-      list,
-      lastSale,
-      links,
-      saleCount,
-      walletsHeld,
-      lastHeld,
-    ];
+    const links = `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`;
+
+    const footer = `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`;
+
+    return [token, isFlagged, links, footer];
   } catch (error) {
     throw Error(error.message);
   }
@@ -87,7 +79,7 @@ export const sortTraits = (traits, size) => {
     };
 
     const traitPrice = trait.floorAskPrice
-      ? `${url.eth}${toRound(trait.floorAskPrice, 2)}`
+      ? `${url.eth}${toRound(trait.floorAskPrice, 2, true)}`
       : "";
 
     return {

@@ -11,17 +11,10 @@ import {
 } from "./helpers.js";
 
 export const azukiEmbed = async (id, interaction) => {
-  const [
-    token,
-    isFlagged,
-    rarity,
-    list,
-    lastSale,
-    links,
-    saleCount,
-    walletsHeld,
-    lastHeld,
-  ] = await tokenHelper(azukiInfo.contract, id);
+  const [token, isFlagged, links, footer] = await tokenHelper(
+    beanzInfo.contract,
+    id
+  );
 
   const options = {
     azuki: `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
@@ -38,38 +31,31 @@ export const azukiEmbed = async (id, interaction) => {
       color: 0x0267bc,
       author: {
         name: `Azuki #${id} ${isFlagged}`,
-        icon_url: `${azukiInfo.icon}`,
+        icon_url: azukiInfo.icon,
       },
       description: `[Azuki Collector's Profile](${url.profile}/${token.owner})`,
       fields: [
         ...sortTraits(token.attributes, 10000),
         {
           name: "Links",
-          value: `${links}`,
+          value: links,
         },
       ],
       image: {
-        url: `${options[`${interaction}`]}`,
+        url: options[`${interaction}`],
       },
       footer: {
-        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`,
+        text: footer,
       },
     },
   ];
 };
 
 export const beanzEmbed = async (id, interaction) => {
-  const [
-    token,
-    isFlagged,
-    rarity,
-    list,
-    lastSale,
-    links,
-    saleCount,
-    walletsHeld,
-    lastHeld,
-  ] = await tokenHelper(beanzInfo.contract, id);
+  const [token, isFlagged, links, footer] = await tokenHelper(
+    beanzInfo.contract,
+    id
+  );
 
   const options = {
     beanz: `https://ikzttp.mypinata.cloud/ipfs/QmTRuWHr7bpqscUWFmhXndzf5AdQqkekhqwgbyJCqKMHrL/${id}.png`,
@@ -81,21 +67,21 @@ export const beanzEmbed = async (id, interaction) => {
       color: 0x0267bc,
       author: {
         name: `Beanz #${id} ${isFlagged}`,
-        icon_url: `${beanzInfo.icon}`,
+        icon_url: beanzInfo.icon,
       },
       description: `[Beanz Collector's Profile](${url.profile}/${token.owner})`,
       fields: [
         ...sortTraits(token.attributes, 19950),
         {
           name: "Links",
-          value: `${links}`,
+          value: links,
         },
       ],
       image: {
-        url: `${options[`${interaction}`]}`,
+        url: options[`${interaction}`],
       },
       footer: {
-        text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`,
+        text: footer,
       },
     },
   ];
@@ -116,7 +102,7 @@ export const pairEmbed = async (azukiId, beanzId) => {
       color: 0x0267bc,
       author: {
         name: `Azuki #${azukiId} | Beanz #${beanzId}`,
-        icon_url: `${azukiInfo.icon}`,
+        icon_url: azukiInfo.icon,
       },
       description: `[Azuki Collector's Profile](${url.profile}/${azukiData.token.owner}) | [Bean Collector's Profile](${url.profile}/${beanzData.token.owner})`,
       image: {
@@ -142,12 +128,14 @@ export const collectionEmbed = async (data, contract) => {
   const slug = data.slug;
   const size = Number(data.tokenCount);
   const listings = Number(data.onSaleCount);
+
   const isVerified =
     data.openseaVerificationStatus === "verified"
       ? "<a:verified:1036933625289134100>"
       : "";
   const royalties = data.royalties?.bps ?? 0;
   const dailySale = dailySales.at(0)?.sales_count ?? 0;
+
   let percentChange = "";
   if (dailySales.length === 2) {
     const today = dailySales.at(0).sales_count;
@@ -159,6 +147,7 @@ export const collectionEmbed = async (data, contract) => {
         ? `(+${toRound(formula, 1)}%)`
         : `(${toRound(formula, 1, true)}%)`;
   }
+
   const website =
     data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
   const discord =
@@ -169,7 +158,7 @@ export const collectionEmbed = async (data, contract) => {
       color: 0x0267bc,
       title: `${data.name} ${isVerified}`,
       thumbnail: {
-        url: `${data.image}`,
+        url: data.image,
       },
       fields: [
         {
@@ -251,17 +240,11 @@ export const collectionEmbed = async (data, contract) => {
 
 export const tokenEmbed = async (data, id, contract) => {
   try {
-    const [
-      token,
-      isFlagged,
-      rarity,
-      list,
-      lastSale,
-      links,
-      saleCount,
-      walletsHeld,
-      lastHeld,
-    ] = await tokenHelper(contract, id, data.name);
+    const [token, isFlagged, links, footer] = await tokenHelper(
+      contract,
+      id,
+      data.name
+    );
 
     const image = token?.image;
     const attributes = token.attributes;
@@ -282,20 +265,20 @@ export const tokenEmbed = async (data, id, contract) => {
         color: 0x0267bc,
         author: {
           name: `${token.collection.name} #${id} ${isFlagged}`,
-          icon_url: `${token.collection.image}`,
+          icon_url: token.collection.image,
         },
         fields: [
           ...sortTraits(attributes, Number(data.tokenCount)),
           {
             name: "Links",
-            value: `${links}`,
+            value: links,
           },
         ],
         image: {
-          url: `${image}`,
+          url: image,
         },
         footer: {
-          text: `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`,
+          text: footer,
         },
       },
     ];
