@@ -40,11 +40,11 @@ export const tokenHelper = async (contract, id, name) => {
     const rarity = token.rarityRank !== null ? `#${token.rarityRank}` : "-";
     const list =
       tokenData.market.floorAsk.price !== null
-        ? `⟠ ${roundPrice(tokenData.market.floorAsk.price.amount.native, 2)}`
+        ? `⟠ ${toRound(tokenData.market.floorAsk.price.amount.native, 2)}`
         : "-";
     const lastSale =
       token.lastSell.value !== null
-        ? `⟠ ${roundPrice(token.lastSell.value, 2)}`
+        ? `⟠ ${toRound(token.lastSell.value, 2)}`
         : "-";
 
     const links = `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`;
@@ -79,19 +79,19 @@ export const tokenHelper = async (contract, id, name) => {
 
 export const sortTraits = (traits, size) => {
   const traitFields = traits.map((trait) => {
-    const capitaliseKey = (key) => {
+    const toCapital = (key) => {
       return key
         .split(" ")
-        .map((keyword) => keyword.charAt(0).toUpperCase() + keyword.slice(1))
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ");
     };
 
     const traitPrice = trait.floorAskPrice
-      ? `${url.eth}${roundPrice(trait.floorAskPrice, 2)}`
+      ? `${url.eth}${toRound(trait.floorAskPrice, 2)}`
       : "";
 
     return {
-      name: `${capitaliseKey(trait.key)}`,
+      name: `${toCapital(trait.key)}`,
       value: `${trait.value}\n(${toPercent(
         trait.tokenCount,
         size
@@ -100,65 +100,51 @@ export const sortTraits = (traits, size) => {
     };
   });
 
-  const paddingLength = 3 - (traits.length % 3);
-  if (paddingLength === 3) return traitFields;
-  const padding = new Array(paddingLength).fill({
+  const padding = 3 - (traits.length % 3);
+  if (padding === 3) return traitFields;
+  const paddingFields = new Array(padding).fill({
     name: "\u200b",
     value: "\u200b",
     inline: true,
   });
-  return traitFields.concat(padding);
+  return traitFields.concat(paddingFields);
 };
 
-export const sortTime = (time) => {
-  const days = time / 86400000;
-
+export const marketplace = (source = "") => {
   const options = [
-    {
-      name: "year(s)",
-      time: 31556952000,
-      conversion: days / 365,
-    },
-    {
-      name: "month(s)",
-      time: 2629800000,
-      conversion: days / 30.4375,
-    },
-    {
-      name: "week(s)",
-      time: 604800000,
-      conversion: days / 7,
-    },
-    {
-      name: "day(s)",
-      time: 86400000,
-      conversion: days,
-    },
-    {
-      name: "hour(s)",
-      time: 3600000,
-      conversion: days * 24,
-    },
-    {
-      name: "minute(s)",
-      time: 60000,
-      conversion: days * 1440,
-    },
+    ["opensea.io", " | <:OpenSeaLogo:862443378461638697>"],
+    ["looksrare.org", " | <:looksblack:926045572903870494>"],
+    ["x2y2.io", " | <:x2y2:1038761561839374398>"],
   ];
 
-  const dp = time < 31556952000 ? 0 : 1;
-
   for (const i of options) {
-    if (time >= i.time) return `${i.conversion.toFixed(dp)} ${i.name}`;
+    if (source === i.at(0)) return i.at(1);
   }
 };
 
-export const roundPrice = (price, dp) => {
+export const toRound = (price, dp, strict = false) => {
   if (Number.isInteger(price)) return price;
-  if (price < 1) dp += 1;
+  if (price < 1 && !strict) dp += 1;
   return parseFloat(price.toFixed(dp));
 };
 
-export const toPercent = (numerator, denominator) => {
-  return roundPrice((numerator / denominator) * 100, 1);
+export const toPercent = (part, whole) => {
+  return toRound((part / whole) * 100, 1);
+};
+
+const sortTime = (time) => {
+  const days = time / 86400000;
+  const dp = time < 31556952000 ? 0 : 1;
+  const options = [
+    [31556952000, days / 365, "year(s)"],
+    [2629800000, days / 30.4375, "month(s)"],
+    [604800000, days / 7, "week(s)"],
+    [86400000, days, "day(s)"],
+    [3600000, days * 24, "hour(s)"],
+    [60000, days * 1440, "minute(s)"],
+  ];
+
+  for (const i of options) {
+    if (time >= i.at(0)) return `${i.at(1).toFixed(dp)} ${i.at(2)}`;
+  }
 };

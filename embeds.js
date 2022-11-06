@@ -5,7 +5,8 @@ import {
   beanzInfo,
   tokenHelper,
   sortTraits,
-  roundPrice,
+  marketplace,
+  toRound,
   toPercent,
 } from "./helpers.js";
 
@@ -129,39 +130,44 @@ export const pairEmbed = async (azukiId, beanzId) => {
 };
 
 export const collectionEmbed = async (data, contract) => {
-  const [uniqueOwners, [dailySaleCount]] = await Promise.all([
+  const [[owners, mostHeld], dailySales] = await Promise.all([
     getOwners(
       `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
     ),
     getData(
-      `https://api.reservoir.tools/collections/daily-volumes/v1?id=${contract}&limit=1`
+      `https://api.reservoir.tools/collections/daily-volumes/v1?id=${contract}&limit=2`
     ),
   ]);
 
   const slug = data.slug;
   const size = Number(data.tokenCount);
-  const listed = Number(data.onSaleCount);
-  const verified =
+  const listings = Number(data.onSaleCount);
+  const isVerified =
     data.openseaVerificationStatus === "verified"
       ? "<a:verified:1036933625289134100>"
       : "";
-  const royalties = data.royalties?.bps ? data.royalties.bps : 0;
-  const dailySale = dailySaleCount?.sales_count
-    ? dailySaleCount.sales_count
-    : "-";
+  const royalty = data.royalties?.bps ?? 0;
+  const dailySale = dailySales.at(0)?.sales_count ?? 0;
+  let percentChange = "";
+  if (dailySales.length === 2) {
+    const today = dailySales.at(0).sales_count;
+    const yesterday = dailySales.at(1).sales_count;
+    const difference = today - yesterday;
+    const formula = (difference / yesterday) * 100;
+    percentChange =
+      difference >= 0
+        ? `(+${toRound(formula, 1)}%)`
+        : `(${toRound(formula, 1, true)}%)`;
+  }
   const website =
     data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
   const discord =
     data.discordUrl !== null ? `[Discord](${data.discordUrl}) | ` : "";
 
-  const volume = function (day) {
-    return `${Math.round(data.volume[day]).toLocaleString("en-US")}`;
-  };
-
   return [
     {
       color: 0x0267bc,
-      title: `${data.name} ${verified}`,
+      title: `${data.name} ${isVerified}`,
       thumbnail: {
         url: `${data.image}`,
       },
@@ -172,50 +178,63 @@ export const collectionEmbed = async (data, contract) => {
           inline: true,
         },
         {
-          name: "Active Listings",
-          value: `${listed.toLocaleString("en-US")} (${toPercent(
-            listed,
+          name: "Listings",
+          value: `${listings.toLocaleString("en-US")} (${toPercent(
+            listings,
             size
           )}%)`,
           inline: true,
         },
         {
-          name: "Royalties",
-          value: `${royalties / 100}%`,
+          name: "Royalty",
+          value: `${royalty / 100}%`,
           inline: true,
         },
         {
           name: "Floor Price",
-          value: `${url.eth}${roundPrice(
+          value: `${url.eth}${toRound(
             data.floorAsk.price.amount.native,
             2
-          )}`,
+          )}${marketplace(data.floorAsk.sourceDomain)}`,
           inline: true,
         },
         {
-          name: "Unique Owners",
-          value: `${uniqueOwners.toLocaleString("en-US")} (${toPercent(
-            uniqueOwners,
+          name: "Owners",
+          value: `${owners.toLocaleString("en-US")} (${toPercent(
+            owners,
             size
           )}%)`,
           inline: true,
         },
         {
-          name: "Daily Sale Count",
-          value: `${dailySale.toLocaleString("en-US")}`,
+          name: "Most Held",
+          value: `${mostHeld.toLocaleString("en-US")} (${toPercent(
+            mostHeld,
+            size
+          )}%)`,
           inline: true,
         },
         {
-          name: "Volume (1 / 7 / 30 / All-Time)",
-          value: `${url.eth}${volume("1day")} /${url.eth}${volume("7day")} /${
-            url.eth
-          }${volume("30day")} /${url.eth}${volume("allTime")}`,
-          inline: false,
+          name: "Total Volume",
+          value: `${url.eth}${Math.round(data.volume.allTime).toLocaleString(
+            "en-US"
+          )}`,
+          inline: true,
+        },
+        {
+          name: "Daily Sale(s)",
+          value: `${dailySale.toLocaleString("en-US")} ${percentChange}`,
+          inline: true,
+        },
+        {
+          name: "\u200b",
+          value: "\u200b",
+          inline: true,
         },
         {
           name: "Contract Address",
           value: `[${contract}](https://etherscan.io/address/${contract})`,
-          inline: false,
+          inline: true,
         },
         {
           name: "Collection Links",

@@ -17,15 +17,14 @@ const fetchData = async (url, options) => {
 
 export const getData = async function (url, options) {
   const data = await fetchData(url, options);
-  const updatedData = data.tokens ?? data.collections ?? data.transfers;
-  return updatedData;
+  return data.tokens ?? data.collections ?? data.transfers;
 };
 
 export const getOwners = async (url) => {
-  let uniqueOwners = 0;
+  let owners = 0;
   const data = await fetchData(url, options);
-  data.ownersDistribution.forEach((data) => (uniqueOwners += data.ownerCount));
-  return uniqueOwners;
+  data.ownersDistribution.forEach((data) => (owners += data.ownerCount));
+  return [owners, data.ownersDistribution.at(-1).tokenCount];
 };
 
 export const refreshToken = async (url, contract, id) => {
