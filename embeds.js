@@ -146,7 +146,7 @@ export const collectionEmbed = async (data, contract) => {
     data.openseaVerificationStatus === "verified"
       ? "<a:verified:1036933625289134100>"
       : "";
-  const royalty = data.royalties?.bps ?? 0;
+  const royalties = data.royalties?.bps ?? 0;
   const dailySale = dailySales.at(0)?.sales_count ?? 0;
   let percentChange = "";
   if (dailySales.length === 2) {
@@ -186,8 +186,8 @@ export const collectionEmbed = async (data, contract) => {
           inline: true,
         },
         {
-          name: "Royalty",
-          value: `${royalty / 100}%`,
+          name: "Royalties",
+          value: `${royalties / 100}%`,
           inline: true,
         },
         {

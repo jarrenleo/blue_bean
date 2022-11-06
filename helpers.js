@@ -110,7 +110,7 @@ export const sortTraits = (traits, size) => {
   return traitFields.concat(paddingFields);
 };
 
-export const marketplace = (source = "") => {
+export const marketplace = (source) => {
   const options = [
     ["opensea.io", " | <:OpenSeaLogo:862443378461638697>"],
     ["looksrare.org", " | <:looksblack:926045572903870494>"],
@@ -120,6 +120,7 @@ export const marketplace = (source = "") => {
   for (const i of options) {
     if (source === i.at(0)) return i.at(1);
   }
+  return "";
 };
 
 export const toRound = (price, dp, strict = false) => {
