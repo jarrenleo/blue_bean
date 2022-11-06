@@ -15,7 +15,7 @@ const fetchData = async (url, options) => {
   return await response.json();
 };
 
-export const getData = async function (url, options) {
+export const getData = async (url, options) => {
   const data = await fetchData(url, options);
   return data.tokens ?? data.collections ?? data.transfers;
 };
