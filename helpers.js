@@ -48,8 +48,8 @@ export const tokenHelper = async (contract, id, name) => {
         : "-";
 
     let saleCount = 0;
-    const filter = new Set();
 
+    const filter = new Set();
     transfers.forEach((transfer) => {
       if (transfer.price) saleCount += 1;
       filter.add(transfer.to);

@@ -12,7 +12,7 @@ import {
 
 export const azukiEmbed = async (id, interaction) => {
   const [token, isFlagged, links, footer] = await tokenHelper(
-    beanzInfo.contract,
+    azukiInfo.contract,
     id
   );
 
