@@ -23,9 +23,12 @@ export const beanzInfo = {
 
 export const tokenHelper = async (contract, id, name) => {
   try {
-    const [[tokenData], transfers] = await Promise.all([
+    const [[tokenData], [sales], transfers] = await Promise.all([
       getData(
         `https://api.reservoir.tools/tokens/v5?tokens=${contract}:${id}&includeAttributes=true`
+      ),
+      getData(
+        `https://api.reservoir.tools/sales/v4?token=${contract}:${id}&limit=1`
       ),
       getData(
         `https://api.reservoir.tools/transfers/v2?token=${contract}:${id}`
@@ -38,7 +41,7 @@ export const tokenHelper = async (contract, id, name) => {
 
     const isFlagged = token.isFlagged ? "⚠️" : "";
     const links = `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`;
-    const footer = sortFooter(tokenData, transfers);
+    const footer = sortFooter(tokenData, sales, transfers);
 
     return [token, isFlagged, links, footer];
   } catch (error) {
@@ -119,7 +122,7 @@ const sortTime = (time) => {
   }
 };
 
-const sortFooter = (tokenData, transfers) => {
+const sortFooter = (tokenData, sales, transfers) => {
   const rarity =
     tokenData.token.rarityRank !== null
       ? `#${tokenData.token.rarityRank}`
@@ -128,17 +131,13 @@ const sortFooter = (tokenData, transfers) => {
     tokenData.market.floorAsk.price !== null
       ? `⟠ ${toRound(tokenData.market.floorAsk.price.amount.native, 2)}`
       : "-";
+  const lastSale = sales ? `⟠ ${toRound(sales.price.amount.native, 2)}` : "-";
 
-  let lastSale = "-";
   let saleCount = 0;
   const filter = new Set();
 
   transfers.forEach((transfer) => {
-    if (transfer.price) {
-      if (typeof lastSale !== "number")
-        lastSale = `⟠ ${toRound(transfer.price, 2)}`;
-      saleCount += 1;
-    }
+    if (transfer.price) saleCount += 1;
     filter.add(transfer.to);
   });
 

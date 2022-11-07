@@ -17,7 +17,7 @@ const fetchData = async (url, options) => {
 
 export const getData = async (url, options) => {
   const data = await fetchData(url, options);
-  return data.tokens ?? data.collections ?? data.transfers;
+  return data.tokens ?? data.collections ?? data.sales ?? data.transfers;
 };
 
 export const getOwners = async (url) => {
