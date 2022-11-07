@@ -37,31 +37,8 @@ export const tokenHelper = async (contract, id, name) => {
       throw new Error(`${name} #${id} does not exist in the collection.`);
 
     const isFlagged = token.isFlagged ? "⚠️" : "";
-    const rarity = token.rarityRank !== null ? `#${token.rarityRank}` : "-";
-    const list =
-      tokenData.market.floorAsk.price !== null
-        ? `⟠ ${toRound(tokenData.market.floorAsk.price.amount.native, 2)}`
-        : "-";
-    const lastSale =
-      token.lastSell.value !== null
-        ? `⟠ ${toRound(token.lastSell.value, 2)}`
-        : "-";
-
-    let saleCount = 0;
-
-    const filter = new Set();
-    transfers.forEach((transfer) => {
-      if (transfer.price) saleCount += 1;
-      filter.add(transfer.to);
-    });
-    const walletsHeld = filter.size;
-
-    const time = Date.now() - transfers.at(0).timestamp * 1000;
-    const lastHeld = sortTime(time);
-
     const links = `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`;
-
-    const footer = `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`;
+    const footer = sortFooter(tokenData, transfers);
 
     return [token, isFlagged, links, footer];
   } catch (error) {
@@ -140,4 +117,34 @@ const sortTime = (time) => {
   for (const i of options) {
     if (time >= i.at(0)) return `${i.at(1).toFixed(dp)} ${i.at(2)}`;
   }
+};
+
+const sortFooter = (tokenData, transfers) => {
+  const rarity =
+    tokenData.token.rarityRank !== null
+      ? `#${tokenData.token.rarityRank}`
+      : "-";
+  const list =
+    tokenData.market.floorAsk.price !== null
+      ? `⟠ ${toRound(tokenData.market.floorAsk.price.amount.native, 2)}`
+      : "-";
+
+  let lastSale = "-";
+  let saleCount = 0;
+  const filter = new Set();
+
+  transfers.forEach((transfer) => {
+    if (transfer.price) {
+      if (typeof lastSale !== "number")
+        lastSale = `⟠ ${toRound(transfer.price, 2)}`;
+      saleCount += 1;
+    }
+    filter.add(transfer.to);
+  });
+
+  const walletsHeld = filter.size;
+  const time = Date.now() - transfers.at(0).timestamp * 1000;
+  const lastHeld = sortTime(time);
+
+  return `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`;
 };
