@@ -147,3 +147,22 @@ const sortFooter = (tokenData, sales, transfers) => {
 
   return `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`;
 };
+
+export const randomHandles = (handleArray) => {
+  const tweetCharLimit = 280;
+  var handleArray = [...handleArray]
+  var randomIndex = Math.floor(Math.random() * handleArray.length);
+  var tmpHandle = handleArray[randomIndex]
+  var handles = "@" + tmpHandle
+  handleArray.splice(randomIndex, 1)
+
+  while (true) {
+    if (handleArray.length == 0) break;
+    randomIndex = Math.floor(Math.random() * handleArray.length);
+    tmpHandle = handleArray[randomIndex]
+    if (handles.length + tmpHandle.length + 2 > tweetCharLimit) break;
+    handles = handles + " @" + tmpHandle
+    handleArray.splice(randomIndex, 1)
+  }
+  return "```\n" + handles + "\n```"
+}

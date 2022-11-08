@@ -7,11 +7,14 @@ import {
   beanzInteraction,
   pairInteraction,
   findInteraction,
+  villageInteraction,
 } from "./interactions.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
 const clientId = process.env.CLIENT_ID;
+const handleArray = process.env.TWITTER_HANDLES.split(',');
+
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -59,8 +62,9 @@ client.on("interactionCreate", async (interaction) => {
 
     const id =
       interaction.commandName &&
-      interaction.commandName !== "random" &&
-      interaction.commandName !== "pair"
+        interaction.commandName !== "random" &&
+        interaction.commandName !== "pair" &&
+        interaction.commandName !== "village"
         ? interaction.options.get("id")?.value
         : null;
 
@@ -94,6 +98,10 @@ client.on("interactionCreate", async (interaction) => {
         ? collectionData.find((result) => result.name === name)
         : null;
       await findInteraction(interaction, data, name, id);
+    }
+
+    if (interaction.commandName === "village") {
+      await villageInteraction(interaction, handleArray);
     }
   } catch (error) {
     console.log(error);
