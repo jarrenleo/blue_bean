@@ -150,19 +150,21 @@ const sortFooter = (tokenData, sales, transfers) => {
 
 export const randomHandles = (handleArray) => {
   const tweetCharLimit = 280;
-  var handleArray = [...handleArray]
-  var randomIndex = Math.floor(Math.random() * handleArray.length);
-  var tmpHandle = handleArray[randomIndex]
-  var handles = "@" + tmpHandle
+  var arrLen = handleArray.length;
+  var handleArray = [...handleArray];
+  var randomIndex = Math.floor(Math.random() * arrLen);
+  var tmpHandle = handleArray[randomIndex];
+  var handles = "@" + tmpHandle;
   handleArray.splice(randomIndex, 1)
 
   while (true) {
-    if (handleArray.length == 0) break;
-    randomIndex = Math.floor(Math.random() * handleArray.length);
-    tmpHandle = handleArray[randomIndex]
+    if (arrLen == 0) break;
+    randomIndex = Math.floor(Math.random() * arrLen);
+    tmpHandle = handleArray[randomIndex];
     if (handles.length + tmpHandle.length + 2 > tweetCharLimit) break;
-    handles = handles + " @" + tmpHandle
-    handleArray.splice(randomIndex, 1)
+    handles = handles + " @" + tmpHandle;
+    handleArray.splice(randomIndex, 1);
+    arrLen -= 1
   }
   return "```\n" + handles + "\n```"
 }
