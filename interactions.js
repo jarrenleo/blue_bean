@@ -7,7 +7,6 @@ import {
   tokenEmbed,
 } from "./embeds.js";
 import { azukiButton, beanzButton } from "./buttons.js";
-import { randomHandles } from "./helpers.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
 const beanzIdRange = (id) => id >= 0 && id < 19950;
@@ -88,16 +87,19 @@ export const findInteraction = async (interaction, data, name, id) => {
   }
 };
 
-export const villageInteraction = async (interaction, handleArray) => {
-  try {
-    if (handleArray.length === 0)
-      throw new Error(
-        "Village Tag Twitter handles not loaded into bot."
-      );
-    await interaction.editReply(randomHandles(handleArray));
-  } catch (error) {
-    await interaction.editReply({
-      content: `${error.message}`,
-    });
+export const villageInteraction = async (interaction, handles) => {
+  const tweetCharLimit = 280;
+  let handlesLength = handles.replaceAll(",", " ").length;
+  const handlesArray = handles.split(",");
+
+  while (handlesLength >= tweetCharLimit) {
+    const randomIndex = Math.floor(Math.random() * handlesArray.length);
+
+    handlesLength -= handlesArray.at(randomIndex).length + 1;
+    handlesArray.splice(randomIndex, 1);
   }
-}
+
+  await interaction.editReply({
+    content: "```\n" + handlesArray.join(" ") + "\n```",
+  });
+};

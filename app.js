@@ -13,8 +13,7 @@ import {
 config();
 const discordToken = process.env.DISCORD_TOKEN;
 const clientId = process.env.CLIENT_ID;
-const handleArray = process.env.TWITTER_HANDLES.split(',');
-
+const handles = process.env.TWITTER_HANDLES;
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -62,9 +61,9 @@ client.on("interactionCreate", async (interaction) => {
 
     const id =
       interaction.commandName &&
-        interaction.commandName !== "random" &&
-        interaction.commandName !== "pair" &&
-        interaction.commandName !== "village"
+      interaction.commandName !== "random" &&
+      interaction.commandName !== "pair" &&
+      interaction.commandName !== "village"
         ? interaction.options.get("id")?.value
         : null;
 
@@ -100,9 +99,8 @@ client.on("interactionCreate", async (interaction) => {
       await findInteraction(interaction, data, name, id);
     }
 
-    if (interaction.commandName === "village") {
-      await villageInteraction(interaction, handleArray);
-    }
+    if (interaction.commandName === "village")
+      await villageInteraction(interaction, handles);
   } catch (error) {
     console.log(error);
   }

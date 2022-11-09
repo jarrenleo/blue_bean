@@ -67,6 +67,6 @@ export const commands = [
   },
   {
     name: "village",
-    description: "Generate a Village Tag",
-  }
+    description: "Generate village tag",
+  },
 ];
