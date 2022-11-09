@@ -87,10 +87,12 @@ export const findInteraction = async (interaction, data, name, id) => {
   }
 };
 
-export const villageInteraction = async (interaction, handles) => {
+export const villageInteraction = async (
+  interaction,
+  handlesArray,
+  handlesLength
+) => {
   const tweetCharLimit = 280;
-  let handlesLength = handles.replaceAll(",", " ").length;
-  const handlesArray = handles.split(",");
 
   while (handlesLength >= tweetCharLimit) {
     const randomIndex = Math.floor(Math.random() * handlesArray.length);
