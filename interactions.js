@@ -7,6 +7,7 @@ import {
   tokenEmbed,
 } from "./embeds.js";
 import { azukiButton, beanzButton } from "./buttons.js";
+import { shuffle } from "./helpers.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
 const beanzIdRange = (id) => id >= 0 && id < 19950;
@@ -15,12 +16,12 @@ export const azukiInteraction = async (interaction, id) => {
   if (interaction.type === 2) {
     azukiIdRange(id)
       ? await interaction.editReply({
-          embeds: await azukiEmbed(id, "azuki"),
-          components: azukiButton(),
-        })
+        embeds: await azukiEmbed(id, "azuki"),
+        components: azukiButton(),
+      })
       : await interaction.editReply({
-          content: `Azuki #${id} does not exist in the collection.`,
-        });
+        content: `Azuki #${id} does not exist in the collection.`,
+      });
   }
 
   if (interaction.type === 3) {
@@ -35,12 +36,12 @@ export const beanzInteraction = async (interaction, id) => {
   if (interaction.type === 2) {
     beanzIdRange(id)
       ? await interaction.editReply({
-          embeds: await beanzEmbed(id, "beanz"),
-          components: beanzButton(),
-        })
+        embeds: await beanzEmbed(id, "beanz"),
+        components: beanzButton(),
+      })
       : await interaction.editReply({
-          content: `Beanz #${id} does not exist in the collection.`,
-        });
+        content: `Beanz #${id} does not exist in the collection.`,
+      });
   }
 
   if (interaction.type === 3) {
@@ -55,8 +56,8 @@ export const pairInteraction = async (interaction, azukiId, beanzId) => {
   azukiIdRange(azukiId) && beanzIdRange(beanzId)
     ? await interaction.editReply({ embeds: await pairEmbed(azukiId, beanzId) })
     : await interaction.editReply({
-        content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
-      });
+      content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
+    });
 };
 
 export const findInteraction = async (interaction, data, name, id) => {
@@ -93,13 +94,7 @@ export const villageInteraction = async (
 ) => {
   const tweetCharLimit = 280;
 
-  let currentIndex = handlesArray.length, randomIndex;
-  while (currentIndex != 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex)
-    currentIndex--;
-    [handlesArray[currentIndex], handlesArray[randomIndex]] = [handlesArray[randomIndex], handlesArray[currentIndex]];
-  }
-
+  shuffle(handlesArray)
   let handles = handlesArray[0], tmpHandle;
   for (let i = 1; i < handlesArray.length; i++) {
     tmpHandle = handlesArray[i];
