@@ -101,8 +101,7 @@ client.on("interactionCreate", async (interaction) => {
 
     if (interaction.commandName === "village") {
       const handlesArray = handles.split(",");
-      let handlesLength = handles.replaceAll(",", " ").length;
-      await villageInteraction(interaction, handlesArray, handlesLength);
+      await villageInteraction(interaction, handlesArray);
     }
   } catch (error) {
     console.log(error);
