@@ -105,6 +105,14 @@ export const toPercent = (part, whole) => {
   return toRound((part / whole) * 100, 1);
 };
 
+export const shuffle = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const randIndex = Math.floor(Math.random() * (i + 1));
+    [array[i], array[randIndex]] = [array[randIndex], array[i]];
+  }
+  return array;
+};
+
 const sortTime = (time) => {
   const days = time / 86400000;
   const dp = time < 31556952000 ? 0 : 1;
@@ -147,11 +155,3 @@ const sortFooter = (tokenData, sales, transfers) => {
 
   return `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`;
 };
-
-export const shuffle = (array) => {
-  let randIndex;
-  for (let i = array.length - 1; i > 0; i--) {
-    randIndex = Math.floor(Math.random() * (i + 1));
-    [array[i], array[randIndex]] = [array[randIndex], array[i]];
-  }
-}

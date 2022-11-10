@@ -16,12 +16,12 @@ export const azukiInteraction = async (interaction, id) => {
   if (interaction.type === 2) {
     azukiIdRange(id)
       ? await interaction.editReply({
-        embeds: await azukiEmbed(id, "azuki"),
-        components: azukiButton(),
-      })
+          embeds: await azukiEmbed(id, "azuki"),
+          components: azukiButton(),
+        })
       : await interaction.editReply({
-        content: `Azuki #${id} does not exist in the collection.`,
-      });
+          content: `Azuki #${id} does not exist in the collection.`,
+        });
   }
 
   if (interaction.type === 3) {
@@ -36,12 +36,12 @@ export const beanzInteraction = async (interaction, id) => {
   if (interaction.type === 2) {
     beanzIdRange(id)
       ? await interaction.editReply({
-        embeds: await beanzEmbed(id, "beanz"),
-        components: beanzButton(),
-      })
+          embeds: await beanzEmbed(id, "beanz"),
+          components: beanzButton(),
+        })
       : await interaction.editReply({
-        content: `Beanz #${id} does not exist in the collection.`,
-      });
+          content: `Beanz #${id} does not exist in the collection.`,
+        });
   }
 
   if (interaction.type === 3) {
@@ -56,8 +56,8 @@ export const pairInteraction = async (interaction, azukiId, beanzId) => {
   azukiIdRange(azukiId) && beanzIdRange(beanzId)
     ? await interaction.editReply({ embeds: await pairEmbed(azukiId, beanzId) })
     : await interaction.editReply({
-      content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
-    });
+        content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
+      });
 };
 
 export const findInteraction = async (interaction, data, name, id) => {
@@ -88,18 +88,17 @@ export const findInteraction = async (interaction, data, name, id) => {
   }
 };
 
-export const villageInteraction = async (
-  interaction,
-  handlesArray
-) => {
+export const villageInteraction = async (interaction, twitterHandles) => {
   const tweetCharLimit = 280;
+  const handlesArray = shuffle(twitterHandles.split(","));
+  let handles = handlesArray[0],
+    tempHandle;
 
-  shuffle(handlesArray)
-  let handles = handlesArray[0], tmpHandle;
   for (let i = 1; i < handlesArray.length; i++) {
-    tmpHandle = handlesArray[i];
-    if (handles.length + tmpHandle.length + 1 > tweetCharLimit) break;
-    handles += " " + tmpHandle
+    tempHandle = handlesArray[i];
+
+    if (handles.length + tempHandle.length + 1 > tweetCharLimit) break;
+    handles += " " + tempHandle;
   }
 
   await interaction.editReply({
