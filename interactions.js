@@ -89,19 +89,25 @@ export const findInteraction = async (interaction, data, name, id) => {
 
 export const villageInteraction = async (
   interaction,
-  handlesArray,
-  handlesLength
+  handlesArray
 ) => {
   const tweetCharLimit = 280;
 
-  while (handlesLength >= tweetCharLimit) {
-    const randomIndex = Math.floor(Math.random() * handlesArray.length);
+  let currentIndex = handlesArray.length, randomIndex;
+  while (currentIndex != 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex--;
+    [handlesArray[currentIndex], handlesArray[randomIndex]] = [handlesArray[randomIndex], handlesArray[currentIndex]];
+  }
 
-    handlesLength -= handlesArray.at(randomIndex).length + 1;
-    handlesArray.splice(randomIndex, 1);
+  let handles = handlesArray[0], tmpHandle;
+  for (let i = 1; i < handlesArray.length; i++) {
+    tmpHandle = handlesArray[i];
+    if (handles.length + tmpHandle.length + 1 > tweetCharLimit) break;
+    handles += " " + tmpHandle
   }
 
   await interaction.editReply({
-    content: "```\n" + handlesArray.join(" ") + "\n```",
+    content: "```\n" + handles + "\n```",
   });
 };
