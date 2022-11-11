@@ -91,8 +91,8 @@ export const findInteraction = async (interaction, data, name, id) => {
 export const villageInteraction = async (interaction, twitterHandles) => {
   const tweetCharLimit = 280;
   const handlesArray = shuffle(twitterHandles.split(","));
-  let handles = handlesArray[0],
-    tempHandle;
+  let tempHandle,
+    handles = handlesArray[0];
 
   for (let i = 1; i < handlesArray.length; i++) {
     tempHandle = handlesArray[i];
