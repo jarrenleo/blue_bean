@@ -231,7 +231,7 @@ export const collectionEmbed = async (data, contract) => {
         },
         {
           name: "Tools",
-          value: `[AlphaSharks](https://vue.alphasharks.io/collection/${contract}) | [NFTFlip](https://review.nftflip.ai/collection/${contract}) | [NFTNerds](https://nftnerds.ai/collection/${contract})`,
+          value: `[AlphaSharks](https://vue.alphasharks.io/collection/${contract}) | [NFTFlip](https://review.nftflip.ai/collection/${contract}) | [NFTNerds](https://nftnerds.ai/collection/${contract}) | [Reservoir](https://www.reservoir.market/collections/${contract})`,
         },
       ],
     },
