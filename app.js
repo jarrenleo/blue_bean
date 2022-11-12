@@ -114,23 +114,30 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isButton()) return;
     if (interaction.customId) await interaction.deferUpdate();
 
+    if (interaction.customId === "village" || interaction.customId === "reroll") {
+      await villageInteraction(interaction, twitterHandles);
+      return
+    }
+
     const [{ data }] = interaction.message.embeds;
     const name = data.author.name;
     const defaultId = name.split(" ").at(1).slice(1);
 
-    if (
-      interaction.customId !== "beanz" &&
-      interaction.customId !== "selfie" &&
-      interaction.customId !== "pair"
-    )
-      await azukiInteraction(interaction, defaultId);
-
-    if (interaction.customId === "beanz" || interaction.customId === "selfie")
-      await beanzInteraction(interaction, defaultId);
-
-    if (interaction.customId === "pair") {
-      const secondId = name.split(" ").at(-1).slice(1);
-      await pairInteraction(interaction, defaultId, secondId);
+    switch (interaction.customId) {
+      case "azuki":
+      case "blue":
+      case "red":
+      case "wallpaper":
+        await azukiInteraction(interaction, defaultId);
+        return
+      case "beanz":
+      case "selfie":
+        await beanzInteraction(interaction, defaultId);
+        return
+      case "pair":
+        const secondId = name.split(" ").at(-1).slice(1);
+        await pairInteraction(interaction, defaultId, secondId);
+        return
     }
   } catch (error) {
     console.log(error);
