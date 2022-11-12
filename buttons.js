@@ -42,3 +42,12 @@ export const pairButton = () => [
       .setStyle(ButtonStyle.Primary)
   ),
 ];
+
+export const villageButton = () => [
+  new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("reroll")
+      .setLabel("Reroll")
+      .setStyle(ButtonStyle.Primary)
+  ),
+]

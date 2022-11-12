@@ -6,7 +6,7 @@ import {
   collectionEmbed,
   tokenEmbed,
 } from "./embeds.js";
-import { azukiButton, beanzButton, pairButton } from "./buttons.js";
+import { azukiButton, beanzButton, pairButton, villageButton } from "./buttons.js";
 import { params, shuffle } from "./helpers.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
@@ -108,5 +108,6 @@ export const villageInteraction = async (interaction, twitterHandles) => {
 
   await interaction.editReply({
     content: "```\n" + handles + "\n```",
+    components: villageButton(),
   });
 };
