@@ -9,6 +9,7 @@ import {
   findInteraction,
   villageInteraction,
 } from "./interactions.js";
+import { params } from "./helpers.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
@@ -37,11 +38,13 @@ client.on("interactionCreate", async (interaction) => {
     if (!interaction.isAutocomplete()) return;
 
     if (interaction.commandName === "find") {
-      const focusedText = interaction.options.getFocused();
+      const query = interaction.options.getFocused();
 
-      if (focusedText) {
+      if (query) {
         collectionData = await getData(
-          `https://api.reservoir.tools/collections/v5?name=${focusedText}&limit=5`
+          `https://api.reservoir.tools/collections/v5?${params(
+            query
+          )}=${query}&limit=5`
         );
         const choices = collectionData.map((result) => result.name);
         await interaction.respond(
@@ -92,7 +95,7 @@ client.on("interactionCreate", async (interaction) => {
     }
 
     if (interaction.commandName === "find") {
-      const name = interaction.options.get("name").value;
+      const name = interaction.options.get("query").value;
       const data = collectionData
         ? collectionData.find((result) => result.name === name)
         : null;

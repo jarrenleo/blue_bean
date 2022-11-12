@@ -95,6 +95,10 @@ export const marketplace = (source) => {
   return "";
 };
 
+export const params = (query) => {
+  return query.length !== 42 ? "name" : "contract";
+};
+
 export const toRound = (price, dp, strict = false) => {
   if (Number.isInteger(price)) return price;
   if (price < 1 && !strict) dp += 1;

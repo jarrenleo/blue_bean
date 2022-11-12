@@ -7,7 +7,7 @@ import {
   tokenEmbed,
 } from "./embeds.js";
 import { azukiButton, beanzButton } from "./buttons.js";
-import { shuffle } from "./helpers.js";
+import { params, shuffle } from "./helpers.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
 const beanzIdRange = (id) => id >= 0 && id < 19950;
@@ -60,11 +60,13 @@ export const pairInteraction = async (interaction, azukiId, beanzId) => {
       });
 };
 
-export const findInteraction = async (interaction, data, name, id) => {
+export const findInteraction = async (interaction, data, query, id) => {
   try {
     if (!data)
       [data] = await getData(
-        `https://api.reservoir.tools/collections/v5?name=${name}&limit=1`
+        `https://api.reservoir.tools/collections/v5?${params(
+          query
+        )}=${query}&limit=1`
       );
 
     const contract = data?.primaryContract;

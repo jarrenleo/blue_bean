@@ -50,8 +50,8 @@ export const commands = [
     description: "Find an NFT collection",
     options: [
       {
-        name: "name",
-        description: "Type in the collection name you wish to find",
+        name: "query",
+        description: "Type in the collection name or contract you wish to find",
         type: 3,
         required: true,
         autocomplete: true,
