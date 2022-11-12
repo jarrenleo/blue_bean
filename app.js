@@ -116,11 +116,22 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     const [{ data }] = interaction.message.embeds;
     const name = data.author.name;
-    const id = name.split(" ").at(1).slice(1);
+    const defaultId = name.split(" ").at(1).slice(1);
 
-    interaction.customId !== "beanz" && interaction.customId !== "selfie"
-      ? await azukiInteraction(interaction, id)
-      : await beanzInteraction(interaction, id);
+    if (
+      interaction.customId !== "beanz" &&
+      interaction.customId !== "selfie" &&
+      interaction.customId !== "pair"
+    )
+      await azukiInteraction(interaction, defaultId);
+
+    if (interaction.customId === "beanz" || interaction.customId === "selfie")
+      await beanzInteraction(interaction, defaultId);
+
+    if (interaction.customId === "pair") {
+      const secondId = name.split(" ").at(-1).slice(1);
+      await pairInteraction(interaction, defaultId, secondId);
+    }
   } catch (error) {
     console.log(error);
   }

@@ -6,7 +6,7 @@ import {
   collectionEmbed,
   tokenEmbed,
 } from "./embeds.js";
-import { azukiButton, beanzButton } from "./buttons.js";
+import { azukiButton, beanzButton, pairButton } from "./buttons.js";
 import { params, shuffle } from "./helpers.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
@@ -54,7 +54,10 @@ export const beanzInteraction = async (interaction, id) => {
 
 export const pairInteraction = async (interaction, azukiId, beanzId) => {
   azukiIdRange(azukiId) && beanzIdRange(beanzId)
-    ? await interaction.editReply({ embeds: await pairEmbed(azukiId, beanzId) })
+    ? await interaction.editReply({
+        embeds: await pairEmbed(azukiId, beanzId),
+        components: pairButton(),
+      })
     : await interaction.editReply({
         content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
       });

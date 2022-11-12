@@ -33,3 +33,12 @@ export const beanzButton = () => [
       .setStyle(ButtonStyle.Primary)
   ),
 ];
+
+export const pairButton = () => [
+  new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("pair")
+      .setLabel("⟳")
+      .setStyle(ButtonStyle.Primary)
+  ),
+];
