@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
-export const azukiButton = () => [
+export const azukiButton = [
   new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId("azuki")
@@ -21,7 +21,7 @@ export const azukiButton = () => [
   ),
 ];
 
-export const beanzButton = () => [
+export const beanzButton = [
   new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId("beanz")
@@ -34,20 +34,11 @@ export const beanzButton = () => [
   ),
 ];
 
-export const pairButton = () => [
+export const updateButton = [
   new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId("pair")
+      .setCustomId("update")
       .setLabel("⟳")
       .setStyle(ButtonStyle.Primary)
   ),
 ];
-
-export const villageButton = () => [
-  new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId("reroll")
-      .setLabel("Reroll")
-      .setStyle(ButtonStyle.Primary)
-  ),
-]

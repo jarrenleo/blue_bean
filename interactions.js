@@ -6,7 +6,7 @@ import {
   collectionEmbed,
   tokenEmbed,
 } from "./embeds.js";
-import { azukiButton, beanzButton, pairButton, villageButton } from "./buttons.js";
+import { azukiButton, beanzButton, updateButton } from "./buttons.js";
 import { params, shuffle } from "./helpers.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
@@ -17,7 +17,7 @@ export const azukiInteraction = async (interaction, id) => {
     azukiIdRange(id)
       ? await interaction.editReply({
           embeds: await azukiEmbed(id, "azuki"),
-          components: azukiButton(),
+          components: azukiButton,
         })
       : await interaction.editReply({
           content: `Azuki #${id} does not exist in the collection.`,
@@ -27,7 +27,7 @@ export const azukiInteraction = async (interaction, id) => {
   if (interaction.type === 3) {
     await interaction.editReply({
       embeds: await azukiEmbed(id, interaction.customId),
-      components: azukiButton(),
+      components: azukiButton,
     });
   }
 };
@@ -37,7 +37,7 @@ export const beanzInteraction = async (interaction, id) => {
     beanzIdRange(id)
       ? await interaction.editReply({
           embeds: await beanzEmbed(id, "beanz"),
-          components: beanzButton(),
+          components: beanzButton,
         })
       : await interaction.editReply({
           content: `Beanz #${id} does not exist in the collection.`,
@@ -47,7 +47,7 @@ export const beanzInteraction = async (interaction, id) => {
   if (interaction.type === 3) {
     await interaction.editReply({
       embeds: await beanzEmbed(id, interaction.customId),
-      components: beanzButton(),
+      components: beanzButton,
     });
   }
 };
@@ -56,7 +56,7 @@ export const pairInteraction = async (interaction, azukiId, beanzId) => {
   azukiIdRange(azukiId) && beanzIdRange(beanzId)
     ? await interaction.editReply({
         embeds: await pairEmbed(azukiId, beanzId),
-        components: pairButton(),
+        components: updateButton,
       })
     : await interaction.editReply({
         content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
@@ -108,6 +108,6 @@ export const villageInteraction = async (interaction, twitterHandles) => {
 
   await interaction.editReply({
     content: "```\n" + handles + "\n```",
-    components: villageButton(),
+    components: updateButton,
   });
 };
