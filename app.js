@@ -61,12 +61,7 @@ client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
     if (interaction.commandName) await interaction.deferReply();
 
-    const id =
-      interaction.commandName === "azuki" ||
-      interaction.commandName === "beanz" ||
-      interaction.commandName === "find"
-        ? interaction.options.get("id").value
-        : null;
+    const id = interaction.options.get("id")?.value ?? null;
 
     switch (interaction.commandName) {
       case "azuki":

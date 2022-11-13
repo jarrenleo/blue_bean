@@ -79,7 +79,7 @@ export const findInteraction = async (interaction, data, query, id) => {
       );
 
     const embedChoice =
-      id === undefined
+      id === null
         ? collectionEmbed(data, contract)
         : tokenEmbed(data, id, contract);
 
