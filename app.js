@@ -137,13 +137,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.on(Events.MessageCreate, function (message) {
   const options = [
-    ["candice", "Candice nuts fit in yo mouth"],
+    ["candice", "Candice dick fit in yo mouth"],
+    ["dragon", "Dragon deez nuts across yo face"],
+    ["deez", "Deez nuts in yo mouth lmao"],
     ["kombucha", "Kombucha mouth on deez nuts"],
     ["landon", "Landon deez nuts"],
+    ["rhydon", "Rhydon this cock"],
     ["sawcon", "Sawcon deez nuts"],
     ["space", "Space for deez nuts in yo mouth"],
     ["watch", "Watch me drag deez nuts across your face"],
-    ["wendys", "Wendys nuts hit you in the face"],
+    ["wendys", "Wendys balls goes to your mouth"],
     ["wilma", "Wilma nuts fit in yo mouth"],
   ];
 
