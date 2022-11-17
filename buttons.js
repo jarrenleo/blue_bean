@@ -7,6 +7,12 @@ export const azukiButton = [
       .setLabel("Azuki")
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
+      .setCustomId("profile")
+      .setLabel("Collector Profile")
+      .setStyle(ButtonStyle.Primary)
+  ),
+  new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
       .setCustomId("blue")
       .setLabel("Blue Jacket")
       .setStyle(ButtonStyle.Primary),
@@ -15,8 +21,8 @@ export const azukiButton = [
       .setLabel("Red Jacket")
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
-      .setCustomId("wallpaper")
-      .setLabel("Wallpaper")
+      .setCustomId("racer")
+      .setLabel("Racer Jacket")
       .setStyle(ButtonStyle.Primary)
   ),
 ];

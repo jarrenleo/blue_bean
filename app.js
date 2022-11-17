@@ -17,7 +17,11 @@ const clientId = process.env.CLIENT_ID;
 const twitterHandles = process.env.TWITTER_HANDLES;
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
 });
 client.login(discordToken);
 
@@ -111,9 +115,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       switch (interaction.customId) {
         case "azuki":
+        case "profile":
         case "blue":
         case "red":
-        case "wallpaper":
+        case "racer":
           await azukiInteraction(interaction, id);
           break;
         case "beanz":
@@ -127,5 +132,36 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } else await villageInteraction(interaction, twitterHandles);
   } catch (error) {
     console.log(error);
+  }
+});
+
+client.on(Events.MessageCreate, function (message) {
+  const options = [
+    ["candice", "Candice nuts fit in yo mouth"],
+    ["kombucha", "Kombucha mouth on deez nuts"],
+    ["landon", "Landon deez nuts"],
+    ["sawcon", "Sawcon deez nuts"],
+    ["space", "Space for deez nuts in yo mouth"],
+    ["watch", "Watch me drag deez nuts across your face"],
+    ["wendys", "Wendys nuts hit you in the face"],
+    ["wilma", "Wilma nuts fit in yo mouth"],
+  ];
+
+  for (const i of options) {
+    const whitelist = () => {
+      if (
+        message.content.toLowerCase().includes(`${i.at(0)}`) &&
+        message.author.id !== "1030118282101014630"
+      )
+        return true;
+      return false;
+    };
+    if (!message.mentions.repliedUser && whitelist())
+      message.channel.send(`${i.at(1)}`);
+
+    if (message.mentions.repliedUser && whitelist())
+      message.channel.send({
+        content: `<@${message.mentions.repliedUser.id}> ${i.at(1)}`,
+      });
   }
 });

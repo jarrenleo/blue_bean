@@ -1,7 +1,7 @@
 {
-  "name": "lycoris-public",
-  "version": "1.4.8",
-  "description": "Discord bot to view NFTs",
+  "name": "blue-bean-public",
+  "version": "1.4.9",
+  "description": "Discord bot for bluebeanfam",
   "main": "app.js",
   "type": "module",
   "scripts": {
