@@ -17,11 +17,7 @@ const clientId = process.env.CLIENT_ID;
 const twitterHandles = process.env.TWITTER_HANDLES;
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
+  intents: [GatewayIntentBits.Guilds],
 });
 client.login(discordToken);
 
