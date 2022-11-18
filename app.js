@@ -110,14 +110,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
     const commandName = interaction.message.interaction.commandName;
 
     if (commandName !== "village") {
-      const id = getId(interaction.message.embeds);
+      const embed = interaction.message.embeds;
+      const id = getId(embed);
+
       switch (interaction.customId) {
         case "beanz":
         case "selfie":
           await beanzInteraction(interaction, id);
           break;
         case "update":
-          const id2 = name.split(" ").at(-1).slice(1);
+          const id2 = getId(embed, -1);
           await pairInteraction(interaction, id, id2);
       }
     } else await villageInteraction(interaction, twitterHandles);

@@ -99,10 +99,10 @@ export const params = (query) => {
   return query.length !== 42 ? "name" : "contract";
 };
 
-export const getId = (embed) => {
+export const getId = (embed, index = 1) => {
   const [{ data }] = embed;
   const name = data.author.name;
-  return name.split(" ").at(1).slice(1);
+  return name.split(" ").at(index).slice(1);
 };
 
 export const toRound = (price, dp, strict = false) => {
