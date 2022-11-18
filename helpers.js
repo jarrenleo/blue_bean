@@ -99,6 +99,12 @@ export const params = (query) => {
   return query.length !== 42 ? "name" : "contract";
 };
 
+export const getId = (embed) => {
+  const [{ data }] = embed;
+  const name = data.author.name;
+  return name.split(" ").at(1).slice(1);
+};
+
 export const toRound = (price, dp, strict = false) => {
   if (Number.isInteger(price)) return price;
   if (price < 1 && !strict) dp += 1;

@@ -9,7 +9,7 @@ import {
   findInteraction,
   villageInteraction,
 } from "./interactions.js";
-import { params } from "./helpers.js";
+import { params, getId } from "./helpers.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
@@ -108,19 +108,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.customId) await interaction.deferUpdate();
 
     const commandName = interaction.message.interaction.commandName;
-    if (commandName !== "village") {
-      const [{ data }] = interaction.message.embeds;
-      const name = data.author.name;
-      const id = name.split(" ").at(1).slice(1);
 
+    if (commandName !== "village") {
+      const id = getId(interaction.message.embeds);
       switch (interaction.customId) {
-        case "azuki":
-        case "profile":
-        case "blue":
-        case "red":
-        case "racer":
-          await azukiInteraction(interaction, id);
-          break;
         case "beanz":
         case "selfie":
           await beanzInteraction(interaction, id);
@@ -135,36 +126,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-client.on(Events.MessageCreate, function (message) {
-  const options = [
-    ["candice", "Candice dick fit in yo mouth"],
-    ["dragon", "Dragon deez nuts across yo face"],
-    ["deez", "Deez nuts in yo mouth lmao"],
-    ["kombucha", "Kombucha mouth on deez nuts"],
-    ["landon", "Landon deez nuts"],
-    ["rhydon", "Rhydon this cock"],
-    ["sawcon", "Sawcon deez nuts"],
-    ["space", "Space for deez nuts in yo mouth"],
-    ["watch", "Watch me drag deez nuts across your face"],
-    ["wendys", "Wendys balls goes to your mouth"],
-    ["wilma", "Wilma nuts fit in yo mouth"],
-  ];
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isSelectMenu()) return;
+  if (interaction.values) await interaction.deferUpdate();
 
-  for (const i of options) {
-    const whitelist = () => {
-      if (
-        message.content.toLowerCase().includes(`${i.at(0)}`) &&
-        message.author.id !== "1030118282101014630"
-      )
-        return true;
-      return false;
-    };
-    if (!message.mentions.repliedUser && whitelist())
-      message.channel.send(`${i.at(1)}`);
+  const id = getId(interaction.message.embeds);
+  const [values] = interaction.values;
 
-    if (message.mentions.repliedUser && whitelist())
-      message.channel.send({
-        content: `<@${message.mentions.repliedUser.id}> ${i.at(1)}`,
-      });
+  switch (values) {
+    case "azuki":
+    case "profile":
+    case "blue":
+    case "red":
+    case "racing":
+      await azukiInteraction(interaction, id);
+      break;
   }
 });

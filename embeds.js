@@ -24,7 +24,7 @@ export const azukiEmbed = async (id, interaction) => {
         `,
     red: `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png
         `,
-    racer: `https://azuki-pairing-images.s3.us-west-1.amazonaws.com/equip_rbr/${id}.png`,
+    racing: `https://azuki-pairing-images.s3.us-west-1.amazonaws.com/equip_rbr/${id}.png`,
   };
 
   return [
