@@ -105,6 +105,11 @@ export const getId = (embed, index = 1) => {
   return name.split(" ").at(index).slice(1);
 };
 
+export const getContract = (embed) => {
+  const [{ data }] = embed;
+  return data.fields.at(9).value.slice(1, 43);
+};
+
 export const toRound = (price, dp, strict = false) => {
   if (Number.isInteger(price)) return price;
   if (price < 1 && !strict) dp += 1;

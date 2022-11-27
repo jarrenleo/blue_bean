@@ -78,14 +78,17 @@ export const findInteraction = async (interaction, data, query, id) => {
         "Collection not found. Please use suggested options that best match your query."
       );
 
-    const embedChoice =
-      id === null
-        ? collectionEmbed(data, contract)
-        : tokenEmbed(data, id, contract);
+    let reply;
+    id === undefined
+      ? (reply = {
+          embeds: await collectionEmbed(data, contract),
+          components: updateButton,
+        })
+      : (reply = {
+          embeds: await tokenEmbed(data, id, contract),
+        });
 
-    await interaction.editReply({
-      embeds: await embedChoice,
-    });
+    await interaction.editReply(reply);
   } catch (error) {
     await interaction.editReply({
       content: `${error.message}`,

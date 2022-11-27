@@ -9,7 +9,7 @@ import {
   findInteraction,
   villageInteraction,
 } from "./interactions.js";
-import { params, getId } from "./helpers.js";
+import { params, getId, getContract } from "./helpers.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
@@ -61,7 +61,13 @@ client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
     if (interaction.commandName) await interaction.deferReply();
 
-    const id = interaction.options.get("id")?.value ?? null;
+    let id;
+    switch (interaction.commandName) {
+      case "azuki":
+      case "beanz":
+      case "find":
+        id = interaction.options.get("id")?.value;
+    }
 
     switch (interaction.commandName) {
       case "azuki":
@@ -85,9 +91,7 @@ client.on("interactionCreate", async (interaction) => {
         break;
       case "find":
         const name = interaction.options.get("query").value;
-        const data = collectionData
-          ? collectionData.find((result) => result.name === name)
-          : null;
+        const data = collectionData?.find((result) => result.name === name);
         await findInteraction(interaction, data, name, id);
         break;
       case "village":
@@ -103,22 +107,33 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isButton()) return;
     if (interaction.customId) await interaction.deferUpdate();
 
+    let id;
     const commandName = interaction.message.interaction.commandName;
+    const embed = interaction.message.embeds;
 
-    if (commandName !== "village") {
-      const embed = interaction.message.embeds;
-      const id = getId(embed);
+    switch (commandName) {
+      case "beanz":
+      case "selfie":
+      case "pair":
+        id = getId(embed);
+    }
 
-      switch (interaction.customId) {
-        case "beanz":
-        case "selfie":
-          await beanzInteraction(interaction, id);
-          break;
-        case "update":
-          const id2 = getId(embed, -1);
-          await pairInteraction(interaction, id, id2);
-      }
-    } else await villageInteraction(interaction, twitterHandles);
+    switch (commandName) {
+      case "beanz":
+      case "selfie":
+        await beanzInteraction(interaction, id);
+        break;
+      case "pair":
+        const id2 = getId(embed, -1);
+        await pairInteraction(interaction, id, id2);
+        break;
+      case "find":
+        const contract = getContract(embed);
+        await findInteraction(interaction, null, contract);
+        break;
+      case "village":
+        await villageInteraction(interaction, twitterHandles);
+    }
   } catch (error) {
     console.log(error);
   }

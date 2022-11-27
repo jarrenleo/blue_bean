@@ -161,6 +161,7 @@ export const collectionEmbed = async (data, contract) => {
       thumbnail: {
         url: data.image,
       },
+      timestamp: `${new Date(Date.now()).toISOString()}`,
       fields: [
         {
           name: "Collection Size",
