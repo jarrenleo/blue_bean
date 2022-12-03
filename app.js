@@ -140,7 +140,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isSelectMenu()) return;
+  if (!interaction.isStringSelectMenu()) return;
   if (interaction.values) await interaction.deferUpdate();
 
   const id = getId(interaction.message.embeds);

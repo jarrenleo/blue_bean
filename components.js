@@ -2,12 +2,12 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  SelectMenuBuilder,
+  StringSelectMenuBuilder,
 } from "discord.js";
 
 export const azukiMenu = [
   new ActionRowBuilder().addComponents(
-    new SelectMenuBuilder()
+    new StringSelectMenuBuilder()
       .setCustomId("select")
       .setPlaceholder("Select Image")
       .addOptions(
