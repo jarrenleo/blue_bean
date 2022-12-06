@@ -152,6 +152,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
     case "blue":
     case "red":
     case "racing":
+    case "white":
+    case "black":
+    case "bblue":
+    case "bred":
+    case "bwater":
+    case "bfire":
+    case "bearth":
+    case "belectric":
+    case "gold":
+    case "spirit":
       await azukiInteraction(interaction, id);
       break;
   }

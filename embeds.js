@@ -16,15 +16,28 @@ export const azukiEmbed = async (id, interaction) => {
     id
   );
 
+  const jacketUrl = (interaction) =>
+    `https://azuki-jackets.s3.us-west-1.amazonaws.com/${interaction}/${id}.png`;
+
+  const hoodieUrl = (interaction) =>
+    `https://azukibuilder.vercel.app/api/build_s1_azuki?azukiId=${id}&equip=%22ambush-${interaction}%22`;
+
   const options = {
     azuki: `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
-    profile: `https://azk.imgix.net/big_azukis/a-${id}.png
-        `,
-    blue: `https://azuki-jackets.s3.us-west-1.amazonaws.com/blue/${id}.png
-        `,
-    red: `https://azuki-jackets.s3.us-west-1.amazonaws.com/red/${id}.png
-        `,
+    profile: `https://azk.imgix.net/big_azukis/a-${id}.png`,
+    blue: jacketUrl(interaction),
+    red: jacketUrl(interaction),
     racing: `https://azuki-pairing-images.s3.us-west-1.amazonaws.com/equip_rbr/${id}.png`,
+    white: hoodieUrl(interaction),
+    black: hoodieUrl(interaction),
+    bblue: hoodieUrl(interaction),
+    bred: hoodieUrl(interaction),
+    bwater: hoodieUrl(interaction),
+    bfire: hoodieUrl(interaction),
+    bearth: hoodieUrl(interaction),
+    belectric: hoodieUrl(interaction),
+    gold: hoodieUrl(interaction),
+    spirit: hoodieUrl(interaction),
   };
 
   return [

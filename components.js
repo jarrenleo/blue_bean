@@ -35,6 +35,56 @@ export const azukiMenu = [
           label: "Racing Jacket",
           description: "Azuki in Oracle Red Bull Racing Jacket",
           value: "racing",
+        },
+        {
+          label: "Ambush Hoodie (White)",
+          description: "Azuki in White Ambush Hoodie",
+          value: "white",
+        },
+        {
+          label: "Ambush Hoodie (Black)",
+          description: "Azuki in Black Ambush Hoodie",
+          value: "black",
+        },
+        {
+          label: "Ambush Hoodie (Blue)",
+          description: "Azuki in Black Ambush Hoodie with Blue Traits",
+          value: "bblue",
+        },
+        {
+          label: "Ambush Hoodie (Red)",
+          description: "Azuki in Black Ambush Hoodie with Red Traits",
+          value: "bred",
+        },
+        {
+          label: "Ambush Hoodie (Water)",
+          description: "Azuki in Black Ambush Hoodie with Water Traits",
+          value: "bwater",
+        },
+        {
+          label: "Ambush Hoodie (Fire)",
+          description: "Azuki in Black Ambush Hoodie with Fire Traits",
+          value: "bfire",
+        },
+        {
+          label: "Ambush Hoodie (Earth)",
+          description: "Azuki in Black Ambush Hoodie with Earth Traits",
+          value: "bearth",
+        },
+        {
+          label: "Ambush Hoodie (Electric)",
+          description: "Azuki in Black Ambush Hoodie with Electric Traits",
+          value: "belectric",
+        },
+        {
+          label: "Ambush Hoodie (Gold)",
+          description: "Azuki in Black Ambush Hoodie with Gold Traits",
+          value: "gold",
+        },
+        {
+          label: "Ambush Hoodie (Spirit)",
+          description: "Azuki in Black Ambush Hoodie with Spirit Traits",
+          value: "spirit",
         }
       )
   ),
