@@ -73,6 +73,7 @@ export const beanzEmbed = async (id, interaction) => {
 
   const options = {
     beanz: `https://ikzttp.mypinata.cloud/ipfs/QmTRuWHr7bpqscUWFmhXndzf5AdQqkekhqwgbyJCqKMHrL/${id}.png`,
+    transparent: `https://azkimg.imgix.net/images_no_bg/final-${id}.png`,
     selfie: `https://azkimg.imgix.net/images_squareface/final-${id}.png`,
   };
 

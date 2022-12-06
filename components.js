@@ -97,6 +97,10 @@ export const beanzButton = [
       .setLabel("Beanz")
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
+      .setCustomId("transparent")
+      .setLabel("Transparent")
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
       .setCustomId("selfie")
       .setLabel("Selfie")
       .setStyle(ButtonStyle.Primary)

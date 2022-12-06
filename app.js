@@ -113,6 +113,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     switch (commandName) {
       case "beanz":
+      case "transparent":
       case "selfie":
       case "pair":
         id = getId(embed);
@@ -120,6 +121,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     switch (commandName) {
       case "beanz":
+      case "transparent":
       case "selfie":
         await beanzInteraction(interaction, id);
         break;

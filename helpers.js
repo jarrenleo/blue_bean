@@ -83,16 +83,18 @@ export const sortTraits = (traits, size) => {
 };
 
 export const marketplace = (source) => {
-  const options = [
-    ["opensea.io", " | <:OpenSeaLogo:862443378461638697>"],
-    ["looksrare.org", " | <:looksblack:926045572903870494>"],
-    ["x2y2.io", " | <:x2y2:1038761561839374398>"],
-  ];
-
-  for (const i of options) {
-    if (source === i.at(0)) return i.at(1);
+  switch (source) {
+    case "opensea.io":
+      return " | <:OpenSeaLogo:862443378461638697>";
+    case "looksrare.org":
+      return " | <:looksblack:926045572903870494>";
+    case "x2y2.io":
+      return " | <:x2y2:1038761561839374398>";
+    case "sudoswap.xyz":
+      return " | <:sudoswap:1049617120092233749>";
+    default:
+      return "";
   }
-  return "";
 };
 
 export const params = (query) => {
