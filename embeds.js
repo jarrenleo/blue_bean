@@ -3,15 +3,15 @@ import {
   url,
   azukiInfo,
   beanzInfo,
-  tokenHelper,
+  getTokenData,
   sortTraits,
-  marketplace,
+  getMarketplace,
   toRound,
   toPercent,
 } from "./helpers.js";
 
 export const azukiEmbed = async (id, interaction) => {
-  const [token, isFlagged, links, footer] = await tokenHelper(
+  const [token, isFlagged, links, stats] = await getTokenData(
     azukiInfo.contract,
     id
   );
@@ -59,14 +59,14 @@ export const azukiEmbed = async (id, interaction) => {
         url: options[`${interaction}`],
       },
       footer: {
-        text: footer,
+        text: stats,
       },
     },
   ];
 };
 
 export const beanzEmbed = async (id, interaction) => {
-  const [token, isFlagged, links, footer] = await tokenHelper(
+  const [token, isFlagged, links, stats] = await getTokenData(
     beanzInfo.contract,
     id
   );
@@ -96,7 +96,7 @@ export const beanzEmbed = async (id, interaction) => {
         url: options[`${interaction}`],
       },
       footer: {
-        text: footer,
+        text: stats,
       },
     },
   ];
@@ -131,17 +131,18 @@ export const pairEmbed = async (azukiId, beanzId) => {
 };
 
 export const collectionEmbed = async (data, contract) => {
-  const [[owners, mostHeld], dailySales] = await Promise.all([
+  const [[owners, topHolder], dailySales, stats] = await Promise.all([
     getOwners(
       `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
     ),
     getData(
       `https://api.reservoir.tools/collections/daily-volumes/v1?id=${contract}&limit=2`
     ),
+    getData(`https://api.reservoir.tools/stats/v2?collection=${contract}`),
   ]);
 
   const slug = data.slug;
-  const size = Number(data.tokenCount);
+  const supply = Number(data.tokenCount);
   const listings = Number(data.onSaleCount);
 
   const isVerified =
@@ -152,16 +153,21 @@ export const collectionEmbed = async (data, contract) => {
   const dailySale = dailySales.at(0)?.sales_count ?? 0;
 
   let percentChange = "";
-  if (dailySales.length === 2) {
+  if (dailySales.length > 1) {
     const today = dailySales.at(0).sales_count;
     const yesterday = dailySales.at(1).sales_count;
     const difference = today - yesterday;
-    const formula = (difference / yesterday) * 100;
+    const getPercentChange = (difference / yesterday) * 100;
     percentChange =
-      difference >= 0
-        ? `(+${toRound(formula, 1)}%)`
-        : `(${toRound(formula, 1, true)}%)`;
+      difference > 0
+        ? `(+${toRound(getPercentChange, 1)}%)`
+        : `(${toRound(getPercentChange, 1, true)}%)`;
   }
+
+  const flaggedTokens = stats.flaggedTokenCount;
+  const hasFlaggedTokens = flaggedTokens
+    ? `(${toPercent(flaggedTokens, supply)}%)`
+    : "";
 
   const website =
     data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
@@ -178,15 +184,15 @@ export const collectionEmbed = async (data, contract) => {
       timestamp: `${new Date(Date.now()).toISOString()}`,
       fields: [
         {
-          name: "Collection Size",
-          value: `${size.toLocaleString("en-US")}`,
+          name: "Supply",
+          value: `${supply.toLocaleString("en-US")}`,
           inline: true,
         },
         {
           name: "Listings",
           value: `${listings.toLocaleString("en-US")} (${toPercent(
             listings,
-            size
+            supply
           )}%)`,
           inline: true,
         },
@@ -200,22 +206,22 @@ export const collectionEmbed = async (data, contract) => {
           value: `${url.eth}${toRound(
             data.floorAsk.price.amount.native,
             2
-          )}${marketplace(data.floorAsk.sourceDomain)}`,
+          )}${getMarketplace(data.floorAsk.sourceDomain)}`,
           inline: true,
         },
         {
           name: "Owners",
           value: `${owners.toLocaleString("en-US")} (${toPercent(
             owners,
-            size
+            supply
           )}%)`,
           inline: true,
         },
         {
-          name: "Most Held",
-          value: `${mostHeld.toLocaleString("en-US")} (${toPercent(
-            mostHeld,
-            size
+          name: "Top Holder",
+          value: `${topHolder.toLocaleString("en-US")} (${toPercent(
+            topHolder,
+            supply
           )}%)`,
           inline: true,
         },
@@ -227,13 +233,13 @@ export const collectionEmbed = async (data, contract) => {
           inline: true,
         },
         {
-          name: "Daily Sale(s)",
+          name: "Daily Sales",
           value: `${dailySale.toLocaleString("en-US")} ${percentChange}`,
           inline: true,
         },
         {
-          name: "\u200b",
-          value: "\u200b",
+          name: "Flagged Tokens",
+          value: `${flaggedTokens.toLocaleString("en-US")} ${hasFlaggedTokens}`,
           inline: true,
         },
         {
@@ -256,7 +262,7 @@ export const collectionEmbed = async (data, contract) => {
 
 export const tokenEmbed = async (data, id, contract) => {
   try {
-    const [token, isFlagged, links, footer] = await tokenHelper(
+    const [token, isFlagged, links, stats] = await getTokenData(
       contract,
       id,
       data.name
@@ -274,6 +280,7 @@ export const tokenEmbed = async (data, id, contract) => {
         throw new Error(
           `Metadata not found for ${data.name} #${id}. A metadata refresh has been requested. Please try again in a few minutes.`
         );
+      else throw new Error(`Metadata not found for ${data.name} #${id}`);
     }
 
     return [
@@ -294,7 +301,7 @@ export const tokenEmbed = async (data, id, contract) => {
           url: image,
         },
         footer: {
-          text: footer,
+          text: stats,
         },
       },
     ];

@@ -5,7 +5,7 @@ export const commands = [
     options: [
       {
         name: "id",
-        description: "Type in the Azuki # you wish to view",
+        description: "Type in the Azuki # you wish to find",
         type: 10,
         required: true,
       },
@@ -17,7 +17,7 @@ export const commands = [
     options: [
       {
         name: "id",
-        description: "Type in the Beanz # you wish to view",
+        description: "Type in the Beanz # you wish to find",
         type: 10,
         required: true,
       },
@@ -47,11 +47,12 @@ export const commands = [
   },
   {
     name: "find",
-    description: "Find an NFT collection",
+    description: "View an NFT collection/token",
     options: [
       {
         name: "query",
-        description: "Type in the collection name or contract you wish to find",
+        description:
+          "Type in the collection name or contract address you wish to find",
         type: 3,
         required: true,
         autocomplete: true,
@@ -67,6 +68,6 @@ export const commands = [
   },
   {
     name: "village",
-    description: "Generate village tag",
+    description: "Get randomised twitter handles to tag the village",
   },
 ];

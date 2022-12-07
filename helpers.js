@@ -1,7 +1,6 @@
 import { getData } from "./fetch.js";
 
 export const url = {
-  eth: "<:eth:1036195593728557106>",
   profile: "https://www.azuki.com/collector",
   opensea: "https://opensea.io/assets/ethereum",
   looksrare: "https://looksrare.org/collections",
@@ -9,6 +8,7 @@ export const url = {
   sudo: "https://sudoswap.xyz/#/item",
   blur: "https://blur.io/",
   gem: "https://www.gem.xyz/asset",
+  eth: "<:eth:1036195593728557106>",
 };
 
 export const azukiInfo = {
@@ -21,7 +21,7 @@ export const beanzInfo = {
   contract: "0x306b1ea3ecdf94ab739f1910bbda052ed4a9f949",
 };
 
-export const tokenHelper = async (contract, id, name) => {
+export const getTokenData = async (contract, id, name) => {
   try {
     const [[tokenData], [sales], transfers] = await Promise.all([
       getData(
@@ -41,9 +41,9 @@ export const tokenHelper = async (contract, id, name) => {
 
     const isFlagged = token.isFlagged ? "⚠️" : "";
     const links = `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`;
-    const footer = sortFooter(tokenData, sales, transfers);
+    const stats = sortFooter(tokenData, sales, transfers);
 
-    return [token, isFlagged, links, footer];
+    return [token, isFlagged, links, stats];
   } catch (error) {
     throw Error(error.message);
   }
@@ -82,71 +82,6 @@ export const sortTraits = (traits, size) => {
   return traitFields.concat(paddingFields);
 };
 
-export const marketplace = (source) => {
-  switch (source) {
-    case "opensea.io":
-      return " | <:OpenSeaLogo:862443378461638697>";
-    case "looksrare.org":
-      return " | <:looksblack:926045572903870494>";
-    case "x2y2.io":
-      return " | <:x2y2:1038761561839374398>";
-    case "sudoswap.xyz":
-      return " | <:sudoswap:1049617120092233749>";
-    default:
-      return "";
-  }
-};
-
-export const params = (query) => {
-  return query.length !== 42 ? "name" : "contract";
-};
-
-export const getId = (embed, index = 1) => {
-  const [{ data }] = embed;
-  const name = data.author.name;
-  return name.split(" ").at(index).slice(1);
-};
-
-export const getContract = (embed) => {
-  const [{ data }] = embed;
-  return data.fields.at(9).value.slice(1, 43);
-};
-
-export const toRound = (price, dp, strict = false) => {
-  if (Number.isInteger(price)) return price;
-  if (price < 1 && !strict) dp += 1;
-  return parseFloat(price.toFixed(dp));
-};
-
-export const toPercent = (part, whole) => {
-  return toRound((part / whole) * 100, 1);
-};
-
-export const shuffle = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const randIndex = Math.floor(Math.random() * (i + 1));
-    [array[i], array[randIndex]] = [array[randIndex], array[i]];
-  }
-  return array;
-};
-
-const sortTime = (time) => {
-  const days = time / 86400000;
-  const dp = time < 31556952000 ? 0 : 1;
-  const options = [
-    [31556952000, days / 365, "year(s)"],
-    [2629800000, days / 30.4375, "month(s)"],
-    [604800000, days / 7, "week(s)"],
-    [86400000, days, "day(s)"],
-    [3600000, days * 24, "hour(s)"],
-    [60000, days * 1440, "minute(s)"],
-  ];
-
-  for (const i of options) {
-    if (time >= i.at(0)) return `${i.at(1).toFixed(dp)} ${i.at(2)}`;
-  }
-};
-
 const sortFooter = (tokenData, sales, transfers) => {
   const rarity =
     tokenData.token.rarityRank !== null
@@ -168,7 +103,71 @@ const sortFooter = (tokenData, sales, transfers) => {
 
   const walletsHeld = filter.size;
   const time = Date.now() - transfers.at(0).timestamp * 1000;
-  const lastHeld = sortTime(time);
+  const holdTime = getTime(time);
 
-  return `Rarity: ${rarity} | List Price: ${list} | Last Sale: ${lastSale}\nSale Count: ${saleCount} | Wallet(s) Held: ${walletsHeld} | Last Held: ${lastHeld}`;
+  return `Rarity: ${rarity} | Listed: ${list} | Last Sale: ${lastSale}\nSales Made: ${saleCount} | Wallets Held: ${walletsHeld} | Hold Time: ${holdTime}`;
+};
+
+export const getParams = (query) => {
+  return query.length !== 42 ? "name" : "contract";
+};
+
+export const getId = (embed, index = 1) => {
+  const [{ data }] = embed;
+  const name = data.author.name;
+  return name.split(" ").at(index).slice(1);
+};
+
+export const getContract = (embed) => {
+  const [{ data }] = embed;
+  return data.fields.at(9).value.slice(1, 43);
+};
+
+export const getMarketplace = (source) => {
+  switch (source) {
+    case "opensea.io":
+      return " | <:OpenSeaLogo:862443378461638697>";
+    case "looksrare.org":
+      return " | <:looksblack:926045572903870494>";
+    case "x2y2.io":
+      return " | <:x2y2:1038761561839374398>";
+    case "sudoswap.xyz":
+      return " | <:sudoswap:1049617120092233749>";
+    default:
+      return "";
+  }
+};
+
+export const toRound = (price, dp, strict = false) => {
+  if (Number.isInteger(price)) return price;
+  if (price < 1 && !strict) dp += 1;
+  return parseFloat(price.toFixed(dp));
+};
+
+export const toPercent = (part, whole) => {
+  return toRound((part / whole) * 100, 1);
+};
+
+const getTime = (time) => {
+  const days = time / 86400000;
+  const dp = time < 31556952000 ? 0 : 1;
+  const options = [
+    [31556952000, days / 365, "year(s)"],
+    [2629800000, days / 30.4375, "month(s)"],
+    [604800000, days / 7, "week(s)"],
+    [86400000, days, "day(s)"],
+    [3600000, days * 24, "hour(s)"],
+    [60000, days * 1440, "minute(s)"],
+  ];
+
+  for (const i of options)
+    if (time >= i.at(0)) return `${i.at(1).toFixed(dp)} ${i.at(2)}`;
+};
+
+export const shuffle = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const randIndex = Math.floor(Math.random() * (i + 1));
+    [array[i], array[randIndex]] = [array[randIndex], array[i]];
+  }
+  return array;
 };

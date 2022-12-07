@@ -7,7 +7,7 @@ import {
   tokenEmbed,
 } from "./embeds.js";
 import { azukiMenu, beanzButton, updateButton } from "./components.js";
-import { params, shuffle } from "./helpers.js";
+import { getParams, shuffle } from "./helpers.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
 const beanzIdRange = (id) => id >= 0 && id < 19950;
@@ -67,7 +67,7 @@ export const findInteraction = async (interaction, data, query, id) => {
   try {
     if (!data)
       [data] = await getData(
-        `https://api.reservoir.tools/collections/v5?${params(
+        `https://api.reservoir.tools/collections/v5?${getParams(
           query
         )}=${query}&limit=1`
       );

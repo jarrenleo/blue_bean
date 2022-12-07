@@ -1,6 +1,6 @@
 {
   "name": "blue-bean-public",
-  "version": "1.4.14",
+  "version": "1.4.15",
   "description": "Discord bot for bluebeanfam",
   "main": "app.js",
   "type": "module",

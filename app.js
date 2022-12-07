@@ -9,7 +9,7 @@ import {
   findInteraction,
   villageInteraction,
 } from "./interactions.js";
-import { params, getId, getContract } from "./helpers.js";
+import { getParams, getId, getContract } from "./helpers.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
@@ -41,7 +41,7 @@ client.on("interactionCreate", async (interaction) => {
       const query = interaction.options.getFocused();
       if (query) {
         collectionData = await getData(
-          `https://api.reservoir.tools/collections/v5?${params(
+          `https://api.reservoir.tools/collections/v5?${getParams(
             query
           )}=${query}&limit=5`
         );
@@ -165,6 +165,5 @@ client.on(Events.InteractionCreate, async (interaction) => {
     case "gold":
     case "spirit":
       await azukiInteraction(interaction, id);
-      break;
   }
 });
