@@ -23,13 +23,11 @@ export const beanzInfo = {
 
 export const getTokenData = async (contract, id, name) => {
   try {
-    const [[tokenData], [sales], transfers] = await Promise.all([
+    const [[tokenData], sales, transfers] = await Promise.all([
       getData(
         `https://api.reservoir.tools/tokens/v5?tokens=${contract}:${id}&includeAttributes=true`
       ),
-      getData(
-        `https://api.reservoir.tools/sales/v4?token=${contract}:${id}&limit=1`
-      ),
+      getData(`https://api.reservoir.tools/sales/v4?token=${contract}:${id}`),
       getData(
         `https://api.reservoir.tools/transfers/v2?token=${contract}:${id}`
       ),
@@ -91,21 +89,18 @@ const sortFooter = (tokenData, sales, transfers) => {
     tokenData.market.floorAsk.price !== null
       ? `⟠ ${toRound(tokenData.market.floorAsk.price.amount.native, 2)}`
       : "-";
-  const lastSale = sales ? `⟠ ${toRound(sales.price.amount.native, 2)}` : "-";
+  const lastSale = sales[0]
+    ? `⟠ ${toRound(sales.at(0).price.amount.native, 2)}`
+    : "-";
 
-  let saleCount = 0;
   const filter = new Set();
-
-  transfers.forEach((transfer) => {
-    if (transfer.price) saleCount += 1;
-    filter.add(transfer.to);
-  });
-
+  transfers.forEach((transfer) => filter.add(transfer.to));
   const walletsHeld = filter.size;
+
   const time = Date.now() - transfers.at(0).timestamp * 1000;
   const holdTime = getTime(time);
 
-  return `Rarity: ${rarity} | Listed: ${list} | Last Sale: ${lastSale}\nSales Made: ${saleCount} | Wallets Held: ${walletsHeld} | Hold Time: ${holdTime}`;
+  return `Rarity: ${rarity} | Listed: ${list} | Last Sale: ${lastSale}\nSales Made: ${sales.length} | Wallets Held: ${walletsHeld} | Hold Time: ${holdTime}`;
 };
 
 export const getParams = (query) => {
