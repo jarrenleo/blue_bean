@@ -69,7 +69,7 @@ export const findInteraction = async (interaction, data, query, id) => {
       [data] = await getData(
         `https://api.reservoir.tools/collections/v5?${getParams(
           query
-        )}=${query}&limit=1`
+        )}=${query}&useNonFlaggedFloorAsk=true&limit=1`
       );
 
     const contract = data?.primaryContract;

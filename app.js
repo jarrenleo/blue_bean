@@ -43,7 +43,7 @@ client.on("interactionCreate", async (interaction) => {
         collectionData = await getData(
           `https://api.reservoir.tools/collections/v5?${getParams(
             query
-          )}=${query}&limit=5`
+          )}=${query}&useNonFlaggedFloorAsk=true&limit=5`
         );
         const choices = collectionData.map((result) => result.name);
         await interaction.respond(
