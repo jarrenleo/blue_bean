@@ -113,9 +113,13 @@ export const getId = (embed, index = 1) => {
   return name.split(" ").at(index).slice(1);
 };
 
-export const getContract = (embed) => {
+export const getEmbedFields = (embed) => {
   const [{ data }] = embed;
-  return data.fields.at(9).value.slice(1, 43);
+  return data.fields;
+};
+
+export const getContract = (fields, i) => {
+  return fields.at(i).value.slice(1, 43);
 };
 
 export const getMarketplace = (source) => {

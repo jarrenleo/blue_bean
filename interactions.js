@@ -5,8 +5,14 @@ import {
   pairEmbed,
   collectionEmbed,
   tokenEmbed,
+  listingsEmbed,
 } from "./embeds.js";
-import { azukiMenu, beanzButton, updateButton } from "./components.js";
+import {
+  azukiMenu,
+  beanzButton,
+  collectionButton,
+  updateButton,
+} from "./components.js";
 import { getParams, shuffle } from "./helpers.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
@@ -82,7 +88,7 @@ export const findInteraction = async (interaction, data, query, id) => {
     id === undefined
       ? (reply = {
           embeds: await collectionEmbed(data, contract),
-          components: updateButton,
+          components: collectionButton,
         })
       : (reply = {
           embeds: await tokenEmbed(data, id, contract),
@@ -94,6 +100,18 @@ export const findInteraction = async (interaction, data, query, id) => {
       content: `${error.message}`,
     });
   }
+};
+
+export const listingsInteraction = async (
+  interaction,
+  contract,
+  name,
+  links
+) => {
+  await interaction.editReply({
+    embeds: await listingsEmbed(contract, name, links),
+    components: collectionButton,
+  });
 };
 
 export const villageInteraction = async (interaction, twitterHandles) => {

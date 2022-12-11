@@ -7,9 +7,10 @@ import {
   beanzInteraction,
   pairInteraction,
   findInteraction,
+  listingsInteraction,
   villageInteraction,
 } from "./interactions.js";
-import { getParams, getId, getContract } from "./helpers.js";
+import { getParams, getId, getContract, getEmbedFields } from "./helpers.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
@@ -129,12 +130,30 @@ client.on(Events.InteractionCreate, async (interaction) => {
         const id2 = getId(embed, -1);
         await pairInteraction(interaction, id, id2);
         break;
-      case "find":
-        const contract = getContract(embed);
-        await findInteraction(interaction, null, contract);
-        break;
       case "village":
         await villageInteraction(interaction, twitterHandles);
+    }
+
+    switch (interaction.customId) {
+      case "collection":
+        const collectionFields = getEmbedFields(embed);
+        const collectionContract =
+          collectionFields.length !== 12
+            ? getContract(collectionFields, 3)
+            : getContract(collectionFields, 9);
+
+        await findInteraction(interaction, null, collectionContract);
+        break;
+      case "listings":
+        const listingsFields = getEmbedFields(embed);
+        const listingsContract =
+          listingsFields.length === 12
+            ? getContract(listingsFields, 9)
+            : getContract(listingsFields, 3);
+        const name = embed.at(0).data.title;
+        const links = listingsFields.slice(-2);
+
+        await listingsInteraction(interaction, listingsContract, name, links);
     }
   } catch (error) {
     console.log(error);

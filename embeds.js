@@ -309,3 +309,60 @@ export const tokenEmbed = async (data, id, contract) => {
     throw Error(error.message);
   }
 };
+
+export const listingsEmbed = async (contract, name, links) => {
+  const listings = await getData(
+    `https://api.reservoir.tools/orders/asks/v4?contracts=${contract}&status=active&includeCriteriaMetadata=true&sortBy=price&limit=15`
+  );
+
+  let tokens = "",
+    listPrice = "",
+    listExpire = "";
+
+  listings.forEach((listing) => {
+    tokens += `${listing.criteria.data.token.name}\n\n`;
+
+    listPrice += `${url.eth}${toRound(
+      listing.price.amount.native,
+      2
+    )}${getMarketplace(listing.source.domain)}\n\n`;
+
+    const timestamp = listing.validUntil
+      ? `<t:${listing.validUntil}:R>\n\n`
+      : "-\n\n";
+    listExpire += timestamp;
+  });
+
+  return [
+    {
+      color: 0x0267bc,
+      title: name,
+      thumbnail: {
+        url: listings.at(0).criteria.data.collection.image,
+      },
+      timestamp: `${new Date(Date.now()).toISOString()}`,
+      fields: [
+        {
+          name: "Tokens",
+          value: tokens,
+          inline: true,
+        },
+        {
+          name: "List Price",
+          value: listPrice,
+          inline: true,
+        },
+        {
+          name: "List Expire",
+          value: listExpire,
+          inline: true,
+        },
+        {
+          name: "Collection Address",
+          value: `[${contract}](https://etherscan.io/address/${contract})`,
+        },
+        ...links,
+      ],
+    },
+  ];
+};
