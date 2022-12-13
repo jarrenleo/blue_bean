@@ -131,15 +131,19 @@ export const pairEmbed = async (azukiId, beanzId) => {
 };
 
 export const collectionEmbed = async (data, contract) => {
-  const [[owners, topHolder], dailySales, stats] = await Promise.all([
-    getOwners(
-      `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
-    ),
-    getData(
-      `https://api.reservoir.tools/collections/daily-volumes/v1?id=${contract}&limit=2`
-    ),
-    getData(`https://api.reservoir.tools/stats/v2?collection=${contract}`),
-  ]);
+  const [[owners, topHolder], dailySales, stats, [floorListing]] =
+    await Promise.all([
+      getOwners(
+        `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
+      ),
+      getData(
+        `https://api.reservoir.tools/collections/daily-volumes/v1?id=${contract}&limit=2`
+      ),
+      getData(`https://api.reservoir.tools/stats/v2?collection=${contract}`),
+      getData(
+        `https://api.reservoir.tools/orders/asks/v4?contracts=${contract}&status=active&sortBy=price&limit=1`
+      ),
+    ]);
 
   const slug = data.slug;
   const supply = Number(data.tokenCount);
@@ -168,6 +172,15 @@ export const collectionEmbed = async (data, contract) => {
   const hasFlaggedTokens = flaggedTokens
     ? `(${toPercent(flaggedTokens, supply)}%)`
     : "";
+
+  const collectionFp = data.floorAsk.price.amount.native;
+  const listingFp = floorListing.price.amount.native;
+  const floorPrice =
+    collectionFp >= listingFp
+      ? `${toRound(collectionFp, 2)}${getMarketplace(
+          data.floorAsk.sourceDomain
+        )}`
+      : `${toRound(listingFp, 2)}${getMarketplace(floorListing.source.domain)}`;
 
   const website =
     data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
@@ -203,10 +216,7 @@ export const collectionEmbed = async (data, contract) => {
         },
         {
           name: "Floor Price",
-          value: `${url.eth}${toRound(
-            data.floorAsk.price.amount.native,
-            2
-          )}${getMarketplace(data.floorAsk.sourceDomain)}`,
+          value: `${url.eth}${floorPrice}`,
           inline: true,
         },
         {
@@ -312,7 +322,7 @@ export const tokenEmbed = async (data, id, contract) => {
 
 export const listingsEmbed = async (contract, name, links) => {
   const listings = await getData(
-    `https://api.reservoir.tools/orders/asks/v4?contracts=${contract}&status=active&includeCriteriaMetadata=true&sortBy=price&limit=15`
+    `https://api.reservoir.tools/orders/asks/v4?contracts=${contract}&status=active&includeCriteriaMetadata=true&sortBy=price&limit=10`
   );
 
   let tokens = "",
