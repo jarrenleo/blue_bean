@@ -138,6 +138,7 @@ export const getMarketplace = (source) => {
 };
 
 export const toRound = (price, dp, strict = false) => {
+  if (!price) return "-";
   if (Number.isInteger(price)) return price;
   if (price < 1 && !strict) dp += 1;
   return parseFloat(price.toFixed(dp));

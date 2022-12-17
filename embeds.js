@@ -173,14 +173,16 @@ export const collectionEmbed = async (data, contract) => {
     ? `(${toPercent(flaggedTokens, supply)}%)`
     : "";
 
-  const collectionFp = data.floorAsk.price.amount.native;
-  const listingFp = floorListing.price.amount.native;
+  const collectionFp = data.floorAsk.price?.amount.native;
+  const listingFp = floorListing?.price.amount.native;
   const floorPrice =
     collectionFp >= listingFp
       ? `${toRound(collectionFp, 2)}${getMarketplace(
           data.floorAsk.sourceDomain
         )}`
-      : `${toRound(listingFp, 2)}${getMarketplace(floorListing.source.domain)}`;
+      : `${toRound(listingFp, 2)}${getMarketplace(
+          floorListing?.source.domain
+        )}`;
 
   const website =
     data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
