@@ -172,7 +172,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
     case "profile":
     case "blue":
     case "red":
-    case "racing":
+    case "rbr":
+    case "santa":
     case "white":
     case "black":
     case "bblue":

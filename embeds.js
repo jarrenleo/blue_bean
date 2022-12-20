@@ -18,7 +18,8 @@ export const azukiEmbed = async (id, interaction) => {
 
   const jacketUrl = (interaction) =>
     `https://azuki-jackets.s3.us-west-1.amazonaws.com/${interaction}/${id}.png`;
-
+  const azukiPairingUrl = (interaction) =>
+    `https://azuki-pairing-images.s3.us-west-1.amazonaws.com/equip_${interaction}/${id}.png`;
   const hoodieUrl = (interaction) =>
     `https://azukibuilder.vercel.app/api/build_s1_azuki?azukiId=${id}&equip=%22ambush-${interaction}%22`;
 
@@ -27,7 +28,8 @@ export const azukiEmbed = async (id, interaction) => {
     profile: `https://azk.imgix.net/big_azukis/a-${id}.png`,
     blue: jacketUrl(interaction),
     red: jacketUrl(interaction),
-    racing: `https://azuki-pairing-images.s3.us-west-1.amazonaws.com/equip_rbr/${id}.png`,
+    rbr: azukiPairingUrl(interaction),
+    santa: azukiPairingUrl(interaction),
     white: hoodieUrl(interaction),
     black: hoodieUrl(interaction),
     bblue: hoodieUrl(interaction),

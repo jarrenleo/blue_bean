@@ -34,7 +34,12 @@ export const azukiMenu = [
         {
           label: "Racing Jacket",
           description: "Azuki in Oracle Red Bull Racing Jacket",
-          value: "racing",
+          value: "rbr",
+        },
+        {
+          label: "Santa Hat and Holiday Sweater",
+          description: "Azuki in Santa Hat and Holiday Sweater",
+          value: "santa",
         },
         {
           label: "Ambush Hoodie (White)",
