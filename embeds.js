@@ -73,10 +73,20 @@ export const beanzEmbed = async (id, interaction) => {
     id
   );
 
+  const beanzUrl = (type = "", query = "") =>
+    `https://azkimg.imgix.net/images${type}/final-${id}.png${query}`;
+  const beanzPairingUrl = (type) =>
+    `https://azuki-pairing-images.s3.us-west-1.amazonaws.com/beanz_equip_${type}/${id}.png`;
+
   const options = {
-    beanz: `https://ikzttp.mypinata.cloud/ipfs/QmTRuWHr7bpqscUWFmhXndzf5AdQqkekhqwgbyJCqKMHrL/${id}.png`,
-    transparent: `https://azkimg.imgix.net/images_no_bg/final-${id}.png`,
-    selfie: `https://azkimg.imgix.net/images_squareface/final-${id}.png`,
+    beanz: beanzUrl(),
+    transparent: beanzUrl("_no_bg"),
+    selfie: beanzUrl("_squareface"),
+    portrait: beanzUrl(
+      "",
+      "?fp-z=1.72&crop=focalpoint&fit=crop&fp-y=0.4&fp-x=0.505"
+    ),
+    beanz_santa: beanzPairingUrl("santa"),
   };
 
   return [

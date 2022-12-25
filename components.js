@@ -8,7 +8,7 @@ import {
 export const azukiMenu = [
   new ActionRowBuilder().addComponents(
     new StringSelectMenuBuilder()
-      .setCustomId("select")
+      .setCustomId("selectAzuki")
       .setPlaceholder("Select Image")
       .addOptions(
         {
@@ -95,20 +95,38 @@ export const azukiMenu = [
   ),
 ];
 
-export const beanzButton = [
+export const beanzMenu = [
   new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId("beanz")
-      .setLabel("Beanz")
-      .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder()
-      .setCustomId("transparent")
-      .setLabel("Transparent")
-      .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder()
-      .setCustomId("selfie")
-      .setLabel("Selfie")
-      .setStyle(ButtonStyle.Primary)
+    new StringSelectMenuBuilder()
+      .setCustomId("selectBeanz")
+      .setPlaceholder("Select Image")
+      .addOptions(
+        {
+          label: "Beanz",
+          description: "Beanz",
+          value: "beanz",
+        },
+        {
+          label: "Beanz (Transparent Background)",
+          description: "Beanz (Transparent Background)",
+          value: "transparent",
+        },
+        {
+          label: "Selfie",
+          description: "Beanz in Selfie Mode",
+          value: "selfie",
+        },
+        {
+          label: "Portrait",
+          description: "Beanz in Portrait Mode",
+          value: "portrait",
+        },
+        {
+          label: "Santa Hat",
+          description: "Beanz in Santa Hat",
+          value: "beanz_santa",
+        }
+      )
   ),
 ];
 

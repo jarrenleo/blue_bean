@@ -9,7 +9,7 @@ import {
 } from "./embeds.js";
 import {
   azukiMenu,
-  beanzButton,
+  beanzMenu,
   collectionButton,
   updateButton,
 } from "./components.js";
@@ -43,7 +43,7 @@ export const beanzInteraction = async (interaction, id) => {
     beanzIdRange(id)
       ? await interaction.editReply({
           embeds: await beanzEmbed(id, "beanz"),
-          components: beanzButton,
+          components: beanzMenu,
         })
       : await interaction.editReply({
           content: `Beanz #${id} does not exist in the collection.`,
@@ -52,8 +52,8 @@ export const beanzInteraction = async (interaction, id) => {
 
   if (interaction.type === 3) {
     await interaction.editReply({
-      embeds: await beanzEmbed(id, interaction.customId),
-      components: beanzButton,
+      embeds: await beanzEmbed(id, ...interaction.values),
+      components: beanzMenu,
     });
   }
 };

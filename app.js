@@ -108,25 +108,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isButton()) return;
     if (interaction.customId) await interaction.deferUpdate();
 
-    let id;
     const commandName = interaction.message.interaction.commandName;
     const embed = interaction.message.embeds;
 
     switch (commandName) {
-      case "beanz":
-      case "transparent":
-      case "selfie":
       case "pair":
-        id = getId(embed);
-    }
-
-    switch (commandName) {
-      case "beanz":
-      case "transparent":
-      case "selfie":
-        await beanzInteraction(interaction, id);
-        break;
-      case "pair":
+        const id = getId(embed);
         const id2 = getId(embed, -1);
         await pairInteraction(interaction, id, id2);
         break;
@@ -185,5 +172,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     case "gold":
     case "spirit":
       await azukiInteraction(interaction, id);
+      break;
+    case "beanz":
+    case "transparent":
+    case "selfie":
+    case "portrait":
+    case "beanz_santa":
+      await beanzInteraction(interaction, id);
   }
 });
