@@ -122,8 +122,8 @@ export const beanzMenu = [
           value: "portrait",
         },
         {
-          label: "Santa Hat",
-          description: "Beanz in Santa Hat",
+          label: "Santa Hat and Holiday Sweater",
+          description: "Beanz in Santa Hat and Holiday Sweater",
           value: "beanz_santa",
         }
       )
