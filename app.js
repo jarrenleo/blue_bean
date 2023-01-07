@@ -26,7 +26,7 @@ const rest = new REST({
   version: "10",
 }).setToken(discordToken);
 
-(async () => {
+(async function () {
   await rest.put(Routes.applicationCommands(clientId), {
     body: commands,
   });
@@ -44,7 +44,7 @@ client.on("interactionCreate", async (interaction) => {
         collectionData = await getData(
           `https://api.reservoir.tools/collections/v5?${getParams(
             query
-          )}=${query}&useNonFlaggedFloorAsk=true&limit=5`
+          )}=${query}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=5`
         );
         const choices = collectionData.map((result) => result.name);
         await interaction.respond(
@@ -125,7 +125,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       case "collection":
         const collectionFields = getEmbedFields(embed);
         const collectionContract =
-          collectionFields.length !== 12
+          collectionFields.length !== 13
             ? getContract(collectionFields, 3)
             : getContract(collectionFields, 9);
 
@@ -134,11 +134,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
       case "listings":
         const listingsFields = getEmbedFields(embed);
         const listingsContract =
-          listingsFields.length === 12
+          listingsFields.length === 13
             ? getContract(listingsFields, 9)
             : getContract(listingsFields, 3);
         const name = embed.at(0).data.title;
-        const links = listingsFields.slice(-2);
+        const links = listingsFields.slice(-3);
 
         await listingsInteraction(interaction, listingsContract, name, links);
     }
@@ -157,6 +157,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   switch (values) {
     case "azuki":
     case "profile":
+    case "dragon":
     case "blue":
     case "red":
     case "rbr":

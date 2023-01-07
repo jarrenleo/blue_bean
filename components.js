@@ -22,6 +22,11 @@ export const azukiMenu = [
           value: "profile",
         },
         {
+          label: "Golden Skateboard & Dragon",
+          description: "Azuki with Golden Skateboard & Dragon",
+          value: "dragon",
+        },
+        {
           label: "Blue Twin Tigers Jacket",
           description: "Azuki in Blue Twin Tigers Jacket",
           value: "blue",

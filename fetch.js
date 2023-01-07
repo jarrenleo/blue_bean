@@ -22,8 +22,7 @@ export const getData = async (url, options) => {
     data.tokens ??
     data.orders ??
     data.sales ??
-    data.transfers ??
-    data.stats
+    data.transfers
   );
 };
 

@@ -1,7 +1,7 @@
 {
   "name": "blue-bean-public",
-  "version": "1.4.22",
-  "description": "Discord bot for bluebeanfam",
+  "version": "1.4.25",
+  "description": "Discord bot to view NFT collections/tokens",
   "main": "app.js",
   "type": "module",
   "scripts": {

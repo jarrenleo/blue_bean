@@ -26,6 +26,7 @@ export const azukiEmbed = async (id, interaction) => {
   const options = {
     azuki: `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
     profile: `https://azk.imgix.net/big_azukis/a-${id}.png`,
+    dragon: `https://azk.imgix.net/dragon_azukis/ikz1_${id}.png?w=4000`,
     blue: jacketUrl(interaction),
     red: jacketUrl(interaction),
     rbr: azukiPairingUrl(interaction),
@@ -143,19 +144,14 @@ export const pairEmbed = async (azukiId, beanzId) => {
 };
 
 export const collectionEmbed = async (data, contract) => {
-  const [[owners, topHolder], dailySales, stats, [floorListing]] =
-    await Promise.all([
-      getOwners(
-        `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
-      ),
-      getData(
-        `https://api.reservoir.tools/collections/daily-volumes/v1?id=${contract}&limit=2`
-      ),
-      getData(`https://api.reservoir.tools/stats/v2?collection=${contract}`),
-      getData(
-        `https://api.reservoir.tools/orders/asks/v4?contracts=${contract}&status=active&sortBy=price&limit=1`
-      ),
-    ]);
+  const [[owners, topHolder], [floorListing]] = await Promise.all([
+    getOwners(
+      `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
+    ),
+    getData(
+      `https://api.reservoir.tools/orders/asks/v4?contracts=${contract}&status=active&sortBy=price&limit=1`
+    ),
+  ]);
 
   const slug = data.slug;
   const supply = Number(data.tokenCount);
@@ -166,24 +162,6 @@ export const collectionEmbed = async (data, contract) => {
       ? "<a:verified:1036933625289134100>"
       : "";
   const royalties = data.royalties?.bps ?? 0;
-  const dailySale = dailySales.at(0)?.sales_count ?? 0;
-
-  let percentChange = "";
-  if (dailySales.length > 1) {
-    const today = dailySales.at(0).sales_count;
-    const yesterday = dailySales.at(1).sales_count;
-    const difference = today - yesterday;
-    const getPercentChange = (difference / yesterday) * 100;
-    percentChange =
-      difference > 0
-        ? `(+${toRound(getPercentChange, 1)}%)`
-        : `(${toRound(getPercentChange, 1, true)}%)`;
-  }
-
-  const flaggedTokens = stats.flaggedTokenCount;
-  const hasFlaggedTokens = flaggedTokens
-    ? `(${toPercent(flaggedTokens, supply)}%)`
-    : "";
 
   const collectionFp = data.floorAsk.price?.amount.native;
   const listingFp = floorListing?.price.amount.native;
@@ -197,9 +175,17 @@ export const collectionEmbed = async (data, contract) => {
         )}`;
 
   const website =
-    data.externalUrl !== null ? `[Website](${data.externalUrl}) | ` : "";
+    data.externalUrl !== null ? `[Website](${data.externalUrl})` : "";
+  const twitter =
+    data.twitterUsername !== null
+      ? `[Twitter](https://twitter.com/${data.twitterUsername})`
+      : "";
   const discord =
-    data.discordUrl !== null ? `[Discord](${data.discordUrl}) | ` : "";
+    data.discordUrl !== null ? `[Discord](${data.discordUrl})` : "";
+  const socialLinks =
+    website || twitter || discord
+      ? [website, twitter, discord].join(" ").trim().replaceAll(" ", " | ")
+      : "-";
 
   return [
     {
@@ -217,10 +203,10 @@ export const collectionEmbed = async (data, contract) => {
         },
         {
           name: "Listings",
-          value: `${listings.toLocaleString("en-US")} (${toPercent(
+          value: `${listings.toLocaleString("en-US")} ${toPercent(
             listings,
             supply
-          )}%)`,
+          )}`,
           inline: true,
         },
         {
@@ -229,24 +215,16 @@ export const collectionEmbed = async (data, contract) => {
           inline: true,
         },
         {
-          name: "Floor Price",
-          value: `${url.eth}${floorPrice}`,
-          inline: true,
-        },
-        {
           name: "Owners",
-          value: `${owners.toLocaleString("en-US")} (${toPercent(
+          value: `${owners.toLocaleString("en-US")} ${toPercent(
             owners,
             supply
-          )}%)`,
+          )}`,
           inline: true,
         },
         {
-          name: "Top Holder",
-          value: `${topHolder.toLocaleString("en-US")} (${toPercent(
-            topHolder,
-            supply
-          )}%)`,
+          name: "Floor Price",
+          value: `${url.eth}${floorPrice}`,
           inline: true,
         },
         {
@@ -257,27 +235,41 @@ export const collectionEmbed = async (data, contract) => {
           inline: true,
         },
         {
-          name: "Daily Sales",
-          value: `${dailySale.toLocaleString("en-US")} ${percentChange}`,
+          name: "Top Holder",
+          value: `${topHolder.toLocaleString("en-US")} ${toPercent(
+            topHolder,
+            supply
+          )}`,
           inline: true,
         },
         {
-          name: "Flagged Tokens",
-          value: `${flaggedTokens.toLocaleString("en-US")} ${hasFlaggedTokens}`,
+          name: "Top Bid",
+          value: `${url.eth}${toRound(
+            data.topBid?.price.amount.native,
+            2
+          )}${getMarketplace(data.topBid?.sourceDomain)}`,
+          inline: true,
+        },
+        {
+          name: "\u200b",
+          value: "\u200b",
           inline: true,
         },
         {
           name: "Contract Address",
           value: `[${contract}](https://etherscan.io/address/${contract})`,
-          inline: true,
         },
         {
-          name: "Collection Links",
-          value: `${website}${discord}[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${contract}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [Sudo](https://sudoswap.xyz/#/browse/buy/${contract}) | [Blur](https://blur.io/collection/${slug}) | [Gem](https://www.gem.xyz/collection/${slug}/)`,
+          name: "Social Links",
+          value: `${socialLinks}`,
+        },
+        {
+          name: "Marketplace Links",
+          value: `[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${contract}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [Sudo](https://sudoswap.xyz/#/browse/buy/${contract}) | [Blur](https://blur.io/collection/${slug}) | [Gem](https://www.gem.xyz/collection/${slug}/)`,
         },
         {
           name: "Tools",
-          value: `[AlphaSharks](https://vue.alphasharks.io/collection/${contract}) | [NFTFlip](https://review.nftflip.ai/collection/${contract}) | [NFTNerds](https://nftnerds.ai/collection/${contract}) | [Reservoir](https://www.reservoir.market/collections/${contract})`,
+          value: `[AlphaSharks](https://vue.alphasharks.io/collection/${contract}) | [NFTFlip](https://review.nftflip.ai/collection/${contract}) | [NFTNerds](https://nftnerds.ai/collection/${contract})`,
         },
       ],
     },

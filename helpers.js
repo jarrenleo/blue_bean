@@ -39,7 +39,7 @@ export const getTokenData = async (contract, id, name) => {
 
     const isFlagged = token.isFlagged ? "⚠️" : "";
     const links = `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`;
-    const stats = sortFooter(tokenData, sales, transfers);
+    const stats = sortStats(tokenData, sales, transfers);
 
     return [token, isFlagged, links, stats];
   } catch (error) {
@@ -62,10 +62,10 @@ export const sortTraits = (traits, size) => {
 
     return {
       name: `${toCapital(trait.key)}`,
-      value: `${trait.value}\n(${toPercent(
+      value: `${trait.value}\n${toPercent(
         trait.tokenCount,
         size
-      )}%)\n${traitPrice}`,
+      )}\n${traitPrice}`,
       inline: true,
     };
   });
@@ -80,7 +80,7 @@ export const sortTraits = (traits, size) => {
   return traitFields.concat(paddingFields);
 };
 
-const sortFooter = (tokenData, sales, transfers) => {
+const sortStats = (tokenData, sales, transfers) => {
   const rarity =
     tokenData.token.rarityRank !== null
       ? `#${tokenData.token.rarityRank}`
@@ -93,12 +93,12 @@ const sortFooter = (tokenData, sales, transfers) => {
     ? `⟠ ${toRound(sales.at(0).price.amount.native, 2)}`
     : "-";
 
-  const filter = new Set();
-  transfers.forEach((transfer) => filter.add(transfer.to));
-  const walletsHeld = filter.size;
+  const transferSet = new Set();
+  transfers.forEach((transfer) => transferSet.add(transfer.to));
+  const walletsHeld = transferSet.size;
 
-  const time = Date.now() - transfers.at(0).timestamp * 1000;
-  const holdTime = getTime(time);
+  const duration = Date.now() / 1000 - transfers.at(0).timestamp;
+  const holdTime = getHoldTime(duration);
 
   return `Rarity: ${rarity} | Listed: ${list} | Last Sale: ${lastSale}\nSales Made: ${sales.length} | Wallets Held: ${walletsHeld} | Hold Time: ${holdTime}`;
 };
@@ -137,6 +137,23 @@ export const getMarketplace = (source) => {
   }
 };
 
+const getHoldTime = (duration) => {
+  const days = duration / 86_400;
+  const dp = duration < 31_556_952 ? 0 : 1;
+  const time = [
+    [31_556_952, days / 365.2425, "year(s)"],
+    [2_629_746, days / 30.436875, "month(s)"],
+    [604_800, days / 7, "week(s)"],
+    [86_400, days, "day(s)"],
+    [3_600, days * 24, "hour(s)"],
+    [60, days * 1_440, "minute(s)"],
+    [1, days * 86_400, "second(s)"],
+  ];
+
+  for (const i of time)
+    if (duration >= i.at(0)) return `${i.at(1).toFixed(dp)} ${i.at(2)}`;
+};
+
 export const toRound = (price, dp, strict = false) => {
   if (!price) return "-";
   if (Number.isInteger(price)) return price;
@@ -145,23 +162,8 @@ export const toRound = (price, dp, strict = false) => {
 };
 
 export const toPercent = (part, whole) => {
-  return toRound((part / whole) * 100, 1);
-};
-
-const getTime = (time) => {
-  const days = time / 86400000;
-  const dp = time < 31556952000 ? 0 : 1;
-  const options = [
-    [31556952000, days / 365, "year(s)"],
-    [2629800000, days / 30.4375, "month(s)"],
-    [604800000, days / 7, "week(s)"],
-    [86400000, days, "day(s)"],
-    [3600000, days * 24, "hour(s)"],
-    [60000, days * 1440, "minute(s)"],
-  ];
-
-  for (const i of options)
-    if (time >= i.at(0)) return `${i.at(1).toFixed(dp)} ${i.at(2)}`;
+  if (part > whole || !part) return "";
+  return `(${toRound((part / whole) * 100, 1)}%)`;
 };
 
 export const shuffle = (array) => {
