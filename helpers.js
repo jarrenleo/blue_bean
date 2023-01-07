@@ -132,7 +132,7 @@ export const getMarketplace = (source) => {
       return " | <:x2y2:1038761561839374398>";
     case "sudoswap.xyz":
       return " | <:sudoswap:1049617120092233749>";
-    case "reservoir.tools":
+    case "reservoir.market":
       return " | <:reservoir:1061296995605676062>";
     default:
       return "";
