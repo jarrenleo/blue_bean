@@ -8,7 +8,11 @@ export const url = {
   sudo: "https://sudoswap.xyz/#/item",
   blur: "https://blur.io/",
   gem: "https://www.gem.xyz/asset",
-  eth: "<:eth:1036195593728557106>",
+};
+
+export const emoji = {
+  eth: "<:eth:1061570848810602576>",
+  weth: "<:weth:1061570477706985593>",
 };
 
 export const azukiInfo = {
@@ -57,7 +61,7 @@ export const sortTraits = (traits, size) => {
     };
 
     const traitPrice = trait.floorAskPrice
-      ? `${url.eth}${toRound(trait.floorAskPrice, 2, true)}`
+      ? `${emoji.eth}${toRound(trait.floorAskPrice, 2, true)}`
       : "";
 
     return {
@@ -125,13 +129,13 @@ export const getContract = (fields, i) => {
 export const getMarketplace = (source) => {
   switch (source) {
     case "opensea.io":
-      return " | <:OpenSeaLogo:862443378461638697>";
+      return " | <:opensea:1061571107888574544>";
     case "looksrare.org":
-      return " | <:looksblack:926045572903870494>";
+      return " | <:looksrare:1061571122111463514>";
     case "x2y2.io":
-      return " | <:x2y2:1038761561839374398>";
+      return " | <:x2y2:1061571333600837643>";
     case "sudoswap.xyz":
-      return " | <:sudoswap:1049617120092233749>";
+      return " | <:sudo:1061570522447622205>";
     case "reservoir.market":
     case "reservoir.tools":
       return " | <:reservoir:1061296995605676062>";

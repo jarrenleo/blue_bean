@@ -1,6 +1,7 @@
 import { getData, getOwners, refreshToken } from "./fetch.js";
 import {
   url,
+  emoji,
   azukiInfo,
   beanzInfo,
   getTokenData,
@@ -224,12 +225,12 @@ export const collectionEmbed = async (data, contract) => {
         },
         {
           name: "Floor Price",
-          value: `${url.eth}${floorPrice}`,
+          value: `${emoji.eth}${floorPrice}`,
           inline: true,
         },
         {
           name: "Total Volume",
-          value: `${url.eth}${Math.round(data.volume.allTime).toLocaleString(
+          value: `${emoji.eth}${Math.round(data.volume.allTime).toLocaleString(
             "en-US"
           )}`,
           inline: true,
@@ -244,7 +245,7 @@ export const collectionEmbed = async (data, contract) => {
         },
         {
           name: "Top Bid",
-          value: `${url.eth}${toRound(
+          value: `${emoji.weth}${toRound(
             data.topBid?.price.amount.native,
             2
           )}${getMarketplace(data.topBid?.sourceDomain)}`,
@@ -338,7 +339,7 @@ export const listingsEmbed = async (contract, name, links) => {
   listings.forEach((listing) => {
     tokens += `${listing.criteria.data.token.name}\n\n`;
 
-    listPrice += `${url.eth}${toRound(
+    listPrice += `${emoji.eth}${toRound(
       listing.price.amount.native,
       2
     )}${getMarketplace(listing.source.domain)}\n\n`;
