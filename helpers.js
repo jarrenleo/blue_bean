@@ -107,6 +107,17 @@ const sortStats = (tokenData, sales, transfers) => {
   return `Rarity: ${rarity} | Listed: ${list} | Last Sale: ${lastSale}\nSales Made: ${sales.length} | Wallets Held: ${walletsHeld} | Hold Time: ${holdTime}`;
 };
 
+export const isVerified = (verificationStatus, customEmoji = false) => {
+  if (verificationStatus !== "verified") return "";
+
+  switch (customEmoji) {
+    case true:
+      return "<a:verified:1036933625289134100>";
+    case false:
+      return "✅";
+  }
+};
+
 export const getParams = (query) => {
   return query.length !== 42 ? "name" : "contract";
 };

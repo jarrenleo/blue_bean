@@ -6,6 +6,7 @@ import {
   beanzInfo,
   getTokenData,
   sortTraits,
+  isVerified,
   getMarketplace,
   toRound,
   toPercent,
@@ -157,11 +158,6 @@ export const collectionEmbed = async (data, contract) => {
   const slug = data.slug;
   const supply = Number(data.tokenCount);
   const listings = Number(data.onSaleCount);
-
-  const isVerified =
-    data.openseaVerificationStatus === "verified"
-      ? "<a:verified:1036933625289134100>"
-      : "";
   const royalties = data.royalties?.bps ?? 0;
 
   const collectionFp = data.floorAsk.price?.amount.native;
@@ -191,7 +187,7 @@ export const collectionEmbed = async (data, contract) => {
   return [
     {
       color: 0x0267bc,
-      title: `${data.name} ${isVerified}`,
+      title: `${data.name} ${isVerified(data.openseaVerificationStatus, true)}`,
       thumbnail: {
         url: data.image,
       },
@@ -246,7 +242,7 @@ export const collectionEmbed = async (data, contract) => {
         {
           name: "Top Bid",
           value: `${emoji.weth}${toRound(
-            data.topBid?.price.amount.native,
+            data.topBid.price?.amount.native,
             2
           )}${getMarketplace(data.topBid?.sourceDomain)}`,
           inline: true,

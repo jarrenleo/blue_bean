@@ -10,7 +10,13 @@ import {
   listingsInteraction,
   villageInteraction,
 } from "./interactions.js";
-import { getParams, getId, getContract, getEmbedFields } from "./helpers.js";
+import {
+  isVerified,
+  getParams,
+  getId,
+  getContract,
+  getEmbedFields,
+} from "./helpers.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
@@ -46,9 +52,17 @@ client.on("interactionCreate", async (interaction) => {
             query
           )}=${query}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=5`
         );
-        const choices = collectionData.map((result) => result.name);
+        const choices = collectionData.map((result) => {
+          return {
+            name: result.name,
+            verificationStatus: result.openseaVerificationStatus,
+          };
+        });
         await interaction.respond(
-          choices.map((choice) => ({ name: choice, value: choice }))
+          choices.map((choice) => ({
+            name: `${choice.name}${isVerified(choice.verificationStatus)}`,
+            value: choice.name,
+          }))
         );
       }
     }
