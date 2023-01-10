@@ -108,7 +108,8 @@ const sortStats = (tokenData, sales, transfers) => {
 };
 
 export const isVerified = (verificationStatus, customEmoji = false) => {
-  if (verificationStatus !== "verified") return "";
+  if (verificationStatus !== "verified" && verificationStatus !== "approved")
+    return "";
 
   switch (customEmoji) {
     case true:

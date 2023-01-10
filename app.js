@@ -60,7 +60,7 @@ client.on("interactionCreate", async (interaction) => {
         });
         await interaction.respond(
           choices.map((choice) => ({
-            name: `${choice.name}${isVerified(choice.verificationStatus)}`,
+            name: `${choice.name} ${isVerified(choice.verificationStatus)}`,
             value: choice.name,
           }))
         );
