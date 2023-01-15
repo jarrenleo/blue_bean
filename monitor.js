@@ -49,11 +49,14 @@ export const monitor = async function (webhook) {
     if (!previousListings.length) break;
     if (hasListings(currentListing)) continue;
 
+    const fiatPrice = Number(
+      (currentListing.price * price.ethereum.usd).toFixed()
+    );
     webhook.send({
       username: "blue bean",
       avatarURL:
         "https://media.discordapp.net/attachments/891506947457712188/1064082031463645264/blue_bean.png?width=671&height=671",
-      embeds: monitorEmbed(currentListing, price.ethereum.usd),
+      embeds: monitorEmbed(currentListing, fiatPrice),
     });
   }
 
