@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import fetch from "node-fetch";
 
 config();
-const options = {
+const reservoirOptions = {
   headers: {
     accept: "*/*",
     "content-type": "application/json",
@@ -10,7 +10,7 @@ const options = {
   },
 };
 
-const fetchData = async (url, options) => {
+export const fetchData = async (url, options = reservoirOptions) => {
   const response = await fetch(url, options);
   return await response.json();
 };
@@ -37,7 +37,7 @@ export const getOwners = async (url) => {
 export const refreshToken = async (url, contract, id) => {
   return await fetch(url, {
     method: "POST",
-    ...options,
+    ...reservoirOptions,
     body: JSON.stringify({
       token: `${contract}:${id}`,
     }),

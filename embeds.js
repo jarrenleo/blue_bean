@@ -381,7 +381,7 @@ export const listingsEmbed = async (contract, name, links) => {
   ];
 };
 
-export const monitorEmbed = (token) => {
+export const monitorEmbed = (token, fiatPrice) => {
   return [
     {
       color: 0x0267bc,
@@ -393,7 +393,9 @@ export const monitorEmbed = (token) => {
       fields: [
         {
           name: "List Price",
-          value: `${emoji.eth}${token.price}${getMarketplace(token.source)}`,
+          value: `${emoji.eth}${token.price} ($${(token.price * fiatPrice)
+            .toFixed()
+            .toLocaleString("en-US")})${getMarketplace(token.source)}`,
           inline: false,
         },
         {

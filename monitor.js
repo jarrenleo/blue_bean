@@ -1,4 +1,4 @@
-import { getData } from "./fetch.js";
+import { fetchData, getData } from "./fetch.js";
 import { toRound } from "./helpers.js";
 import { monitorEmbed } from "./embeds.js";
 
@@ -17,9 +17,15 @@ const hasListings = function (currentListing) {
 };
 
 export const monitor = async function (webhook) {
-  const listings = await getData(
-    `https://api.reservoir.tools/collections/activity/v5?community=azuki&types=ask`
-  );
+  const [listings, price] = await Promise.all([
+    getData(
+      `https://api.reservoir.tools/collections/activity/v5?community=azuki&types=ask`
+    ),
+    fetchData(
+      "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+      {}
+    ),
+  ]);
 
   currentListings = [];
 
@@ -47,7 +53,7 @@ export const monitor = async function (webhook) {
       username: "blue bean",
       avatarURL:
         "https://media.discordapp.net/attachments/891506947457712188/1064082031463645264/blue_bean.png?width=671&height=671",
-      embeds: monitorEmbed(currentListing),
+      embeds: monitorEmbed(currentListing, price.ethereum.usd),
     });
   }
 
