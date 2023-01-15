@@ -1,6 +1,14 @@
 import { config } from "dotenv";
-import { Client, GatewayIntentBits, REST, Routes, Events } from "discord.js";
+import {
+  Client,
+  GatewayIntentBits,
+  REST,
+  Routes,
+  Events,
+  WebhookClient,
+} from "discord.js";
 import { commands } from "./commands.js";
+import { monitor } from "./monitor.js";
 import { getData } from "./fetch.js";
 import {
   azukiInteraction,
@@ -37,6 +45,14 @@ const rest = new REST({
     body: commands,
   });
 })();
+
+const listingsWebhook = new WebhookClient({
+  url: process.env.LISTINGS_WEBHOOK,
+});
+
+setInterval(async function () {
+  await monitor(listingsWebhook);
+}, 5000);
 
 let collectionData;
 

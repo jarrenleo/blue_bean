@@ -18,6 +18,7 @@ const fetchData = async (url, options) => {
 export const getData = async (url, options) => {
   const data = await fetchData(url, options);
   return (
+    data.activities ??
     data.collections ??
     data.tokens ??
     data.orders ??

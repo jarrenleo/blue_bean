@@ -10,6 +10,7 @@ import {
   getMarketplace,
   toRound,
   toPercent,
+  getMarketplaceLinks,
 } from "./helpers.js";
 
 export const azukiEmbed = async (id, interaction) => {
@@ -376,6 +377,39 @@ export const listingsEmbed = async (contract, name, links) => {
         },
         ...links,
       ],
+    },
+  ];
+};
+
+export const monitorEmbed = (token) => {
+  return [
+    {
+      color: 0x0267bc,
+      author: {
+        name: `${token.name}`,
+        icon_url: token.icon,
+      },
+      description: `[Collector's Profile](${url.profile}/${token.owner})`,
+      fields: [
+        {
+          name: "List Price",
+          value: `${emoji.eth}${token.price}${getMarketplace(token.source)}`,
+          inline: false,
+        },
+        {
+          name: "Links",
+          value: getMarketplaceLinks(token.contract, token.id),
+        },
+      ],
+      image: {
+        url: token.image,
+      },
+      footer: {
+        icon_url:
+          "https://cdn.discordapp.com/attachments/957980880251531264/1063870693193830420/BLUEBEAN.gif",
+        text: "Powered by bluebeanfam",
+      },
+      timestamp: new Date(Date.now()).toISOString(),
     },
   ];
 };

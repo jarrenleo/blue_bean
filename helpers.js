@@ -6,7 +6,7 @@ export const url = {
   looksrare: "https://looksrare.org/collections",
   x2y2: "https://x2y2.io/eth",
   sudo: "https://sudoswap.xyz/#/item",
-  blur: "https://blur.io/",
+  blur: "https://blur.io/asset",
   gem: "https://www.gem.xyz/asset",
 };
 
@@ -42,7 +42,7 @@ export const getTokenData = async (contract, id, name) => {
       throw new Error(`${name} #${id} does not exist in the collection.`);
 
     const isFlagged = token.isFlagged ? "⚠️" : "";
-    const links = `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${token.owner}?contractAddress=${contract}) | [Gem](${url.gem}/${contract}/${id})`;
+    const links = getMarketplaceLinks(contract, id);
     const stats = sortStats(tokenData, sales, transfers);
 
     return [token, isFlagged, links, stats];
@@ -148,12 +148,18 @@ export const getMarketplace = (source) => {
       return " | <:x2y2:1061571333600837643>";
     case "sudoswap.xyz":
       return " | <:sudo:1061570522447622205>";
+    case "gem.xyz":
+      return " | <:gem:1060644885612474439>";
     case "reservoir.market":
     case "reservoir.tools":
       return " | <:reservoir:1061296995605676062>";
     default:
       return "";
   }
+};
+
+export const getMarketplaceLinks = (contract, id) => {
+  return `[OpenSea](${url.opensea}/${contract}/${id}) | [LooksRare](${url.looksrare}/${contract}/${id}) | [X2Y2](${url.x2y2}/${contract}/${id}) | [Sudo](${url.sudo}/${contract}/${id}) | [Blur](${url.blur}/${contract}/${id}) | [Gem](${url.gem}/${contract}/${id})`;
 };
 
 const getHoldTime = (duration) => {
