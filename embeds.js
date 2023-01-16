@@ -393,9 +393,12 @@ export const monitorEmbed = (token, fiatPrice) => {
       fields: [
         {
           name: "List Price",
-          value: `${emoji.eth}${token.price} ($${fiatPrice.toLocaleString(
-            "en-US"
-          )})${getMarketplace(token.source)}`,
+          value: `${emoji.eth}${toRound(
+            token.price,
+            2
+          )} ($${fiatPrice.toLocaleString("en-US")})${getMarketplace(
+            token.source
+          )}`,
           inline: false,
         },
         {

@@ -1,15 +1,13 @@
 import { fetchData, getData } from "./fetch.js";
-import { toRound } from "./helpers.js";
 import { monitorEmbed } from "./embeds.js";
 
 let previousListings = [];
-let currentListings = [];
 
-const hasListings = function (currentListing) {
+const hasListing = function (listings) {
   for (const previousListing of previousListings)
     if (
-      previousListing.id === currentListing.id &&
-      previousListing.timestamp === currentListing.timestamp
+      previousListing.token.tokenId === listings.token.tokenId &&
+      previousListing.timestamp === listings.timestamp
     )
       return true;
 
@@ -27,39 +25,30 @@ export const monitor = async function (webhook) {
     ),
   ]);
 
-  currentListings = [];
-
   for (let i = listings.length - 1; i >= 0; i--) {
+    if (!previousListings.length) break;
+    if (hasListing(listings[i])) continue;
+
     const token = {
       icon: listings.at(i).collection.collectionImage,
       name: listings.at(i).token.tokenName,
-      price: toRound(listings.at(i).price, 2),
+      id: listings.at(i).token.tokenId,
+      price: listings.at(i).price,
       image: listings.at(i).token.tokenImage,
       owner: listings.at(i).fromAddress,
       source: listings.at(i).order.source.domain,
       contract: listings.at(i).collection.collectionId,
-      id: listings.at(i).token.tokenId,
-      timestamp: listings.at(i).timestamp,
     };
+    const fiatPrice = Number((token.price * price.ethereum.usd).toFixed());
 
-    currentListings.push(token);
-  }
-
-  for (const currentListing of currentListings) {
-    if (!previousListings.length) break;
-    if (hasListings(currentListing)) continue;
-
-    const fiatPrice = Number(
-      (currentListing.price * price.ethereum.usd).toFixed()
-    );
     webhook.send({
       username: "blue bean",
       avatarURL:
         "https://media.discordapp.net/attachments/891506947457712188/1064082031463645264/blue_bean.png?width=671&height=671",
-      embeds: monitorEmbed(currentListing, fiatPrice),
+      embeds: monitorEmbed(token, fiatPrice),
     });
   }
 
   previousListings = [];
-  previousListings = currentListings;
+  previousListings = listings;
 };
