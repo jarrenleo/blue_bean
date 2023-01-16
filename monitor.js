@@ -1,18 +1,10 @@
 import { fetchData, getData } from "./fetch.js";
 import { monitorEmbed } from "./embeds.js";
 
-let previousListings = [];
-
-const hasListing = function (listings) {
-  for (const previousListing of previousListings)
-    if (
-      previousListing.token.tokenId === listings.token.tokenId &&
-      previousListing.timestamp === listings.timestamp
-    )
-      return true;
-
-  return false;
-};
+let previousListing = [];
+const hasListing = (listing) =>
+  listing.token.tokenId === previousListing.at(0).token.tokenId &&
+  listing.timestamp === previousListing.at(0).timestamp;
 
 export const monitor = async function (webhook) {
   const [listings, price] = await Promise.all([
@@ -25,10 +17,16 @@ export const monitor = async function (webhook) {
     ),
   ]);
 
-  for (let i = listings.length - 1; i >= 0; i--) {
-    if (!previousListings.length) break;
-    if (hasListing(listings[i])) continue;
+  if (!previousListing.length) {
+    previousListing.push(listings[0]);
+    return;
+  }
 
+  const newListing = listings.findIndex(hasListing);
+
+  if (!newListing) return;
+
+  for (let i = newListing - 1; i >= 0; i--) {
     const token = {
       icon: listings.at(i).collection.collectionImage,
       name: listings.at(i).token.tokenName,
@@ -49,6 +47,5 @@ export const monitor = async function (webhook) {
     });
   }
 
-  previousListings = [];
-  previousListings = listings;
+  previousListing[0] = listings[0];
 };
