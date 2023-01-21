@@ -263,7 +263,7 @@ export const collectionEmbed = async (data, contract) => {
         },
         {
           name: "Marketplace Links",
-          value: `[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${contract}) | [X2Y2](https://x2y2.io/collection/${slug}/items) | [Sudo](https://sudoswap.xyz/#/browse/buy/${contract}) | [Blur](https://blur.io/collection/${slug}) | [Gem](https://www.gem.xyz/collection/${slug}/) | [Reservoir](https://www.reservoir.market/collections/${contract})`,
+          value: `[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${contract}) | [X2Y2](https://x2y2.io/collection/${contract}) | [Sudo](https://sudoswap.xyz/#/browse/buy/${contract}) | [Blur](https://blur.io/collection/${contract}) | [Gem](https://www.gem.xyz/collection/${contract}) | [Reservoir](https://www.reservoir.market/collections/${contract})`,
         },
         {
           name: "Tools",
@@ -386,10 +386,10 @@ export const monitorEmbed = (token, fiatPrice) => {
     {
       color: 0x0267bc,
       author: {
-        name: `${token.name}`,
-        icon_url: token.icon,
+        name: `${token.token.tokenName}`,
+        icon_url: token.collection.collectionImage,
       },
-      description: `[Collector's Profile](${url.profile}/${token.owner})`,
+      description: `[Collector's Profile](${url.profile}/${token.fromAddress})`,
       fields: [
         {
           name: "List Price",
@@ -397,17 +397,20 @@ export const monitorEmbed = (token, fiatPrice) => {
             token.price,
             2
           )} ($${fiatPrice.toLocaleString("en-US")})${getMarketplace(
-            token.source
+            token.order.source.domain
           )}`,
           inline: false,
         },
         {
           name: "Links",
-          value: getMarketplaceLinks(token.contract, token.id),
+          value: getMarketplaceLinks(
+            token.collection.collectionId,
+            token.token.tokenId
+          ),
         },
       ],
       image: {
-        url: token.image,
+        url: token.token.tokenImage,
       },
       footer: {
         icon_url:
