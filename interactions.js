@@ -1,4 +1,3 @@
-import { getData } from "./fetch.js";
 import {
   azukiEmbed,
   beanzEmbed,
@@ -14,7 +13,7 @@ import {
   refreshButton,
   rerollButton,
 } from "./components.js";
-import { getParams, shuffle } from "./helpers.js";
+import { shuffle } from "./helpers.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
 const beanzIdRange = (id) => id >= 0 && id < 19950;
@@ -70,16 +69,8 @@ export const pairInteraction = async (interaction, azukiId, beanzId) => {
       });
 };
 
-export const findInteraction = async (interaction, data, name, id) => {
+export const findInteraction = async (interaction, contract, id) => {
   try {
-    if (!data)
-      [data] = await getData(
-        `https://api.reservoir.tools/collections/v5?${getParams(
-          name
-        )}=${name}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=1`
-      );
-
-    const contract = data?.primaryContract;
     if (!contract)
       throw new Error(
         "Collection not found. Please use suggested options that best match your query."
@@ -88,11 +79,11 @@ export const findInteraction = async (interaction, data, name, id) => {
     let reply;
     id === undefined
       ? (reply = {
-          embeds: await collectionEmbed(data, contract),
+          embeds: await collectionEmbed(contract),
           components: collectionButton,
         })
       : (reply = {
-          embeds: await tokenEmbed(data, id, contract),
+          embeds: await tokenEmbed(contract, id),
         });
 
     await interaction.editReply(reply);

@@ -146,8 +146,11 @@ export const pairEmbed = async (azukiId, beanzId) => {
   ];
 };
 
-export const collectionEmbed = async (data, contract) => {
-  const [[owners, topHolder], [floorListing]] = await Promise.all([
+export const collectionEmbed = async (contract) => {
+  const [[data], [owners, topHolder], [floorListing]] = await Promise.all([
+    getData(
+      `https://api.reservoir.tools/collections/v5?contract=${contract}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=1`
+    ),
     getOwners(
       `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
     ),
@@ -274,7 +277,7 @@ export const collectionEmbed = async (data, contract) => {
   ];
 };
 
-export const tokenEmbed = async (data, id, contract) => {
+export const tokenEmbed = async (contract, id) => {
   try {
     const [token, isFlagged, traits, links, stats] = await getTokenData(
       contract,

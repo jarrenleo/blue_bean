@@ -18,7 +18,7 @@ import {
   listingsInteraction,
   villageInteraction,
 } from "./interactions.js";
-import { isVerified, getParams, getId, getContract } from "./helpers.js";
+import { isVerified, getId, getContract } from "./helpers.js";
 import { monitor } from "./monitor.js";
 
 config();
@@ -47,7 +47,7 @@ discordClient.login(discordToken);
   await mongoDBClient.connect();
 })();
 
-let collectionData;
+let queryResults;
 discordClient.on("interactionCreate", async (interaction) => {
   try {
     if (!interaction.isAutocomplete() || interaction.commandName !== "find")
@@ -55,20 +55,16 @@ discordClient.on("interactionCreate", async (interaction) => {
 
     const query = interaction.options.getFocused();
     if (query) {
-      collectionData = await getData(
-        `https://api.reservoir.tools/collections/v5?${getParams(
-          query
-        )}=${query}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=5`
+      queryResults = await getData(
+        `https://www.reservoir.market/api/reservoir/search/collections/v1?limit=5&name=${query}`,
+        {}
       );
-      const choices = collectionData.map((result) => {
-        return {
-          name: result.name,
-          verificationStatus: result.openseaVerificationStatus,
-        };
-      });
+
       await interaction.respond(
-        choices.map((choice) => ({
-          name: `${choice.name} ${isVerified(choice.verificationStatus)}`,
+        queryResults.map((choice) => ({
+          name: `${choice.name} ${isVerified(
+            choice.openseaVerificationStatus
+          )}`,
           value: choice.name,
         }))
       );
@@ -104,9 +100,21 @@ discordClient.on("interactionCreate", async (interaction) => {
         await pairInteraction(interaction, azukiId, beanzId);
         break;
       case "find":
-        const name = interaction.options.get("query").value;
-        const data = collectionData?.find((result) => result.name === name);
-        await findInteraction(interaction, data, name, id);
+        let query = interaction.options.get("query").value;
+
+        if (query.length < 42) {
+          let data = queryResults?.find((result) => result.name === query);
+
+          if (!data)
+            [data] = await getData(
+              `https://www.reservoir.market/api/reservoir/search/collections/v1?limit=1&name=${query}`,
+              {}
+            );
+
+          query = data?.contract;
+        }
+
+        await findInteraction(interaction, query, id);
         break;
       case "village":
         await villageInteraction(interaction, twitterHandles);
@@ -127,7 +135,7 @@ discordClient.on(Events.InteractionCreate, async (interaction) => {
     switch (interaction.customId) {
       case "collection":
         const collectionContract = getContract(data);
-        await findInteraction(interaction, null, collectionContract);
+        await findInteraction(interaction, collectionContract);
         break;
       case "listings":
         const listingsContract = getContract(data);

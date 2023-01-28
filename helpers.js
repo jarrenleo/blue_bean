@@ -135,10 +135,6 @@ const getTokenStats = (tokenData, sales, transfers) => {
   return `Rarity: ${rarity} | Listed: ${listed} | Last Sale: ${lastSale}\nSales Made: ${salesMade} | Wallets Held: ${walletsHeld} | Hold Time: ${holdTime}`;
 };
 
-export const getParams = (query) => {
-  return query.length !== 42 ? "name" : "contract";
-};
-
 export const getId = (data, index = 1) => {
   return data.author.name.split(" ").at(index).slice(1);
 };

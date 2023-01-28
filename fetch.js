@@ -10,13 +10,13 @@ const reservoirOptions = {
   },
 };
 
-export const fetchData = async (url, options = reservoirOptions) => {
+export const fetchData = async (url, options) => {
   const response = await fetch(url, options);
   return await response.json();
 };
 
-export const getData = async (url) => {
-  const data = await fetchData(url);
+export const getData = async (url, options = reservoirOptions) => {
+  const data = await fetchData(url, options);
   return (
     data.activities ??
     data.collections ??
@@ -29,8 +29,9 @@ export const getData = async (url) => {
 
 export const getOwners = async (url) => {
   let owners = 0;
-  const data = await fetchData(url);
+  const data = await fetchData(url, reservoirOptions);
   data.ownersDistribution.forEach((data) => (owners += data.ownerCount));
+
   return [owners, data.ownersDistribution.at(-1).tokenCount];
 };
 
