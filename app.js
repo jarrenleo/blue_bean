@@ -7,8 +7,8 @@ import {
   Events,
   WebhookClient,
 } from "discord.js";
+import { MongoClient } from "mongodb";
 import { commands } from "./commands.js";
-import { monitor } from "./monitor.js";
 import { getData } from "./fetch.js";
 import {
   azukiInteraction,
@@ -18,76 +18,67 @@ import {
   listingsInteraction,
   villageInteraction,
 } from "./interactions.js";
-import {
-  isVerified,
-  getParams,
-  getId,
-  getContract,
-  getEmbedFields,
-} from "./helpers.js";
+import { isVerified, getParams, getId, getContract } from "./helpers.js";
+import { monitor } from "./monitor.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
-const clientId = process.env.CLIENT_ID;
+const discordClientId = process.env.DISCORD_CLIENT_ID;
+const mongoDBUri = process.env.MONGODB_URI;
 const twitterHandles = process.env.TWITTER_HANDLES;
 
-const client = new Client({
+const discordClient = new Client({
   intents: [GatewayIntentBits.Guilds],
 });
-client.login(discordToken);
-
-const rest = new REST({
-  version: "10",
-}).setToken(discordToken);
+discordClient.login(discordToken);
 
 (async function () {
-  await rest.put(Routes.applicationCommands(clientId), {
+  const rest = new REST({
+    version: "10",
+  }).setToken(discordToken);
+
+  await rest.put(Routes.applicationCommands(discordClientId), {
     body: commands,
   });
 })();
 
-const listingsWebhook = new WebhookClient({
-  url: process.env.LISTINGS_WEBHOOK,
-});
-
-setInterval(async function () {
-  await monitor(listingsWebhook);
-}, 5000);
+(async function () {
+  const mongoDBClient = new MongoClient(mongoDBUri);
+  await mongoDBClient.connect();
+})();
 
 let collectionData;
-
-client.on("interactionCreate", async (interaction) => {
+discordClient.on("interactionCreate", async (interaction) => {
   try {
-    if (!interaction.isAutocomplete()) return;
+    if (!interaction.isAutocomplete() || interaction.commandName !== "find")
+      return;
 
-    if (interaction.commandName === "find") {
-      const query = interaction.options.getFocused();
-      if (query) {
-        collectionData = await getData(
-          `https://api.reservoir.tools/collections/v5?${getParams(
-            query
-          )}=${query}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=5`
-        );
-        const choices = collectionData.map((result) => {
-          return {
-            name: result.name,
-            verificationStatus: result.openseaVerificationStatus,
-          };
-        });
-        await interaction.respond(
-          choices.map((choice) => ({
-            name: `${choice.name} ${isVerified(choice.verificationStatus)}`,
-            value: choice.name,
-          }))
-        );
-      }
+    const query = interaction.options.getFocused();
+    if (query) {
+      collectionData = await getData(
+        `https://api.reservoir.tools/collections/v5?${getParams(
+          query
+        )}=${query}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=5`
+      );
+      const choices = collectionData.map((result) => {
+        return {
+          name: result.name,
+          verificationStatus: result.openseaVerificationStatus,
+        };
+      });
+      await interaction.respond(
+        choices.map((choice) => ({
+          name: `${choice.name} ${isVerified(choice.verificationStatus)}`,
+          value: choice.name,
+        }))
+      );
     }
   } catch (error) {
     console.log(error);
   }
 });
 
-client.on("interactionCreate", async (interaction) => {
+discordClient.on("interactionCreate", async (interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
     if (interaction.commandName) await interaction.deferReply();
@@ -107,14 +98,6 @@ client.on("interactionCreate", async (interaction) => {
       case "beanz":
         await beanzInteraction(interaction, id);
         break;
-      case "random":
-        const randomId = (size) => Math.floor(Math.random() * size);
-        if (Math.random() < 0.5) {
-          await azukiInteraction(interaction, randomId(10000));
-        } else {
-          await beanzInteraction(interaction, randomId(19950));
-        }
-        break;
       case "pair":
         const azukiId = interaction.options.get("azuki-id").value;
         const beanzId = interaction.options.get("beanz-id").value;
@@ -133,55 +116,43 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-client.on(Events.InteractionCreate, async (interaction) => {
+discordClient.on(Events.InteractionCreate, async (interaction) => {
   try {
     if (!interaction.isButton()) return;
     if (interaction.customId) await interaction.deferUpdate();
 
-    const commandName = interaction.message.interaction.commandName;
     const embed = interaction.message.embeds;
-
-    switch (commandName) {
-      case "pair":
-        const id = getId(embed);
-        const id2 = getId(embed, -1);
-        await pairInteraction(interaction, id, id2);
-        break;
-      case "village":
-        await villageInteraction(interaction, twitterHandles);
-    }
+    const data = embed[0]?.data;
 
     switch (interaction.customId) {
       case "collection":
-        const collectionFields = getEmbedFields(embed);
-        const collectionContract =
-          collectionFields.length !== 13
-            ? getContract(collectionFields, 3)
-            : getContract(collectionFields, 9);
-
+        const collectionContract = getContract(data);
         await findInteraction(interaction, null, collectionContract);
         break;
       case "listings":
-        const listingsFields = getEmbedFields(embed);
-        const listingsContract =
-          listingsFields.length === 13
-            ? getContract(listingsFields, 9)
-            : getContract(listingsFields, 3);
-        const name = embed.at(0).data.title;
-        const links = listingsFields.slice(-3);
-
+        const listingsContract = getContract(data);
+        const name = data.title;
+        const links = data.fields.slice(-3);
         await listingsInteraction(interaction, listingsContract, name, links);
+        break;
+      case "refresh":
+        const id = getId(data);
+        const id2 = getId(data, -1);
+        await pairInteraction(interaction, id, id2);
+        break;
+      case "reroll":
+        await villageInteraction(interaction, twitterHandles);
     }
   } catch (error) {
     console.log(error);
   }
 });
 
-client.on(Events.InteractionCreate, async (interaction) => {
+discordClient.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isStringSelectMenu()) return;
   if (interaction.values) await interaction.deferUpdate();
 
-  const id = getId(interaction.message.embeds);
+  const id = getId(interaction.message.embeds[0].data);
   const [values] = interaction.values;
 
   switch (values) {
@@ -212,3 +183,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
       await beanzInteraction(interaction, id);
   }
 });
+
+setInterval(async function () {
+  await monitor(
+    new WebhookClient({
+      url: process.env.LISTINGS_WEBHOOK,
+    })
+  );
+}, 5000);

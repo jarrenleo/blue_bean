@@ -1,22 +1,21 @@
 import { getData, getOwners, refreshToken } from "./fetch.js";
 import {
-  url,
   emoji,
   azukiInfo,
   beanzInfo,
-  getTokenData,
-  sortTraits,
   isVerified,
-  getMarketplace,
+  getTokenData,
+  getTokenMarketplaceLinks,
+  getMarketplaceLogo,
   toRound,
   toPercent,
-  getMarketplaceLinks,
 } from "./helpers.js";
 
 export const azukiEmbed = async (id, interaction) => {
-  const [token, isFlagged, links, stats] = await getTokenData(
+  const [token, isFlagged, traits, links, stats] = await getTokenData(
     azukiInfo.contract,
-    id
+    id,
+    10000
   );
 
   const jacketUrl = (interaction) =>
@@ -53,11 +52,11 @@ export const azukiEmbed = async (id, interaction) => {
         name: `Azuki #${id} ${isFlagged}`,
         icon_url: azukiInfo.icon,
       },
-      description: `[Azuki Collector's Profile](${url.profile}/${token.owner})`,
+      description: `[Azuki Collector's Profile](${azukiInfo.profile}/${token.owner})`,
       fields: [
-        ...sortTraits(token.attributes, 10000),
+        ...traits,
         {
-          name: "Links",
+          name: "Marketplace Links",
           value: links,
         },
       ],
@@ -72,9 +71,10 @@ export const azukiEmbed = async (id, interaction) => {
 };
 
 export const beanzEmbed = async (id, interaction) => {
-  const [token, isFlagged, links, stats] = await getTokenData(
+  const [token, isFlagged, traits, links, stats] = await getTokenData(
     beanzInfo.contract,
-    id
+    id,
+    19950
   );
 
   const beanzUrl = (type = "", query = "") =>
@@ -100,11 +100,11 @@ export const beanzEmbed = async (id, interaction) => {
         name: `Beanz #${id} ${isFlagged}`,
         icon_url: beanzInfo.icon,
       },
-      description: `[Beanz Collector's Profile](${url.profile}/${token.owner})`,
+      description: `[Beanz Collector's Profile](${azukiInfo.profile}/${token.owner})`,
       fields: [
-        ...sortTraits(token.attributes, 19950),
+        ...traits,
         {
-          name: "Links",
+          name: "Marketplace Links",
           value: links,
         },
       ],
@@ -135,7 +135,7 @@ export const pairEmbed = async (azukiId, beanzId) => {
         name: `Azuki #${azukiId} | Beanz #${beanzId}`,
         icon_url: azukiInfo.icon,
       },
-      description: `[Azuki Collector's Profile](${url.profile}/${azukiData.token.owner}) | [Bean Collector's Profile](${url.profile}/${beanzData.token.owner})`,
+      description: `[Azuki Collector's Profile](${azukiInfo.profile}/${azukiData.token.owner}) | [Bean Collector's Profile](${azukiInfo.profile}/${beanzData.token.owner})`,
       image: {
         url: `https://azukiimagemaker.vercel.app/api/pairbeanz-prod?azukiId=${azukiId}&beanzId=${beanzId}`,
       },
@@ -165,10 +165,10 @@ export const collectionEmbed = async (data, contract) => {
   const listingFp = floorListing?.price.amount.native;
   const floorPrice =
     collectionFp >= listingFp
-      ? `${toRound(collectionFp, 2)}${getMarketplace(
+      ? `${toRound(collectionFp, 2)}${getMarketplaceLogo(
           data.floorAsk.sourceDomain
         )}`
-      : `${toRound(listingFp, 2)}${getMarketplace(
+      : `${toRound(listingFp, 2)}${getMarketplaceLogo(
           floorListing?.source.domain
         )}`;
 
@@ -245,7 +245,7 @@ export const collectionEmbed = async (data, contract) => {
           value: `${emoji.weth}${toRound(
             data.topBid.price?.amount.native,
             2
-          )}${getMarketplace(data.topBid?.sourceDomain)}`,
+          )}${getMarketplaceLogo(data.topBid?.sourceDomain)}`,
           inline: true,
         },
         {
@@ -263,11 +263,11 @@ export const collectionEmbed = async (data, contract) => {
         },
         {
           name: "Marketplace Links",
-          value: `[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${contract}) | [X2Y2](https://x2y2.io/collection/${contract}) | [Sudo](https://sudoswap.xyz/#/browse/buy/${contract}) | [Blur](https://blur.io/collection/${contract}) | [Gem](https://www.gem.xyz/collection/${contract}) | [Reservoir](https://www.reservoir.market/collections/${contract})`,
+          value: `[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${contract}) | [X2Y2](https://x2y2.io/collection/${contract}) | [Sudoswap](https://sudoswap.xyz/#/browse/buy/${contract}) | [Gem](https://www.gem.xyz/collection/${contract})\n[Blur](https://blur.io/collection/${contract}) | [Magically](https://magically.gg/collection/${contract}) | [Reservoir](https://www.reservoir.market/collections/${contract})`,
         },
         {
           name: "Tools",
-          value: `[AlphaSharks](https://vue.alphasharks.io/collection/${contract}) | [NFTFlip](https://review.nftflip.ai/collection/${contract}) | [NFTNerds](https://nftnerds.ai/collection/${contract})`,
+          value: `[NFTFlip](https://review.nftflip.ai/collection/${contract}) | [NFTNerds](https://nftnerds.ai/collection/${contract})`,
         },
       ],
     },
@@ -276,15 +276,15 @@ export const collectionEmbed = async (data, contract) => {
 
 export const tokenEmbed = async (data, id, contract) => {
   try {
-    const [token, isFlagged, links, stats] = await getTokenData(
+    const [token, isFlagged, traits, links, stats] = await getTokenData(
       contract,
       id,
+      data.tokenCount,
       data.name
     );
 
     const image = token?.image;
-    const attributes = token.attributes;
-    if (!image || !attributes.length) {
+    if (!image || !token.attributes.length) {
       const response = await refreshToken(
         "https://api.reservoir.tools/tokens/refresh/v1",
         contract,
@@ -294,7 +294,6 @@ export const tokenEmbed = async (data, id, contract) => {
         throw new Error(
           `Metadata not found for ${data.name} #${id}. A metadata refresh has been requested. Please try again in a few minutes.`
         );
-      else throw new Error(`Metadata not found for ${data.name} #${id}`);
     }
 
     return [
@@ -305,9 +304,9 @@ export const tokenEmbed = async (data, id, contract) => {
           icon_url: token.collection.image,
         },
         fields: [
-          ...sortTraits(attributes, Number(data.tokenCount)),
+          ...traits,
           {
-            name: "Links",
+            name: "Marketplace Links",
             value: links,
           },
         ],
@@ -339,7 +338,7 @@ export const listingsEmbed = async (contract, name, links) => {
     listPrice += `${emoji.eth}${toRound(
       listing.price.amount.native,
       2
-    )}${getMarketplace(listing.source.domain)}\n\n`;
+    )}${getMarketplaceLogo(listing.source.domain)}\n\n`;
 
     const timestamp = listing.validUntil
       ? `<t:${listing.validUntil}:R>\n\n`
@@ -352,7 +351,7 @@ export const listingsEmbed = async (contract, name, links) => {
       color: 0x0267bc,
       title: name,
       thumbnail: {
-        url: listings.at(0).criteria.data.collection.image,
+        url: listings[0].criteria.data.collection.image,
       },
       timestamp: `${new Date(Date.now()).toISOString()}`,
       fields: [
@@ -389,21 +388,21 @@ export const monitorEmbed = (token, fiatPrice) => {
         name: `${token.token.tokenName}`,
         icon_url: token.collection.collectionImage,
       },
-      description: `[Collector's Profile](${url.profile}/${token.fromAddress})`,
+      description: `[Collector's Profile](${azukiInfo.profile}/${token.fromAddress})`,
       fields: [
         {
           name: "List Price",
           value: `${emoji.eth}${toRound(
             token.price,
             2
-          )} ($${fiatPrice.toLocaleString("en-US")})${getMarketplace(
+          )} ($${fiatPrice.toLocaleString("en-US")})${getMarketplaceLogo(
             token.order.source.domain
           )}`,
           inline: false,
         },
         {
-          name: "Links",
-          value: getMarketplaceLinks(
+          name: "Marketplace Links",
+          value: getTokenMarketplaceLinks(
             token.collection.collectionId,
             token.token.tokenId
           ),

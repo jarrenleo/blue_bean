@@ -1,6 +1,6 @@
 {
   "name": "blue-bean-public",
-  "version": "1.5.3",
+  "version": "1.5.5",
   "description": "Discord bot to view NFT collections/tokens",
   "main": "app.js",
   "type": "module",
@@ -12,7 +12,7 @@
   "dependencies": {
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
-    "eventsource": "^2.0.2",
+    "mongodb": "^4.13.0",
     "node-fetch": "^3.2.10"
   }
 }

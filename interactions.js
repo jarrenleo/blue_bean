@@ -11,7 +11,8 @@ import {
   azukiMenu,
   beanzMenu,
   collectionButton,
-  updateButton,
+  refreshButton,
+  rerollButton,
 } from "./components.js";
 import { getParams, shuffle } from "./helpers.js";
 
@@ -62,20 +63,20 @@ export const pairInteraction = async (interaction, azukiId, beanzId) => {
   azukiIdRange(azukiId) && beanzIdRange(beanzId)
     ? await interaction.editReply({
         embeds: await pairEmbed(azukiId, beanzId),
-        components: updateButton,
+        components: refreshButton,
       })
     : await interaction.editReply({
         content: `Azuki #${azukiId} or Beanz #${beanzId} does not exist in the collection.`,
       });
 };
 
-export const findInteraction = async (interaction, data, query, id) => {
+export const findInteraction = async (interaction, data, name, id) => {
   try {
     if (!data)
       [data] = await getData(
         `https://api.reservoir.tools/collections/v5?${getParams(
-          query
-        )}=${query}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=1`
+          name
+        )}=${name}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=1`
       );
 
     const contract = data?.primaryContract;
@@ -117,18 +118,18 @@ export const listingsInteraction = async (
 export const villageInteraction = async (interaction, twitterHandles) => {
   const tweetCharLimit = 280;
   const handlesArray = shuffle(twitterHandles.split(","));
-  let tempHandle,
+  let temporaryHandle,
     handles = handlesArray[0];
 
   for (let i = 1; i < handlesArray.length; i++) {
-    tempHandle = handlesArray[i];
+    temporaryHandle = handlesArray[i];
 
-    if (handles.length + tempHandle.length + 1 > tweetCharLimit) break;
-    handles += " " + tempHandle;
+    if (handles.length + temporaryHandle.length + 1 > tweetCharLimit) break;
+    handles += " " + temporaryHandle;
   }
 
   await interaction.editReply({
     content: "```\n" + handles + "\n```",
-    components: updateButton,
+    components: rerollButton,
   });
 };

@@ -148,11 +148,20 @@ export const collectionButton = [
   ),
 ];
 
-export const updateButton = [
+export const refreshButton = [
   new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId("update")
-      .setLabel("⟳")
+      .setCustomId("refresh")
+      .setLabel("Refresh")
+      .setStyle(ButtonStyle.Primary)
+  ),
+];
+
+export const rerollButton = [
+  new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("reroll")
+      .setLabel("Reroll")
       .setStyle(ButtonStyle.Primary)
   ),
 ];

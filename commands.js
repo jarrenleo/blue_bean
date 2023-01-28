@@ -24,10 +24,6 @@ export const commands = [
     ],
   },
   {
-    name: "random",
-    description: "View a random Azuki/Beanz from the collection",
-  },
-  {
     name: "pair",
     description: "Pair your Azuki and Beanz",
     options: [

@@ -3,8 +3,8 @@ import { monitorEmbed } from "./embeds.js";
 
 let previousListing = [];
 const hasListing = (listing) =>
-  listing.token.tokenId === previousListing.at(0).token.tokenId &&
-  listing.timestamp === previousListing.at(0).timestamp;
+  listing.token.tokenId === previousListing[0].token.tokenId &&
+  listing.timestamp === previousListing[0].timestamp;
 
 export const monitor = async function (webhook) {
   const [listings, price] = await Promise.all([
@@ -28,7 +28,7 @@ export const monitor = async function (webhook) {
 
   for (let i = newListing - 1; i >= 0; i--) {
     const fiatPrice = Number(
-      (listings.at(i).price * price.ethereum.usd).toFixed()
+      (listings[i].price * price.ethereum.usd).toFixed()
     );
 
     webhook.send({
