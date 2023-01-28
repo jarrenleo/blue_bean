@@ -20,10 +20,11 @@ export const getData = async (url, options = reservoirOptions) => {
   return (
     data.activities ??
     data.collections ??
-    data.tokens ??
     data.orders ??
+    data.tokens ??
     data.sales ??
-    data.transfers
+    data.transfers ??
+    data.stats
   );
 };
 
@@ -33,14 +34,4 @@ export const getOwners = async (url) => {
   data.ownersDistribution.forEach((data) => (owners += data.ownerCount));
 
   return [owners, data.ownersDistribution.at(-1).tokenCount];
-};
-
-export const refreshToken = async (url, contract, id) => {
-  return await fetch(url, {
-    method: "POST",
-    ...reservoirOptions,
-    body: JSON.stringify({
-      token: `${contract}:${id}`,
-    }),
-  });
 };

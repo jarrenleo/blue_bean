@@ -1,4 +1,4 @@
-import { getData, getOwners, refreshToken } from "./fetch.js";
+import { getData, getOwners } from "./fetch.js";
 import {
   emoji,
   azukiInfo,
@@ -14,8 +14,7 @@ import {
 export const azukiEmbed = async (id, interaction) => {
   const [token, isFlagged, traits, links, stats] = await getTokenData(
     azukiInfo.contract,
-    id,
-    10000
+    id
   );
 
   const jacketUrl = (interaction) =>
@@ -73,8 +72,7 @@ export const azukiEmbed = async (id, interaction) => {
 export const beanzEmbed = async (id, interaction) => {
   const [token, isFlagged, traits, links, stats] = await getTokenData(
     beanzInfo.contract,
-    id,
-    19950
+    id
   );
 
   const beanzUrl = (type = "", query = "") =>
@@ -281,23 +279,8 @@ export const tokenEmbed = async (contract, id) => {
   try {
     const [token, isFlagged, traits, links, stats] = await getTokenData(
       contract,
-      id,
-      data.tokenCount,
-      data.name
+      id
     );
-
-    const image = token?.image;
-    if (!image || !token.attributes.length) {
-      const response = await refreshToken(
-        "https://api.reservoir.tools/tokens/refresh/v1",
-        contract,
-        id
-      );
-      if (response.status === 200)
-        throw new Error(
-          `Metadata not found for ${data.name} #${id}. A metadata refresh has been requested. Please try again in a few minutes.`
-        );
-    }
 
     return [
       {
@@ -314,7 +297,7 @@ export const tokenEmbed = async (contract, id) => {
           },
         ],
         image: {
-          url: image,
+          url: token.image,
         },
         footer: {
           text: stats,

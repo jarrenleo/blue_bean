@@ -28,9 +28,9 @@ export const isVerified = (verificationStatus, customEmoji = false) => {
   }
 };
 
-export const getTokenData = async (contract, id, tokenCount, name) => {
+export const getTokenData = async (contract, id) => {
   try {
-    const [[tokenData], sales, transfers] = await Promise.all([
+    const [[tokenData], sales, transfers, stats] = await Promise.all([
       getData(
         `https://api.reservoir.tools/tokens/v5?tokens=${contract}:${id}&includeAttributes=true`
       ),
@@ -38,18 +38,24 @@ export const getTokenData = async (contract, id, tokenCount, name) => {
       getData(
         `https://api.reservoir.tools/transfers/v2?token=${contract}:${id}`
       ),
+      getData(`https://api.reservoir.tools/stats/v2?collection=${contract}`),
     ]);
 
     const token = tokenData?.token;
     if (!token)
-      throw new Error(`${name} #${id} does not exist in the collection.`);
+      throw new Error(`Token #${id} does not exist in the collection.`);
+
+    if (!token?.image || !token.attributes.length)
+      throw new Error(
+        `Metadata not found for token #${id}. Please reach out to maki#1999.`
+      );
 
     const isFlagged = token.isFlagged ? "⚠️" : "";
 
     return [
       token,
       isFlagged,
-      getTokenTraits(token.attributes, tokenCount),
+      getTokenTraits(token.attributes, stats.tokenCount),
       getTokenMarketplaceLinks(contract, id),
       getTokenStats(tokenData, sales, transfers),
     ];
