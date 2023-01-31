@@ -5,6 +5,7 @@ import {
   collectionEmbed,
   tokenEmbed,
   listingsEmbed,
+  profitEmbed,
 } from "./embeds.js";
 import {
   azukiMenu,
@@ -13,7 +14,7 @@ import {
   refreshButton,
   rerollButton,
 } from "./components.js";
-import { shuffle } from "./helpers.js";
+import { hasDBRecord, shuffle } from "./helpers.js";
 
 const azukiIdRange = (id) => id >= 0 && id < 10000;
 const beanzIdRange = (id) => id >= 0 && id < 19950;
@@ -69,24 +70,30 @@ export const pairInteraction = async (interaction, azukiId, beanzId) => {
       });
 };
 
-export const findInteraction = async (interaction, contract, id) => {
+export const findInteraction = async (interaction, contract, id, db) => {
   try {
     if (!contract)
       throw new Error(
-        "Collection not found. Please use suggested options that best match your query."
+        "Collection not found. Please use autocomplete to best match your query."
       );
 
-    let reply;
-    id === undefined
-      ? (reply = {
-          embeds: await collectionEmbed(contract),
-          components: collectionButton,
-        })
-      : (reply = {
-          embeds: await tokenEmbed(contract, id),
+    switch (interaction.commandName || interaction.customId) {
+      case "find":
+      case "collection":
+        id === undefined
+          ? interaction.editReply({
+              embeds: await collectionEmbed(contract),
+              components: collectionButton,
+            })
+          : interaction.editReply({
+              embeds: await tokenEmbed(contract, id),
+            });
+        break;
+      case "profit":
+        await interaction.editReply({
+          embeds: await profitEmbed(contract, interaction.user.id, db),
         });
-
-    await interaction.editReply(reply);
+    }
   } catch (error) {
     await interaction.editReply({
       content: `${error.message}`,
@@ -104,6 +111,92 @@ export const listingsInteraction = async (
     embeds: await listingsEmbed(contract, name, links),
     components: collectionButton,
   });
+};
+
+export const walletInteraction = async (interaction, db) => {
+  try {
+    await interaction.deferReply({ ephemeral: true });
+    const addressInput = interaction.options._hoistedOptions[0].value.trim();
+    const subCommandName = interaction.options._hoistedOptions[0].name;
+    const userId = interaction.user.id;
+
+    if (addressInput.length !== 42)
+      throw new Error("Invalid wallet/contract address ❌");
+
+    const isResponseAcknowledged = (response) => {
+      if (response.acknowledged)
+        interaction.editReply({
+          content: `Wallet address updated ✅`,
+        });
+      else
+        throw new Error(
+          `Unable to update wallet address, please try again later ❌`
+        );
+    };
+
+    switch (subCommandName) {
+      case "add":
+        const hasAddRecord = await hasDBRecord(db, { userId: userId });
+
+        if (!hasAddRecord) {
+          const response = await db.insertOne({
+            userId: userId,
+            wallets: [addressInput],
+          });
+          isResponseAcknowledged(response);
+          break;
+        }
+
+        if (hasAddRecord.wallets.includes(addressInput))
+          throw new Error("Wallet address has previously been added ❌");
+
+        const addUpdateResponse = await db.updateOne(
+          { userId: userId },
+          { $push: { wallets: addressInput } }
+        );
+        isResponseAcknowledged(addUpdateResponse);
+        break;
+      case "remove":
+        const hasRemoveRecord = await hasDBRecord(db, {
+          userId: userId,
+          wallets: addressInput,
+        });
+
+        if (!hasRemoveRecord)
+          throw new Error("Wallet address does not exist ❌");
+
+        const removeUpdateResponse = await db.updateOne(
+          { userId: userId },
+          { $pull: { wallets: addressInput } }
+        );
+        isResponseAcknowledged(removeUpdateResponse);
+    }
+  } catch (error) {
+    await interaction.editReply({
+      content: `${error.message}`,
+    });
+  }
+};
+
+export const walletListInteraction = async (interaction, db) => {
+  try {
+    await interaction.deferReply({ ephemeral: true });
+
+    const hasWalletListRecord = await hasDBRecord(db, {
+      userId: interaction.user.id,
+    });
+
+    if (!hasWalletListRecord) throw new Error("Wallet list not found ❌");
+
+    const walletList = hasWalletListRecord.wallets.join("\n- ");
+    await interaction.editReply({
+      content: `**Wallet List**\n- ${walletList}`,
+    });
+  } catch (error) {
+    await interaction.editReply({
+      content: `${error.message}`,
+    });
+  }
 };
 
 export const villageInteraction = async (interaction, twitterHandles) => {

@@ -1,4 +1,5 @@
-import { fetchData, getData } from "./fetch.js";
+import { fetchData, getReservoirData } from "./fetch.js";
+import { toFiat } from "./helpers.js";
 import { monitorEmbed } from "./embeds.js";
 
 let previousListing = [];
@@ -8,7 +9,7 @@ const hasListing = (listing) =>
 
 export const monitor = async function (webhook) {
   const [listings, price] = await Promise.all([
-    getData(
+    getReservoirData(
       `https://api.reservoir.tools/collections/activity/v5?community=azuki&limit=20&types=ask`
     ),
     fetchData(
@@ -27,15 +28,14 @@ export const monitor = async function (webhook) {
   if (!newListing) return;
 
   for (let i = newListing - 1; i >= 0; i--) {
-    const fiatPrice = Number(
-      (listings[i].price * price.ethereum.usd).toFixed()
-    );
-
     webhook.send({
       username: "blue bean",
       avatarURL:
         "https://media.discordapp.net/attachments/891506947457712188/1064082031463645264/blue_bean.png?width=671&height=671",
-      embeds: monitorEmbed(listings[i], fiatPrice),
+      embeds: monitorEmbed(
+        listings[i],
+        toFiat(listings[i].price, price.ethereum.usd)
+      ),
     });
   }
 

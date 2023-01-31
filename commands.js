@@ -5,7 +5,7 @@ export const commands = [
     options: [
       {
         name: "id",
-        description: "Type in the Azuki # you wish to find",
+        description: "Azuki # you wish to find",
         type: 10,
         required: true,
       },
@@ -17,7 +17,7 @@ export const commands = [
     options: [
       {
         name: "id",
-        description: "Type in the Beanz # you wish to find",
+        description: "Beanz # you wish to find",
         type: 10,
         required: true,
       },
@@ -29,13 +29,13 @@ export const commands = [
     options: [
       {
         name: "azuki-id",
-        description: "Type in the Azuki # you wish to pair",
+        description: "Azuki # you wish to pair",
         type: 10,
         required: true,
       },
       {
         name: "beanz-id",
-        description: "Type in the Beanz # you wish to pair",
+        description: "Beanz # you wish to pair",
         type: 10,
         required: true,
       },
@@ -47,20 +47,50 @@ export const commands = [
     options: [
       {
         name: "query",
-        description:
-          "Type in the collection name or contract address you wish to find",
+        description: "Collection name or contract address you wish to find",
         type: 3,
         required: true,
         autocomplete: true,
       },
       {
         name: "id",
-        description: "Type in the token # you wish to find",
+        description: "Token # you wish to find",
         type: 10,
-        required: false,
-        autocomplete: false,
       },
     ],
+  },
+  {
+    name: "profit",
+    description: "View your wallet portfolio",
+    options: [
+      {
+        name: "query",
+        description: "Collection name or contract address you wish to find",
+        type: 3,
+        required: true,
+        autocomplete: true,
+      },
+    ],
+  },
+  {
+    name: "wallet",
+    description: "Add/Remove wallets from database",
+    options: [
+      {
+        name: "add",
+        description: "Wallet address you wish to add",
+        type: 3,
+      },
+      {
+        name: "remove",
+        description: "Wallet address you wish to remove",
+        type: 3,
+      },
+    ],
+  },
+  {
+    name: "wallet-list",
+    description: "View all wallets stored on database",
   },
   {
     name: "village",

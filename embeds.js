@@ -1,4 +1,9 @@
-import { getData, getOwners } from "./fetch.js";
+import {
+  fetchData,
+  getReservoirData,
+  getReservoirOwners,
+  getZerionData,
+} from "./fetch.js";
 import {
   emoji,
   azukiInfo,
@@ -6,9 +11,12 @@ import {
   isVerified,
   getTokenData,
   getTokenMarketplaceLinks,
+  getAverage,
   getMarketplaceLogo,
+  toFiat,
   toRound,
   toPercent,
+  hasDBRecord,
 } from "./helpers.js";
 
 export const azukiEmbed = async (id, interaction) => {
@@ -118,10 +126,10 @@ export const beanzEmbed = async (id, interaction) => {
 
 export const pairEmbed = async (azukiId, beanzId) => {
   const [[azukiData], [beanzData]] = await Promise.all([
-    getData(
+    getReservoirData(
       `https://api.reservoir.tools/tokens/v5?tokens=${azukiInfo.contract}:${azukiId}`
     ),
-    getData(
+    getReservoirData(
       `https://api.reservoir.tools/tokens/v5?tokens=${beanzInfo.contract}:${beanzId}`
     ),
   ]);
@@ -146,13 +154,13 @@ export const pairEmbed = async (azukiId, beanzId) => {
 
 export const collectionEmbed = async (contract) => {
   const [[data], [owners, topHolder], [floorListing]] = await Promise.all([
-    getData(
+    getReservoirData(
       `https://api.reservoir.tools/collections/v5?contract=${contract}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=1`
     ),
-    getOwners(
+    getReservoirOwners(
       `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
     ),
-    getData(
+    getReservoirData(
       `https://api.reservoir.tools/orders/asks/v4?contracts=${contract}&status=active&sortBy=price&limit=1`
     ),
   ]);
@@ -173,14 +181,11 @@ export const collectionEmbed = async (contract) => {
           floorListing?.source.domain
         )}`;
 
-  const website =
-    data.externalUrl !== null ? `[Website](${data.externalUrl})` : "";
-  const twitter =
-    data.twitterUsername !== null
-      ? `[Twitter](https://twitter.com/${data.twitterUsername})`
-      : "";
-  const discord =
-    data.discordUrl !== null ? `[Discord](${data.discordUrl})` : "";
+  const website = data.externalUrl ? `[Website](${data.externalUrl})` : "";
+  const twitter = data.twitterUsername
+    ? `[Twitter](https://twitter.com/${data.twitterUsername})`
+    : "";
+  const discord = data.discordUrl ? `[Discord](${data.discordUrl})` : "";
   const socialLinks =
     website || twitter || discord
       ? [website, twitter, discord].join(" ").trim().replaceAll(" ", " | ")
@@ -202,10 +207,10 @@ export const collectionEmbed = async (contract) => {
         },
         {
           name: "Listings",
-          value: `${listings.toLocaleString("en-US")} ${toPercent(
+          value: `${listings.toLocaleString("en-US")} (${toPercent(
             listings,
             supply
-          )}`,
+          )}%)`,
           inline: true,
         },
         {
@@ -215,10 +220,10 @@ export const collectionEmbed = async (contract) => {
         },
         {
           name: "Owners",
-          value: `${owners.toLocaleString("en-US")} ${toPercent(
+          value: `${owners.toLocaleString("en-US")} (${toPercent(
             owners,
             supply
-          )}`,
+          )}%)`,
           inline: true,
         },
         {
@@ -235,10 +240,10 @@ export const collectionEmbed = async (contract) => {
         },
         {
           name: "Top Holder",
-          value: `${topHolder.toLocaleString("en-US")} ${toPercent(
+          value: `${topHolder.toLocaleString("en-US")} (${toPercent(
             topHolder,
             supply
-          )}`,
+          )}%)`,
           inline: true,
         },
         {
@@ -310,7 +315,7 @@ export const tokenEmbed = async (contract, id) => {
 };
 
 export const listingsEmbed = async (contract, name, links) => {
-  const listings = await getData(
+  const listings = await getReservoirData(
     `https://api.reservoir.tools/orders/asks/v4?contracts=${contract}&status=active&includeCriteriaMetadata=true&sortBy=price&limit=10`
   );
 
@@ -400,9 +405,261 @@ export const monitorEmbed = (token, fiatPrice) => {
       footer: {
         icon_url:
           "https://cdn.discordapp.com/attachments/957980880251531264/1063870693193830420/BLUEBEAN.gif",
-        text: "Powered by bluebeanfam",
+        text: "Powered by Blue Bean",
       },
       timestamp: new Date(Date.now()).toISOString(),
     },
   ];
+};
+
+export const profitEmbed = async (contract, userId, db) => {
+  try {
+    const hasProfitRecord = await hasDBRecord(db, { userId: userId });
+    const wallets = hasProfitRecord.wallets;
+
+    if (!wallets.length) throw new Error("Wallet list not found ❌");
+
+    const promises = wallets.map((wallet) =>
+      getZerionData(
+        `https://api.zerion.io/v1/wallets/${wallet}/transactions/?currency=eth&filter[search_query]=${contract}&filter[operation_types]=mint,trade`
+      )
+    );
+    const datasets = await Promise.all([
+      getReservoirData(
+        `https://api.reservoir.tools/collections/v5?contract=${contract}&useNonFlaggedFloorAsk=true`
+      ),
+      fetchData(
+        "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+        {}
+      ),
+      ...promises,
+    ]);
+
+    const [collectionData] = datasets[0];
+    const fiatPrice = datasets[1].ethereum.usd;
+
+    let tokensMinted = 0,
+      mintCosts = 0,
+      mintGasCosts = 0;
+    let tokensBought = 0,
+      buyCosts = 0,
+      buyGasCosts = 0;
+    let tokensSold = 0,
+      revenue = 0;
+
+    for (let i = 2; i < datasets.length; i++) {
+      const transactions = datasets[i].data;
+      if (!transactions.length) continue;
+
+      for (const transaction of transactions) {
+        const attributes = transaction.attributes;
+        const operationType = attributes.operation_type;
+        const transfers = attributes.transfers;
+        const fee = attributes.fee;
+
+        switch (operationType) {
+          case "mint":
+            for (const transfer of transfers) {
+              const mintFloat = transfer.quantity.float;
+
+              if (transfer.nft_info) tokensMinted += mintFloat;
+              if (transfer.fungible_info) mintCosts += mintFloat;
+            }
+            mintGasCosts += fee.quantity.float;
+            break;
+          case "trade":
+            for (const transfer of transfers) {
+              const tradeFloat = transfer.quantity.float;
+
+              if (transfer.nft_info)
+                switch (transfer.direction) {
+                  case "in":
+                    tokensBought += tradeFloat;
+                    break;
+                  case "out":
+                    tokensSold += tradeFloat;
+                }
+
+              if (transfer.fungible_info) {
+                const decimals = transfer.quantity.decimals;
+                const tradeAmount =
+                  decimals === 18
+                    ? tradeFloat
+                    : tradeFloat / 10 ** (18 - decimals);
+
+                switch (transfer.direction) {
+                  case "in":
+                    revenue += tradeAmount;
+                    break;
+                  case "out":
+                    buyCosts += tradeAmount;
+                    buyGasCosts += fee.quantity.float;
+                }
+              }
+            }
+        }
+      }
+    }
+
+    const avgMintCosts = getAverage(mintCosts, tokensMinted);
+    const avgMintGasCosts = getAverage(mintGasCosts, tokensMinted);
+    const avgBuyCosts = getAverage(buyCosts, tokensBought);
+    const avgBuyGasCosts = getAverage(buyGasCosts, tokensBought);
+    const avgRevenue = getAverage(revenue, tokensSold);
+
+    const calculatedTokensHeld = tokensMinted + tokensBought - tokensSold;
+    const tokensHeld = calculatedTokensHeld > 0 ? calculatedTokensHeld : 0;
+    const floorPrice = collectionData.floorAsk.price?.amount.native;
+    const currentValue = tokensHeld * floorPrice;
+
+    const totalCosts = mintCosts + mintGasCosts + buyCosts + buyGasCosts;
+    const realisedPnL = revenue - totalCosts;
+    const unrealisedPnL = realisedPnL + currentValue;
+    const ROI = realisedPnL
+      ? `${toPercent(realisedPnL, totalCosts, true)}%`
+      : "-";
+    const currencyOptions = {
+      style: "currency",
+      currency: "USD",
+    };
+
+    const value = (calculatedData, price = fiatPrice, options = {}) => {
+      if (!calculatedData) return "-";
+      const include$ = JSON.stringify(options) === "{}" ? "$" : "";
+
+      return `${emoji.eth}${toRound(calculatedData, 2)} (${include$}${toFiat(
+        calculatedData,
+        price
+      ).toLocaleString("en-US", options)})`;
+    };
+
+    return [
+      {
+        color: 0x0267bc,
+        title: `${collectionData.name} ${isVerified(
+          collectionData.openseaVerificationStatus,
+          true
+        )}`,
+        thumbnail: {
+          url: collectionData.image,
+        },
+        description: `Showing profit & loss information from **${wallets.length}** wallets`,
+        fields: [
+          {
+            name: "Tokens Minted",
+            value: tokensMinted,
+            inline: true,
+          },
+          {
+            name: "Mint Costs",
+            value: value(mintCosts),
+            inline: true,
+          },
+          {
+            name: "Avg. Mint Costs",
+            value: value(avgMintCosts),
+            inline: true,
+          },
+          {
+            name: "Mint Gas Costs",
+            value: value(mintGasCosts),
+            inline: true,
+          },
+          {
+            name: "Avg. Mint Gas Costs",
+            value: value(avgMintGasCosts),
+            inline: true,
+          },
+          {
+            name: "\u200b",
+            value: "\u200b",
+            inline: true,
+          },
+          {
+            name: "Tokens Bought",
+            value: tokensBought,
+            inline: true,
+          },
+          {
+            name: "Buy Costs",
+            value: value(buyCosts),
+            inline: true,
+          },
+          {
+            name: "Avg. Buy Costs",
+            value: value(avgBuyCosts),
+            inline: true,
+          },
+          {
+            name: "Buy Gas Costs",
+            value: value(buyGasCosts),
+            inline: true,
+          },
+          {
+            name: "Avg. Buy Gas Costs",
+            value: value(avgBuyGasCosts),
+            inline: true,
+          },
+          {
+            name: "\u200b",
+            value: "\u200b",
+            inline: true,
+          },
+          {
+            name: "Tokens Sold",
+            value: tokensSold,
+            inline: true,
+          },
+          {
+            name: "Revenue",
+            value: value(revenue),
+            inline: true,
+          },
+          {
+            name: "Avg. Revenue",
+            value: value(avgRevenue),
+            inline: true,
+          },
+          {
+            name: "Tokens Held",
+            value: tokensHeld,
+            inline: true,
+          },
+          {
+            name: "Floor Price",
+            value: value(floorPrice),
+            inline: true,
+          },
+          {
+            name: "Current Value",
+            value: value(currentValue),
+            inline: true,
+          },
+          {
+            name: "Realised P&L",
+            value: value(realisedPnL, undefined, currencyOptions),
+            inline: true,
+          },
+          {
+            name: "Unrealised P&L",
+            value: value(unrealisedPnL, undefined, currencyOptions),
+            inline: true,
+          },
+          {
+            name: "ROI",
+            value: ROI,
+            inline: true,
+          },
+        ],
+        footer: {
+          icon_url:
+            "https://cdn.discordapp.com/attachments/957980880251531264/1063870693193830420/BLUEBEAN.gif",
+          text: "Powered by Blue Bean",
+        },
+        timestamp: new Date(Date.now()).toISOString(),
+      },
+    ];
+  } catch (error) {
+    throw Error(error.message);
+  }
 };

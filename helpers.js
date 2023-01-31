@@ -1,4 +1,4 @@
-import { getData } from "./fetch.js";
+import { getReservoirData } from "./fetch.js";
 
 export const emoji = {
   eth: "<:eth:1061570848810602576>",
@@ -31,14 +31,18 @@ export const isVerified = (verificationStatus, customEmoji = false) => {
 export const getTokenData = async (contract, id) => {
   try {
     const [[tokenData], sales, transfers, stats] = await Promise.all([
-      getData(
+      getReservoirData(
         `https://api.reservoir.tools/tokens/v5?tokens=${contract}:${id}&includeAttributes=true`
       ),
-      getData(`https://api.reservoir.tools/sales/v4?token=${contract}:${id}`),
-      getData(
+      getReservoirData(
+        `https://api.reservoir.tools/sales/v4?token=${contract}:${id}`
+      ),
+      getReservoirData(
         `https://api.reservoir.tools/transfers/v2?token=${contract}:${id}`
       ),
-      getData(`https://api.reservoir.tools/stats/v2?collection=${contract}`),
+      getReservoirData(
+        `https://api.reservoir.tools/stats/v2?collection=${contract}`
+      ),
     ]);
 
     const token = tokenData?.token;
@@ -72,10 +76,10 @@ const getTokenTraits = (traits, size) => {
 
     return {
       name: `${trait.key}`,
-      value: `${trait.value}\n${toPercent(
+      value: `${trait.value}\n(${toPercent(
         trait.tokenCount,
         size
-      )}\n${traitPrice}`,
+      )}%)\n${traitPrice}`,
       inline: true,
     };
   });
@@ -114,14 +118,12 @@ const getHoldTime = (duration) => {
 };
 
 const getTokenStats = (tokenData, sales, transfers) => {
-  const rarity =
-    tokenData.token.rarityRank !== null
-      ? `#${tokenData.token.rarityRank}`
-      : "-";
-  const listed =
-    tokenData.market.floorAsk.price !== null
-      ? `⟠ ${toRound(tokenData.market.floorAsk.price.amount.native, 2)}`
-      : "-";
+  const rarity = tokenData.token.rarityRank
+    ? `#${tokenData.token.rarityRank}`
+    : "-";
+  const listed = tokenData.market.floorAsk.price
+    ? `⟠ ${toRound(tokenData.market.floorAsk.price.amount.native, 2)}`
+    : "-";
   const lastSale = sales[0]
     ? `⟠ ${toRound(sales[0].price.amount.native, 2)}`
     : "-";
@@ -155,6 +157,11 @@ export const getContract = (data) => {
   return contract;
 };
 
+export const getAverage = (total, elements) => {
+  if (!elements) return total;
+  return total / elements;
+};
+
 export const getMarketplaceLogo = (source) => {
   switch (source) {
     case "opensea.io":
@@ -177,6 +184,11 @@ export const getMarketplaceLogo = (source) => {
   }
 };
 
+export const toFiat = (eth, usd) => {
+  if (!eth) return eth;
+  return +(eth * usd).toFixed();
+};
+
 export const toRound = (price, dp, strict = false) => {
   if (!price) return "-";
   if (Number.isInteger(price)) return price;
@@ -185,10 +197,12 @@ export const toRound = (price, dp, strict = false) => {
   return parseFloat(price.toFixed(dp));
 };
 
-export const toPercent = (part, whole) => {
-  if (part > whole || !part) return "";
-  return `(${toRound((part / whole) * 100, 1)}%)`;
+export const toPercent = (part, whole, strict = false) => {
+  if ((part > whole && !strict) || !part) return "";
+  return toRound((part / whole) * 100, 1);
 };
+
+export const hasDBRecord = async (db, object) => await db.findOne(object);
 
 export const shuffle = (array) => {
   for (let i = array.length - 1; i > 0; i--) {

@@ -9,13 +9,15 @@ import {
 } from "discord.js";
 import { MongoClient } from "mongodb";
 import { commands } from "./commands.js";
-import { getData } from "./fetch.js";
+import { getReservoirData } from "./fetch.js";
 import {
   azukiInteraction,
   beanzInteraction,
   pairInteraction,
   findInteraction,
   listingsInteraction,
+  walletInteraction,
+  walletListInteraction,
   villageInteraction,
 } from "./interactions.js";
 import { isVerified, getId, getContract } from "./helpers.js";
@@ -42,32 +44,34 @@ discordClient.login(discordToken);
   });
 })();
 
-(async function () {
-  const mongoDBClient = new MongoClient(mongoDBUri);
-  await mongoDBClient.connect();
-})();
+const mongoDBClient = new MongoClient(mongoDBUri);
+const db = mongoDBClient.db("wallets").collection("users");
+mongoDBClient.connect();
 
 let queryResults;
 discordClient.on("interactionCreate", async (interaction) => {
   try {
-    if (!interaction.isAutocomplete() || interaction.commandName !== "find")
-      return;
+    if (!interaction.isAutocomplete()) return;
 
-    const query = interaction.options.getFocused();
-    if (query) {
-      queryResults = await getData(
-        `https://www.reservoir.market/api/reservoir/search/collections/v1?limit=5&name=${query}`,
-        {}
-      );
+    switch (interaction.commandName) {
+      case "find":
+      case "profit":
+        const query = interaction.options.getFocused();
+        if (query) {
+          queryResults = await getReservoirData(
+            `https://www.reservoir.market/api/reservoir/search/collections/v1?limit=5&name=${query}`,
+            {}
+          );
 
-      await interaction.respond(
-        queryResults.map((choice) => ({
-          name: `${choice.name} ${isVerified(
-            choice.openseaVerificationStatus
-          )}`,
-          value: choice.name,
-        }))
-      );
+          await interaction.respond(
+            queryResults.map((choice) => ({
+              name: `${choice.name} ${isVerified(
+                choice.openseaVerificationStatus
+              )}`,
+              value: choice.name,
+            }))
+          );
+        }
     }
   } catch (error) {
     console.log(error);
@@ -77,7 +81,11 @@ discordClient.on("interactionCreate", async (interaction) => {
 discordClient.on("interactionCreate", async (interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
-    if (interaction.commandName) await interaction.deferReply();
+    if (
+      interaction.commandName !== "wallet" &&
+      interaction.commandName !== "wallet-list"
+    )
+      await interaction.deferReply();
 
     let id;
     switch (interaction.commandName) {
@@ -97,16 +105,18 @@ discordClient.on("interactionCreate", async (interaction) => {
       case "pair":
         const azukiId = interaction.options.get("azuki-id").value;
         const beanzId = interaction.options.get("beanz-id").value;
+
         await pairInteraction(interaction, azukiId, beanzId);
         break;
       case "find":
+      case "profit":
         let query = interaction.options.get("query").value;
 
         if (query.length < 42) {
           let data = queryResults?.find((result) => result.name === query);
 
           if (!data)
-            [data] = await getData(
+            [data] = await getReservoirData(
               `https://www.reservoir.market/api/reservoir/search/collections/v1?limit=1&name=${query}`,
               {}
             );
@@ -114,7 +124,13 @@ discordClient.on("interactionCreate", async (interaction) => {
           query = data?.contract;
         }
 
-        await findInteraction(interaction, query, id);
+        await findInteraction(interaction, query, id, db);
+        break;
+      case "wallet":
+        await walletInteraction(interaction, db);
+        break;
+      case "wallet-list":
+        await walletListInteraction(interaction, db);
         break;
       case "village":
         await villageInteraction(interaction, twitterHandles);
