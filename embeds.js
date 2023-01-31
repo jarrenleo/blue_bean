@@ -543,7 +543,7 @@ export const profitEmbed = async (contract, userId, db) => {
         thumbnail: {
           url: collectionData.image,
         },
-        description: `Showing profit & loss information from **${wallets.length}** wallets`,
+        description: `Showing profit & loss information from **${wallets.length}** wallet(s)`,
         fields: [
           {
             name: "Tokens Minted",
@@ -627,7 +627,9 @@ export const profitEmbed = async (contract, userId, db) => {
           },
           {
             name: "Floor Price",
-            value: value(floorPrice),
+            value: `${value(floorPrice)}${getMarketplaceLogo(
+              collectionData.floorAsk.sourceDomain
+            )}`,
             inline: true,
           },
           {
