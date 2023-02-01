@@ -412,9 +412,9 @@ export const monitorEmbed = (token) => {
 export const profitEmbed = async (contract, userId, db) => {
   try {
     const hasProfitRecord = await hasDBRecord(db, { userId: userId });
-    const wallets = hasProfitRecord.wallets;
+    const wallets = hasProfitRecord?.wallets;
 
-    if (!wallets.length) throw new Error("Wallet list not found ❌");
+    if (!wallets?.length) throw new Error("Wallet list not found ❌");
 
     const promises = wallets.map((wallet) =>
       getZerionData(
@@ -434,6 +434,10 @@ export const profitEmbed = async (contract, userId, db) => {
 
     const [collectionData] = datasets[0];
     const fiatPrice = datasets[1].ethereum.usd;
+    if (!collectionData?.id)
+      throw new Error(
+        "Collection not found. Please use autocomplete to best match your query."
+      );
 
     let tokensMinted = 0,
       mintCosts = 0,
