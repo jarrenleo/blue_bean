@@ -153,15 +153,12 @@ export const pairEmbed = async (azukiId, beanzId) => {
 };
 
 export const collectionEmbed = async (contract) => {
-  const [[data], [owners, topHolder], [floorListing]] = await Promise.all([
+  const [[data], [owners, topHolder]] = await Promise.all([
     getReservoirData(
       `https://api.reservoir.tools/collections/v5?contract=${contract}&includeTopBid=true&useNonFlaggedFloorAsk=true&limit=1`
     ),
     getReservoirOwners(
       `https://api.reservoir.tools/collections/${contract}/owners-distribution/v1`
-    ),
-    getReservoirData(
-      `https://api.reservoir.tools/orders/asks/v4?contracts=${contract}&status=active&sortBy=price&limit=1`
     ),
   ]);
 
@@ -171,15 +168,9 @@ export const collectionEmbed = async (contract) => {
   const royalties = data.royalties?.bps ?? 0;
 
   const collectionFp = data.floorAsk.price?.amount.native;
-  const listingFp = floorListing?.price.amount.native;
-  const floorPrice =
-    collectionFp >= listingFp
-      ? `${toRound(collectionFp, 2)}${getMarketplaceLogo(
-          data.floorAsk.sourceDomain
-        )}`
-      : `${toRound(listingFp, 2)}${getMarketplaceLogo(
-          floorListing?.source.domain
-        )}`;
+  const floorPrice = `${toRound(collectionFp, 2)}${getMarketplaceLogo(
+    data.floorAsk.sourceDomain
+  )}`;
 
   const website = data.externalUrl ? `[Website](${data.externalUrl})` : "";
   const twitter = data.twitterUsername
