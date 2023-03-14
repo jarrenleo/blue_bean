@@ -176,6 +176,8 @@ export const getMarketplaceLogo = (source) => {
       return " | <:gem:1060644885612474439>";
     case "magically.gg":
       return " | <:magically:1068776103654727711>";
+    case "blur.io":
+      return " | <:blur:1075392456859856966>";
     case "reservoir.market":
     case "reservoir.tools":
       return " | <:reservoir:1061296995605676062>";
