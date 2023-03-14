@@ -23,7 +23,7 @@ export const monitor = async function (webhook) {
     webhook.send({
       username: "blue bean",
       avatarURL:
-        "https://media.discordapp.net/attachments/891506947457712188/1064082031463645264/blue_bean.png?width=671&height=671",
+        "https://azkimg.imgix.net/images/final-19789.png?fp-z=1.72&crop=focalpoint&fit=crop&fp-y=0.4&fp-x=0.505",
       embeds: monitorEmbed(listings[i]),
     });
   }
