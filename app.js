@@ -21,13 +21,16 @@ import {
   villageInteraction,
 } from "./interactions.js";
 import { isVerified, getId, getContract } from "./helpers.js";
-import { monitor } from "./monitor.js";
+import { Monitor } from "./monitor.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
 const discordClientId = process.env.DISCORD_CLIENT_ID;
 const mongoDBUri = process.env.MONGODB_URI;
 const twitterHandles = process.env.TWITTER_HANDLES;
+const listingWebhook = new WebhookClient({
+  url: process.env.LISTINGS_WEBHOOK,
+});
 
 const discordClient = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -47,6 +50,9 @@ discordClient.login(discordToken);
 const mongoDBClient = new MongoClient(mongoDBUri);
 const db = mongoDBClient.db("wallets").collection("users");
 mongoDBClient.connect();
+
+const listingMonitor = new Monitor("azuki", "ask", listingWebhook, 10000);
+listingMonitor.startMonitor();
 
 let queryResults;
 discordClient.on("interactionCreate", async (interaction) => {
@@ -207,11 +213,3 @@ discordClient.on(Events.InteractionCreate, async (interaction) => {
       await beanzInteraction(interaction, id);
   }
 });
-
-setInterval(async function () {
-  await monitor(
-    new WebhookClient({
-      url: process.env.LISTINGS_WEBHOOK,
-    })
-  );
-}, 5000);
