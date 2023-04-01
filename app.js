@@ -8,6 +8,7 @@ import {
   WebhookClient,
 } from "discord.js";
 import { MongoClient } from "mongodb";
+import ws from "ws";
 import { commands } from "./commands.js";
 import { getReservoirData } from "./fetch.js";
 import {
@@ -20,17 +21,20 @@ import {
   walletListInteraction,
   villageInteraction,
 } from "./interactions.js";
-import { isVerified, getId, getContract } from "./helpers.js";
-import { Monitor } from "./monitor.js";
+import { monitorEmbed } from "./embeds.js";
+import {
+  azukiInfo,
+  beanzInfo,
+  isVerified,
+  getId,
+  getContract,
+} from "./helpers.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
 const discordClientId = process.env.DISCORD_CLIENT_ID;
 const mongoDBUri = process.env.MONGODB_URI;
 const twitterHandles = process.env.TWITTER_HANDLES;
-const listingWebhook = new WebhookClient({
-  url: process.env.LISTINGS_WEBHOOK,
-});
 
 const discordClient = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -51,9 +55,6 @@ const mongoDBClient = new MongoClient(mongoDBUri);
 const db = mongoDBClient.db("wallets").collection("users");
 mongoDBClient.connect();
 
-const listingMonitor = new Monitor("azuki", "ask", listingWebhook, 10000);
-listingMonitor.startMonitor();
-
 let queryResults;
 discordClient.on("interactionCreate", async (interaction) => {
   try {
@@ -63,6 +64,7 @@ discordClient.on("interactionCreate", async (interaction) => {
       case "find":
       case "profit":
         const query = interaction.options.getFocused();
+
         if (query) {
           queryResults = await getReservoirData(
             `https://www.reservoir.market/api/reservoir/search/collections/v1?limit=5&name=${query}`,
@@ -212,4 +214,40 @@ discordClient.on(Events.InteractionCreate, async (interaction) => {
     case "beanz_santa":
       await beanzInteraction(interaction, id);
   }
+});
+
+const listingWebhook = new WebhookClient({
+  url: process.env.LISTINGS_WEBHOOK,
+});
+const wss = new ws(
+  `wss://ws.reservoir.tools?api_key=${process.env.RESERVOIR_API_KEY}`
+);
+
+wss.on("open", function () {
+  wss.on("message", (data) => {
+    const parsedData = JSON.parse(data);
+
+    if (parsedData.status === "ready") {
+      wss.send(
+        JSON.stringify({
+          type: "subscribe",
+          channel: "asks",
+        })
+      );
+    }
+
+    const newListing = parsedData.data;
+    if (
+      newListing.contract !== azukiInfo.contract &&
+      newListing.contract !== beanzInfo.contract
+    )
+      return;
+
+    listingWebhook.send({
+      username: "blue bean",
+      avatarURL:
+        "https://azkimg.imgix.net/images/final-19789.png?fp-z=1.72&crop=focalpoint&fit=crop&fp-y=0.4&fp-x=0.505",
+      embeds: monitorEmbed(newListing),
+    });
+  });
 });

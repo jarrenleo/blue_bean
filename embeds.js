@@ -10,7 +10,6 @@ import {
   beanzInfo,
   isVerified,
   getTokenData,
-  getTokenMarketplaceLinks,
   getAverage,
   getMarketplaceLogo,
   toFiat,
@@ -363,32 +362,42 @@ export const listingsEmbed = async (contract, name, links) => {
 };
 
 export const monitorEmbed = (token) => {
+  const tokenInfo =
+    token.contract === azukiInfo.contract ? azukiInfo : beanzInfo;
+  const id = token.criteria.data.token.tokenId;
+  const image =
+    token.contract === azukiInfo.contract
+      ? `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`
+      : `https://azkimg.imgix.net/images/final-${id}.png`;
+
   return [
     {
       color: 0x0267bc,
       author: {
-        name: `${token.token.tokenName}`,
-        icon_url: token.collection.collectionImage,
+        name: `${tokenInfo.name} #${id}`,
+        icon_url: tokenInfo.icon,
       },
-      description: `[Collector's Profile](${azukiInfo.profile}/${token.fromAddress})`,
+      description: `[Collector's Profile](${azukiInfo.profile}/${token.maker})`,
       fields: [
         {
           name: "List Price",
-          value: `${emoji.eth}${toRound(token.price, 2)}${getMarketplaceLogo(
-            token.order.source.domain
-          )}`,
-          inline: false,
+          value: `${emoji.eth}${toRound(
+            token.price.amount.native,
+            2
+          )}${getMarketplaceLogo(token.source.domain)}`,
         },
         {
-          name: "Marketplace Links",
-          value: getTokenMarketplaceLinks(
-            token.collection.collectionId,
-            token.token.tokenId
-          ),
+          name: "List Expire",
+          value: `<t:${token.expiration}:F> | <t:${token.expiration}:R>`,
+        },
+        {
+          name: "Marketplace Link",
+          value: `[${token.source.name}](${token.source.url})`,
+          inline: false,
         },
       ],
       image: {
-        url: token.token.tokenImage,
+        url: image,
       },
       footer: {
         icon_url:
