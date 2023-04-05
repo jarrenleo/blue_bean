@@ -226,28 +226,29 @@ const wss = new ws(
 wss.on("open", function () {
   wss.on("message", (data) => {
     const parsedData = JSON.parse(data);
+    const newAskSubscription = (contract) =>
+      JSON.stringify({
+        type: "subscribe",
+        event: "ask.created",
+        filters: {
+          contract: contract,
+        },
+      });
 
     if (parsedData.status === "ready") {
-      wss.send(
-        JSON.stringify({
-          type: "subscribe",
-          channel: "asks",
-        })
-      );
+      wss.send(newAskSubscription(azukiInfo.contract));
+      wss.send(newAskSubscription(beanzInfo.contract));
     }
 
-    const newListing = parsedData.data;
-    if (
-      newListing.contract !== azukiInfo.contract &&
-      newListing.contract !== beanzInfo.contract
-    )
-      return;
+    if (parsedData.event) {
+      const newListing = parsedData.data;
 
-    listingWebhook.send({
-      username: "blue bean",
-      avatarURL:
-        "https://azkimg.imgix.net/images/final-19789.png?fp-z=1.72&crop=focalpoint&fit=crop&fp-y=0.4&fp-x=0.505",
-      embeds: monitorEmbed(newListing),
-    });
+      listingWebhook.send({
+        username: "blue bean",
+        avatarURL:
+          "https://azkimg.imgix.net/images/final-19789.png?fp-z=1.72&crop=focalpoint&fit=crop&fp-y=0.4&fp-x=0.505",
+        embeds: monitorEmbed(newListing),
+      });
+    }
   });
 });
