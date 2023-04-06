@@ -81,10 +81,10 @@ const getTokenTraits = (traits, size) => {
 
     return {
       name: `${trait.key}`,
-      value: `${trait.value}\n(${toPercent(
+      value: `${trait.value}\n${toPercent(
         trait.tokenCount,
         size
-      )}%)\n${traitPrice}`,
+      )}\n${traitPrice}`,
       inline: true,
     };
   });
