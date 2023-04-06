@@ -164,7 +164,7 @@ discordClient.on(Events.InteractionCreate, async (interaction) => {
       case "listings":
         const listingsContract = getContract(data);
         const name = data.title;
-        const links = data.fields.slice(-3);
+        const links = data.fields.slice(-2);
         await listingsInteraction(interaction, listingsContract, name, links);
         break;
       case "refresh":

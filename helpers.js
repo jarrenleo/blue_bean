@@ -9,6 +9,8 @@ export const azukiInfo = {
   name: "Azuki",
   icon: "https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT?auto=format&w=1920",
   contract: "0xed5af388653567af2f388e6224dc7c4b3241c544",
+  image: (id) =>
+    `https://ipfs.io/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
   profile: "https://www.azuki.com/collector",
 };
 
@@ -16,6 +18,7 @@ export const beanzInfo = {
   name: "Beanz",
   icon: "https://i.seadn.io/gae/_R4fuC4QGYd14-KwX2bD1wf-AWjDF2VMabfqWFJhIgiN2FnAUpnD5PLdJORrhQ8gly7KcjhQZZpuzYVPF7CDSzsqmDh97z84j2On?auto=format&w=1920",
   contract: "0x306b1ea3ecdf94ab739f1910bbda052ed4a9f949",
+  image: (id) => `https://azkimg.imgix.net/images/final-${id}.png`,
 };
 
 export const isVerified = (verificationStatus, customEmoji = false) => {
@@ -62,7 +65,7 @@ export const getTokenData = async (contract, id) => {
       token,
       isFlagged,
       getTokenTraits(token.attributes, stats.tokenCount),
-      getTokenMarketplaceLinks(contract, id),
+      getTokenMarketplaceLinks(contract, id, token.collection.slug),
       getTokenStats(tokenData, sales, transfers),
     ];
   } catch (error) {
@@ -98,8 +101,8 @@ const getTokenTraits = (traits, size) => {
   return traitFields.concat(paddingFields);
 };
 
-const getTokenMarketplaceLinks = (contract, id) => {
-  return `[OpenSea](https://opensea.io/assets/ethereum/${contract}/${id}) | [LooksRare](https://looksrare.org/collections/${contract}/${id}) | [X2Y2](https://x2y2.io/eth/${contract}/${id}) | [Sudoswap](https://sudoswap.xyz/#/item/${contract}/${id}) | [Gem](https://www.gem.xyz/asset/${contract}/${id})\n[Blur](https://blur.io/asset/${contract}/${id}) | [Reservoir](https://www.reservoir.market/${contract}/${id})`;
+const getTokenMarketplaceLinks = (contract, id, slug) => {
+  return `[OpenSea](https://opensea.io/assets/ethereum/${contract}/${id}) | [OpenSea Pro](https://pro.opensea.io/collection/${slug}?view=${id}&tokenAddress=${contract}) | [LooksRare](https://looksrare.org/collections/${contract}/${id}) | [X2Y2](https://x2y2.io/eth/${contract}/${id})\n[Sudoswap](https://sudoswap.xyz/#/item/${contract}/${id}) | [Blur](https://blur.io/asset/${contract}/${id}) | [Reservoir](https://www.reservoir.market/${contract}/${id})`;
 };
 
 const getHoldTime = (duration) => {
@@ -152,7 +155,7 @@ export const getId = (data, index = 1) => {
 export const getContract = (data) => {
   const fields = data.fields;
   const contract =
-    fields.length === 13
+    fields.length === 12
       ? fields[9].value.slice(1, 43)
       : fields[3].value.slice(1, 43);
 
@@ -168,18 +171,18 @@ export const getMarketplaceLogo = (source) => {
   switch (source) {
     case "opensea.io":
       return " | <:opensea:1061571107888574544>";
+    case "gem.xyz":
+      return " | <:openseapro:1093544112680083476>";
     case "looksrare.org":
       return " | <:looksrare:1061571122111463514>";
     case "x2y2.io":
       return " | <:x2y2:1061571333600837643>";
     case "sudoswap.xyz":
       return " | <:sudo:1061570522447622205>";
-    case "gem.xyz":
-      return " | <:gem:1060644885612474439>";
-    case "magically.gg":
-      return " | <:magically:1068776103654727711>";
     case "blur.io":
       return " | <:blur:1075392456859856966>";
+    case "magically.gg":
+      return " | <:magically:1068776103654727711>";
     case "reservoir.market":
     case "reservoir.tools":
       return " | <:reservoir:1061296995605676062>";
@@ -203,7 +206,7 @@ export const toRound = (price, dp, strict = false) => {
 
 export const toPercent = (part, whole, strict = false) => {
   if ((part > whole && !strict) || !part) return "";
-  return toRound((part / whole) * 100, 1);
+  return `(${toRound((part / whole) * 100, 1)}%)`;
 };
 
 export const hasDBRecord = async (db, object) => await db.findOne(object);

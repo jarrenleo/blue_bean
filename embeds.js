@@ -32,7 +32,7 @@ export const azukiEmbed = async (id, interaction) => {
     `https://azukibuilder.vercel.app/api/build_s1_azuki?azukiId=${id}&equip=%22ambush-${interaction}%22`;
 
   const options = {
-    azuki: `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`,
+    azuki: azukiInfo.image(id),
     profile: `https://azk.imgix.net/big_azukis/a-${id}.png`,
     dragon: `https://azk.imgix.net/dragon_azukis/ikz1_${id}.png?w=4000`,
     blue: jacketUrl(interaction),
@@ -197,10 +197,10 @@ export const collectionEmbed = async (contract) => {
         },
         {
           name: "Listings",
-          value: `${listings.toLocaleString("en-US")} (${toPercent(
+          value: `${listings.toLocaleString("en-US")} ${toPercent(
             listings,
             supply
-          )}%)`,
+          )}`,
           inline: true,
         },
         {
@@ -210,10 +210,10 @@ export const collectionEmbed = async (contract) => {
         },
         {
           name: "Owners",
-          value: `${owners.toLocaleString("en-US")} (${toPercent(
+          value: `${owners.toLocaleString("en-US")} ${toPercent(
             owners,
             supply
-          )}%)`,
+          )}`,
           inline: true,
         },
         {
@@ -230,10 +230,10 @@ export const collectionEmbed = async (contract) => {
         },
         {
           name: "Top Holder",
-          value: `${topHolder.toLocaleString("en-US")} (${toPercent(
+          value: `${topHolder.toLocaleString("en-US")} ${toPercent(
             topHolder,
             supply
-          )}%)`,
+          )}`,
           inline: true,
         },
         {
@@ -259,11 +259,7 @@ export const collectionEmbed = async (contract) => {
         },
         {
           name: "Marketplace Links",
-          value: `[OpenSea](https://opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${contract}) | [X2Y2](https://x2y2.io/collection/${contract}) | [Sudoswap](https://sudoswap.xyz/#/browse/buy/${contract}) | [Gem](https://www.gem.xyz/collection/${contract})\n[Blur](https://blur.io/collection/${contract}) | [Magically](https://magically.gg/collection/${contract}) | [Reservoir](https://www.reservoir.market/collections/${contract})`,
-        },
-        {
-          name: "Tools",
-          value: `[NFTFlip](https://review.nftflip.ai/collection/${contract}) | [NFTNerds](https://nftnerds.ai/collection/${contract})`,
+          value: `[OpenSea](https://opensea.io/collection/${slug}) | [OpenSea Pro](https://pro.opensea.io/collection/${slug}) | [LooksRare](https://looksrare.org/collections/${contract}) | [X2Y2](https://x2y2.io/collection/${contract}) | [Sudoswap](https://sudoswap.xyz/#/browse/buy/${contract}) | [Blur](https://blur.io/collection/${contract})\n[Magically](https://magically.gg/collection/${contract}) | [Reservoir](https://www.reservoir.market/collections/${contract})`,
         },
       ],
     },
@@ -367,8 +363,8 @@ export const monitorEmbed = (token) => {
   const id = token.criteria.data.token.tokenId;
   const image =
     token.contract === azukiInfo.contract
-      ? `https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/${id}.png`
-      : `https://azkimg.imgix.net/images/final-${id}.png`;
+      ? azukiInfo.image(id)
+      : beanzInfo.image(id);
 
   return [
     {
@@ -515,23 +511,18 @@ export const profitEmbed = async (contract, userId, db) => {
 
     const totalCosts = mintCosts + mintGasCosts + buyCosts + buyGasCosts;
     const realisedPnL = revenue - totalCosts;
-    const unrealisedPnL = realisedPnL + currentValue;
+    const potentialPnL = calculatedTokensHeld ? realisedPnL + currentValue : "";
     const ROI = realisedPnL
-      ? `${toPercent(realisedPnL, totalCosts, true)}%`
+      ? `${toPercent(realisedPnL, totalCosts, true).slice(1, -1)}`
       : "-";
-    const currencyOptions = {
-      style: "currency",
-      currency: "USD",
-    };
 
-    const value = (calculatedData, price = fiatPrice, options = {}) => {
+    const value = (calculatedData, price = fiatPrice) => {
       if (!calculatedData) return "-";
-      const include$ = JSON.stringify(options) === "{}" ? "$" : "";
 
-      return `${emoji.eth}${toRound(calculatedData, 2)} (${include$}${toFiat(
+      return `${emoji.eth}${toRound(calculatedData, 2)} ($${toFiat(
         calculatedData,
         price
-      ).toLocaleString("en-US", options)})`;
+      ).toLocaleString("en-US")})`;
     };
 
     return [
@@ -640,12 +631,12 @@ export const profitEmbed = async (contract, userId, db) => {
           },
           {
             name: "Realised P&L",
-            value: value(realisedPnL, undefined, currencyOptions),
+            value: value(realisedPnL),
             inline: true,
           },
           {
-            name: "Unrealised P&L",
-            value: value(unrealisedPnL, undefined, currencyOptions),
+            name: "Potential P&L",
+            value: value(potentialPnL),
             inline: true,
           },
           {
