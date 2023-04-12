@@ -129,7 +129,17 @@ export const beanzMenu = [
         {
           label: "Santa Hat and Holiday Sweater",
           description: "Beanz in Santa Hat and Holiday Sweater",
-          value: "beanz_santa",
+          value: "beanz_equip_santa",
+        },
+        {
+          label: "Brown Bear Kigu",
+          description: "Beanz in Brown Bear Kigu",
+          value: "equip_beanz_ipx_brown",
+        },
+        {
+          label: "Sally Chick Kigu",
+          description: "Beanz in Sally Chick Kigu",
+          value: "equip_beanz_ipx_sally",
         }
       )
   ),

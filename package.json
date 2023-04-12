@@ -1,6 +1,6 @@
 {
   "name": "blue-bean-public",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "description": "Analytical NFT Discord Bot",
   "main": "app.js",
   "type": "module",

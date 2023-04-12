@@ -211,7 +211,9 @@ discordClient.on(Events.InteractionCreate, async (interaction) => {
     case "transparent":
     case "selfie":
     case "portrait":
-    case "beanz_santa":
+    case "beanz_equip_santa":
+    case "equip_beanz_ipx_brown":
+    case "equip_beanz_ipx_sally":
       await beanzInteraction(interaction, id);
   }
 });

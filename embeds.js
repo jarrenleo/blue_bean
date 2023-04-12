@@ -84,8 +84,8 @@ export const beanzEmbed = async (id, interaction) => {
 
   const beanzUrl = (type = "", query = "") =>
     `https://azkimg.imgix.net/images${type}/final-${id}.png${query}`;
-  const beanzPairingUrl = (type) =>
-    `https://azuki-pairing-images.s3.us-west-1.amazonaws.com/beanz_equip_${type}/${id}.png`;
+  const beanzPairingUrl = (interaction) =>
+    `https://azuki-pairing-images.s3.us-west-1.amazonaws.com/${interaction}/${id}.png`;
 
   const options = {
     beanz: beanzUrl(),
@@ -95,7 +95,9 @@ export const beanzEmbed = async (id, interaction) => {
       "",
       "?fp-z=1.72&crop=focalpoint&fit=crop&fp-y=0.4&fp-x=0.505"
     ),
-    beanz_santa: beanzPairingUrl("santa"),
+    beanz_equip_santa: beanzPairingUrl(interaction),
+    equip_beanz_ipx_brown: beanzPairingUrl(interaction),
+    equip_beanz_ipx_sally: beanzPairingUrl(interaction),
   };
 
   return [
