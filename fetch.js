@@ -24,6 +24,7 @@ export const getReservoirData = async (url, options = reservoirOptions) => {
   const data = await fetchData(url, options);
 
   return (
+    data.results ??
     data.activities ??
     data.collections ??
     data.orders ??

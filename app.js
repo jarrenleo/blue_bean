@@ -28,6 +28,7 @@ import {
   isVerified,
   getId,
   getContract,
+  toRound,
 } from "./helpers.js";
 
 config();
@@ -66,19 +67,26 @@ discordClient.on("interactionCreate", async (interaction) => {
         const query = interaction.options.getFocused();
 
         if (query) {
+          let choices = [];
+
           queryResults = await getReservoirData(
-            `https://www.reservoir.market/api/reservoir/search/collections/v1?limit=5&name=${query}`,
+            `https://marketplace.reservoir.tools/api/globalSearch?query=${query}`,
             {}
           );
 
-          await interaction.respond(
-            queryResults.map((choice) => ({
-              name: `${choice.name} ${isVerified(
-                choice.openseaVerificationStatus
-              )}`,
-              value: choice.name,
-            }))
-          );
+          for (const result of queryResults) {
+            const data = result.data;
+            if (data.chainName !== "ethereum") continue;
+
+            choices.push({
+              name: `${data.name} ${isVerified(
+                data.openseaVerificationStatus
+              )} | ⟠${toRound(data.floorAskPrice, 2)}`,
+              value: `${data.contract}`,
+            });
+          }
+
+          await interaction.respond(choices);
         }
     }
   } catch (error) {
@@ -121,13 +129,16 @@ discordClient.on("interactionCreate", async (interaction) => {
         let query = interaction.options.get("query").value;
 
         if (query.length < 42) {
-          let data = queryResults?.find((result) => result.name === query);
+          let data = queryResults?.find((result) => result.data.name === query);
 
-          if (!data)
-            [data] = await getReservoirData(
-              `https://www.reservoir.market/api/reservoir/search/collections/v1?limit=1&name=${query}`,
+          if (!data) {
+            const noDataResult = await getReservoirData(
+              `https://marketplace.reservoir.tools/api/globalSearch?query=${query}`,
               {}
             );
+
+            data = noDataResult[0]?.data;
+          }
 
           query = data?.contract;
         }
