@@ -1,14 +1,6 @@
 import { config } from "dotenv";
-import {
-  Client,
-  GatewayIntentBits,
-  REST,
-  Routes,
-  Events,
-  WebhookClient,
-} from "discord.js";
+import { Client, GatewayIntentBits, REST, Routes, Events } from "discord.js";
 import { MongoClient } from "mongodb";
-import ws from "ws";
 import { commands } from "./commands.js";
 import { getReservoirData } from "./fetch.js";
 import {
@@ -21,15 +13,7 @@ import {
   walletListInteraction,
   villageInteraction,
 } from "./interactions.js";
-import { monitorEmbed } from "./embeds.js";
-import {
-  azukiInfo,
-  beanzInfo,
-  isVerified,
-  getId,
-  getContract,
-  toRound,
-} from "./helpers.js";
+import { isVerified, getId, getContract, toRound } from "./helpers.js";
 
 config();
 const discordToken = process.env.DISCORD_TOKEN;
@@ -227,41 +211,4 @@ discordClient.on(Events.InteractionCreate, async (interaction) => {
     case "equip_beanz_ipx_sally":
       await beanzInteraction(interaction, id);
   }
-});
-
-const listingWebhook = new WebhookClient({
-  url: process.env.LISTINGS_WEBHOOK,
-});
-const wss = new ws(
-  `wss://ws.reservoir.tools?api_key=${process.env.RESERVOIR_API_KEY}`
-);
-
-wss.on("open", function () {
-  wss.on("message", (data) => {
-    const parsedData = JSON.parse(data);
-    const newAskSubscription = (contract) =>
-      JSON.stringify({
-        type: "subscribe",
-        event: "ask.created",
-        filters: {
-          contract: contract,
-        },
-      });
-
-    if (parsedData.status === "ready") {
-      wss.send(newAskSubscription(azukiInfo.contract));
-      wss.send(newAskSubscription(beanzInfo.contract));
-    }
-
-    if (parsedData.event) {
-      const newListing = parsedData.data;
-
-      listingWebhook.send({
-        username: "blue bean",
-        avatarURL:
-          "https://azkimg.imgix.net/images/final-19789.png?fp-z=1.72&crop=focalpoint&fit=crop&fp-y=0.4&fp-x=0.505",
-        embeds: monitorEmbed(newListing),
-      });
-    }
-  });
 });

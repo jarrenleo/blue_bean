@@ -359,54 +359,6 @@ export const listingsEmbed = async (contract, name, links) => {
   ];
 };
 
-export const monitorEmbed = (token) => {
-  const tokenInfo =
-    token.contract === azukiInfo.contract ? azukiInfo : beanzInfo;
-  const id = token.criteria.data.token.tokenId;
-  const image =
-    token.contract === azukiInfo.contract
-      ? azukiInfo.image(id)
-      : beanzInfo.image(id);
-
-  return [
-    {
-      color: 0x0267bc,
-      author: {
-        name: `${tokenInfo.name} #${id}`,
-        icon_url: tokenInfo.icon,
-      },
-      description: `[Collector's Profile](${azukiInfo.profile}/${token.maker})`,
-      fields: [
-        {
-          name: "List Price",
-          value: `${emoji.eth}${toRound(
-            token.price.amount.native,
-            2
-          )}${getMarketplaceLogo(token.source.domain)}`,
-        },
-        {
-          name: "List Expire",
-          value: `<t:${token.expiration}:F> | <t:${token.expiration}:R>`,
-        },
-        {
-          name: "Marketplace Link",
-          value: `[${token.source.name}](${token.source.url})`,
-          inline: false,
-        },
-      ],
-      image: {
-        url: image,
-      },
-      footer: {
-        icon_url:
-          "https://cdn.discordapp.com/attachments/957980880251531264/1063870693193830420/BLUEBEAN.gif",
-        text: "Powered by Blue Bean",
-      },
-      timestamp: new Date(Date.now()).toISOString(),
-    },
-  ];
-};
-
 export const profitEmbed = async (contract, userId, db) => {
   try {
     const hasProfitRecord = await hasDBRecord(db, { userId: userId });
