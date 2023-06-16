@@ -3,6 +3,9 @@ import {
   ButtonBuilder,
   ButtonStyle,
   StringSelectMenuBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
 } from "discord.js";
 
 export const collectionButton = [
@@ -24,6 +27,11 @@ export const azukiMenu = [
           label: "Original",
           description: "Original Azuki",
           value: "original",
+        },
+        {
+          label: "Pairing",
+          description: "Pair Azuki with Beanz",
+          value: "pairing",
         },
         {
           label: "Blue Twin Tigers Jacket",
@@ -71,9 +79,9 @@ export const beanzMenu = [
           value: "original",
         },
         {
-          label: "Original without background",
-          description: "Original Beanz without background",
-          value: "no_background",
+          label: "Pairing",
+          description: "Pair Beanz with Azuki",
+          value: "pairing",
         },
         {
           label: "Selfie",
@@ -98,3 +106,16 @@ export const beanzMenu = [
       )
   ),
 ];
+
+export const modal = function () {
+  const inputId = new TextInputBuilder()
+    .setCustomId("inputId")
+    .setLabel("Token ID")
+    .setStyle(TextInputStyle.Short)
+    .setRequired(true);
+
+  return new ModalBuilder()
+    .setCustomId("modal")
+    .setTitle("Pairing")
+    .addComponents(new ActionRowBuilder().addComponents(inputId));
+};

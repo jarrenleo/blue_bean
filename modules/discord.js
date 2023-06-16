@@ -5,6 +5,7 @@ import { AutoComplete } from "./collections/autoComplete.js";
 import { Collection } from "./collections/collection.js";
 import { Azuki } from "./tokens/azuki.js";
 import { Beanz } from "./tokens/beanz.js";
+import { modal } from "../utilities/components.js";
 config();
 
 export class Discord {
@@ -22,6 +23,7 @@ export class Discord {
     this.handleChatInputInteraction();
     this.handleButtonInteraction();
     this.handleMenuInteraction();
+    this.handleModalInteraction();
   }
 
   login() {
@@ -81,6 +83,10 @@ export class Discord {
   handleMenuInteraction() {
     this.discord.on(Events.InteractionCreate, async (interaction) => {
       if (!interaction.isStringSelectMenu()) return;
+      if (interaction.values[0] === "pairing") {
+        interaction.showModal(modal());
+        return;
+      }
       await interaction.deferUpdate();
 
       switch (interaction.customId) {
@@ -88,6 +94,21 @@ export class Discord {
           await this.azuki.handleInteraction(interaction);
           break;
         case "beanzMenu":
+          await this.beanz.handleInteraction(interaction);
+      }
+    });
+  }
+
+  handleModalInteraction() {
+    this.discord.on(Events.InteractionCreate, async (interaction) => {
+      if (!interaction.isModalSubmit()) return;
+      await interaction.deferUpdate();
+
+      switch (interaction.message.interaction.commandName) {
+        case "azuki":
+          await this.azuki.handleInteraction(interaction);
+          break;
+        case "beanz":
           await this.beanz.handleInteraction(interaction);
       }
     });

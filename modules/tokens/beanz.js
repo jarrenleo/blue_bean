@@ -20,32 +20,36 @@ export class Beanz extends Token {
     }
   }
 
-  getId(interaction) {
+  getBeanzId(interaction) {
     return interaction.message.embeds[0].data.author.name
       .split(" ")[1]
       .slice(1);
   }
 
-  getImageUrl(selection, id) {
+  getAzukiId(interaction) {
+    return interaction.fields.getTextInputValue("inputId");
+  }
+
+  getImageUrl(selection, beanzId, azukiId) {
     const baseUrl = "https://azkimg.imgix.net";
     const baseUrlEquip =
       "https://azuki-pairing-images.s3.us-west-1.amazonaws.com";
 
     const beanzImageUrls = {
-      original: `${baseUrl}/images/final-${id}.png`,
-      no_background: `${baseUrl}/images_no_bg/final-${id}.png`,
-      selfie: `${baseUrl}/images_squareface/final-${id}.png`,
-      santa: `${baseUrlEquip}/beanz_equip_santa/${id}.png`,
-      bear: `${baseUrlEquip}/equip_beanz_ipx_brown/${id}.png`,
-      chick: `${baseUrlEquip}/equip_beanz_ipx_sally/${id}.png`,
+      original: `${baseUrl}/images/final-${beanzId}.png`,
+      pairing: `https://azukiimagemaker.vercel.app/api/pairbeanz-prod?azukiId=${azukiId}&beanzId=${beanzId}`,
+      selfie: `${baseUrl}/images_squareface/final-${beanzId}.png`,
+      santa: `${baseUrlEquip}/beanz_equip_santa/${beanzId}.png`,
+      bear: `${baseUrlEquip}/equip_beanz_ipx_brown/${beanzId}.png`,
+      chick: `${baseUrlEquip}/equip_beanz_ipx_sally/${beanzId}.png`,
     };
 
     return beanzImageUrls[selection];
   }
 
-  async updateEmbed(interaction, id) {
+  async updateEmbed(interaction, selection, beanzId, azukiId) {
     let updatedEmbed = interaction.message.embeds[0].data;
-    updatedEmbed.image.url = this.getImageUrl(interaction.values[0], id);
+    updatedEmbed.image.url = this.getImageUrl(selection, beanzId, azukiId);
 
     await this.sendEmbed(interaction, [updatedEmbed]);
   }
@@ -64,8 +68,15 @@ export class Beanz extends Token {
     }
 
     if (interaction.type === 3) {
-      const id = this.getId(interaction);
-      this.updateEmbed(interaction, id);
+      const id = this.getBeanzId(interaction);
+      this.updateEmbed(interaction, interaction.values[0], id);
+    }
+
+    if (interaction.type === 5) {
+      const beanzId = this.getBeanzId(interaction);
+      const azukiId = this.getAzukiId(interaction);
+
+      this.updateEmbed(interaction, "pairing", beanzId, azukiId);
     }
   }
 }
