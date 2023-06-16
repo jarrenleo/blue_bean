@@ -8,20 +8,7 @@ import {
 export const collectionButton = [
   new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId("collection")
-      .setLabel("Collection")
-      .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder()
-      .setCustomId("listings")
-      .setLabel("Listings")
-      .setStyle(ButtonStyle.Primary)
-  ),
-];
-
-export const refreshButton = [
-  new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId("refresh")
+      .setCustomId("collectionButton")
       .setLabel("Refresh")
       .setStyle(ButtonStyle.Primary)
   ),

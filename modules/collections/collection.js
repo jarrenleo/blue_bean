@@ -1,5 +1,6 @@
 import { CollectionData } from "../../data/collectionData.js";
 import { collectionEmbed } from "../../utilities/embeds.js";
+import { collectionButton } from "../../utilities/components.js";
 import { Token } from "../tokens/token.js";
 
 export class Collection extends CollectionData {
@@ -38,9 +39,14 @@ export class Collection extends CollectionData {
     }
   }
 
+  getContract(interaction) {
+    return interaction.message.embeds[0].data.fields[7].value.slice(1, 43);
+  }
+
   async sendEmbed(interaction, embed) {
     await interaction.editReply({
       embeds: embed,
+      components: collectionButton,
     });
   }
 
@@ -51,11 +57,18 @@ export class Collection extends CollectionData {
   }
 
   async handleInteraction(interaction, storedData) {
-    const query = this.getInput(interaction);
-    const matchedData = this.matchQueryToData(query, storedData);
+    if (interaction.type === 2) {
+      const query = this.getInput(interaction);
+      const matchedData = this.matchQueryToData(query, storedData);
 
-    this.isCollection(interaction)
-      ? this.createEmbed(interaction, query, matchedData)
-      : this.token.handleInteraction(interaction, query, matchedData);
+      this.isCollection(interaction)
+        ? this.createEmbed(interaction, query, matchedData)
+        : this.token.handleInteraction(interaction, query, matchedData);
+    }
+
+    if (interaction.type === 3) {
+      const contract = this.getContract(interaction);
+      this.createEmbed(interaction, contract);
+    }
   }
 }

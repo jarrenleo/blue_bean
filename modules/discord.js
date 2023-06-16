@@ -20,6 +20,7 @@ export class Discord {
     this.setCommands();
     this.handleAutoCompleteInteraction();
     this.handleChatInputInteraction();
+    this.handleButtonInteraction();
     this.handleMenuInteraction();
   }
 
@@ -61,6 +62,18 @@ export class Discord {
           break;
         case "beanz":
           await this.beanz.handleInteraction(interaction);
+      }
+    });
+  }
+
+  handleButtonInteraction() {
+    this.discord.on(Events.InteractionCreate, async (interaction) => {
+      if (!interaction.isButton()) return;
+      await interaction.deferUpdate();
+
+      switch (interaction.customId) {
+        case "collectionButton":
+          await this.collection.handleInteraction(interaction);
       }
     });
   }
