@@ -26,7 +26,7 @@ export const toPercent = (numerator, denominator) => {
 };
 
 export const isAzukiCommunity = (slug) =>
-  ["azuki", "beanzofficial"].includes(slug);
+  ["azuki", "beanzofficial", "azukielementalbeans"].includes(slug);
 
 export const symbol = {
   eth: "<:eth:1061570848810602576>",
