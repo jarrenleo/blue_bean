@@ -22,7 +22,6 @@ export const collectionEmbed = (data) => {
       thumbnail: {
         url: image,
       },
-      timestamp: new Date(Date.now()).toISOString(),
       fields: [
         {
           name: "Supply",
@@ -75,6 +74,7 @@ export const collectionEmbed = (data) => {
           inline: false,
         },
       ],
+      timestamp: new Date(Date.now()).toISOString(),
     },
   ];
 };

@@ -1,3 +1,18 @@
+const token = (collection) => {
+  return {
+    name: `${collection.toLowerCase()}`,
+    description: `View ${collection} token`,
+    options: [
+      {
+        name: "id",
+        description: `${collection} ID`,
+        type: 10,
+        required: true,
+      },
+    ],
+  };
+};
+
 export const commands = [
   {
     name: "find",
@@ -17,28 +32,7 @@ export const commands = [
       },
     ],
   },
-  {
-    name: "azuki",
-    description: "View an Azuki",
-    options: [
-      {
-        name: "id",
-        description: "Azuki ID",
-        type: 10,
-        required: true,
-      },
-    ],
-  },
-  {
-    name: "beanz",
-    description: "View a Beanz",
-    options: [
-      {
-        name: "id",
-        description: "Beanz ID",
-        type: 10,
-        required: true,
-      },
-    ],
-  },
+  token("Azuki"),
+  token("Beanz"),
+  token("Elementals"),
 ];

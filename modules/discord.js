@@ -5,6 +5,7 @@ import { AutoComplete } from "./collections/autoComplete.js";
 import { Collection } from "./collections/collection.js";
 import { Azuki } from "./tokens/azuki.js";
 import { Beanz } from "./tokens/beanz.js";
+import { Elementals } from "./tokens/elementals.js";
 import { modal } from "../utilities/components.js";
 config();
 
@@ -15,6 +16,7 @@ export class Discord {
   collection = new Collection();
   azuki = new Azuki();
   beanz = new Beanz();
+  elementals = new Elementals();
 
   constructor() {
     this.discord = this.login();
@@ -64,6 +66,9 @@ export class Discord {
           break;
         case "beanz":
           await this.beanz.handleInteraction(interaction);
+          break;
+        case "elementals":
+          await this.elementals.handleInteraction(interaction);
       }
     });
   }
