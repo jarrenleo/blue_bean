@@ -1,7 +1,6 @@
 import { Token } from "./token.js";
 import { tokenEmbed } from "../../utilities/embeds.js";
 import { elementalsButton } from "../../utilities/components.js";
-import { updateMetadata } from "../../data/updateMetadata.js";
 
 export class Elementals extends Token {
   contract = "0xb6a37b5d14d502c3ab0ae6f3a0e058bc9517786e";
