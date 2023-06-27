@@ -28,12 +28,8 @@ export class Elementals extends Token {
       .slice(1);
   }
 
-  async updateEmbed(interaction, id) {
-    const response = await updateMetadata(this.contract, id);
-    if (response !== "Request accepted") return;
-
-    setTimeout(() => this.createEmbed(interaction, id), 5000);
-  }
+  // async updateEmbed(interaction, id) {
+  // }
 
   async sendEmbed(interaction, embed) {
     await interaction.editReply({
@@ -48,9 +44,9 @@ export class Elementals extends Token {
       this.createEmbed(interaction, id);
     }
 
-    if (interaction.type === 3) {
-      const id = this.getElementalsId(interaction);
-      this.updateEmbed(interaction, id);
-    }
+    // if (interaction.type === 3) {
+    //   const id = this.getElementalsId(interaction);
+    //   this.updateEmbed(interaction, id);
+    // }
   }
 }

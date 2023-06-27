@@ -81,10 +81,6 @@ export class Discord {
       switch (interaction.customId) {
         case "collectionButton":
           await this.collection.handleInteraction(interaction);
-          break;
-        // temporary
-        case "elementalsButton":
-          await this.elementals.handleInteraction(interaction);
       }
     });
   }
