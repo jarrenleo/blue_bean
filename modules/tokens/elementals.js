@@ -4,7 +4,7 @@ import { elementalsButton } from "../../utilities/components.js";
 import { updateMetadata } from "../../data/updateMetadata.js";
 
 export class Elementals extends Token {
-  contract = "0x3af2a97414d1101e2107a70e7f33955da1346305";
+  contract = "0xb6a37b5d14d502c3ab0ae6f3a0e058bc9517786e";
 
   constructor() {
     super();
