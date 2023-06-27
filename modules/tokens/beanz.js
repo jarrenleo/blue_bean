@@ -22,7 +22,8 @@ export class Beanz extends Token {
 
   getBeanzId(interaction) {
     return interaction.message.embeds[0].data.author.name
-      .split(" ")[1]
+      .split(" ")
+      .at(-1)
       .slice(1);
   }
 

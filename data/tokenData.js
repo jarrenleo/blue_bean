@@ -87,6 +87,11 @@ export class TokenData {
     }
   };
 
+  getImage(url) {
+    if (!url.startsWith("ipfs")) return url;
+    return `https://ipfs.io/ipfs/${url.slice(7)}`;
+  }
+
   getStatistics(floorAsk, sale, bid, lastTransfer) {
     const listPrice = floorAsk ? `⟠ ${round(floorAsk, 2)}` : "-";
     const topBid = bid ? `⟠ ${round(bid, 2)}` : "-";
@@ -118,7 +123,6 @@ export class TokenData {
 
       const data = token[0];
       if (!data) throw Error();
-
       const icon = data.token.collection.image;
       const name = data.token.name;
       const isFlagged = this.getFlagStatus(data.token.isFlagged);
@@ -133,7 +137,7 @@ export class TokenData {
         data.token.collection.slug,
         data.token.owner
       );
-      const image = data.token.image;
+      const image = this.getImage(data.token.metadata.imageOriginal);
       const statistic = this.getStatistics(
         data.market.floorAsk.price?.amount.native,
         data.token.lastSale?.price.amount.native,

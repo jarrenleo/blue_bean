@@ -27,7 +27,8 @@ export class Azuki extends Token {
 
   getAzukiId(interaction) {
     return interaction.message.embeds[0].data.author.name
-      .split(" ")[1]
+      .split(" ")
+      .at(-1)
       .slice(1);
   }
 

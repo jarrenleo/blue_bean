@@ -1,5 +1,7 @@
 import { Token } from "./token.js";
 import { tokenEmbed } from "../../utilities/embeds.js";
+import { elementalsButton } from "../../utilities/components.js";
+import { updateMetadata } from "../../data/updateMetadata.js";
 
 export class Elementals extends Token {
   contract = "0x3af2a97414d1101e2107a70e7f33955da1346305";
@@ -19,14 +21,36 @@ export class Elementals extends Token {
     }
   }
 
+  getElementalsId(interaction) {
+    return interaction.message.embeds[0].data.author.name
+      .split(" ")
+      .at(-1)
+      .slice(1);
+  }
+
+  async updateEmbed(interaction, id) {
+    const response = await updateMetadata(this.contract, id);
+    if (response !== "Request accepted") return;
+
+    setTimeout(() => this.createEmbed(interaction, id), 5000);
+  }
+
   async sendEmbed(interaction, embed) {
     await interaction.editReply({
       embeds: embed,
+      components: elementalsButton,
     });
   }
 
   async handleInteraction(interaction) {
-    const id = this.getInput(interaction);
-    this.createEmbed(interaction, id);
+    if (interaction.type === 2) {
+      const id = this.getInput(interaction);
+      this.createEmbed(interaction, id);
+    }
+
+    if (interaction.type === 3) {
+      const id = this.getElementalsId(interaction);
+      this.updateEmbed(interaction, id);
+    }
   }
 }
