@@ -87,11 +87,6 @@ export class TokenData {
     }
   };
 
-  getImage(defaultUrl, ipfsUrl) {
-    if (!ipfsUrl.startsWith("ipfs")) return defaultUrl;
-    return `https://ipfs.io/ipfs/${ipfsUrl.slice(7)}`;
-  }
-
   getStatistics(floorAsk, sale, bid, lastTransfer) {
     const listPrice = floorAsk ? `⟠ ${round(floorAsk, 2)}` : "-";
     const topBid = bid ? `⟠ ${round(bid, 2)}` : "-";
@@ -137,10 +132,7 @@ export class TokenData {
         data.token.collection.slug,
         data.token.owner
       );
-      const image = this.getImage(
-        data.token.image,
-        data.token.metadata.imageOriginal
-      );
+      const image = data.token.image;
       const statistic = this.getStatistics(
         data.market.floorAsk.price?.amount.native,
         data.token.lastSale?.price.amount.native,

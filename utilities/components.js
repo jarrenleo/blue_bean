@@ -119,12 +119,3 @@ export const modal = function () {
     .setTitle("Pairing")
     .addComponents(new ActionRowBuilder().addComponents(inputId));
 };
-
-export const elementalsButton = [
-  new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId("elementalsButton")
-      .setLabel("Refresh Metadata")
-      .setStyle(ButtonStyle.Primary)
-  ),
-];

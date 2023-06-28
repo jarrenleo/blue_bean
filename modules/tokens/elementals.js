@@ -1,6 +1,5 @@
 import { Token } from "./token.js";
 import { tokenEmbed } from "../../utilities/embeds.js";
-import { elementalsButton } from "../../utilities/components.js";
 
 export class Elementals extends Token {
   contract = "0xb6a37b5d14d502c3ab0ae6f3a0e058bc9517786e";
@@ -20,32 +19,14 @@ export class Elementals extends Token {
     }
   }
 
-  getElementalsId(interaction) {
-    return interaction.message.embeds[0].data.author.name
-      .split(" ")
-      .at(-1)
-      .slice(1);
-  }
-
-  // async updateEmbed(interaction, id) {
-  // }
-
   async sendEmbed(interaction, embed) {
     await interaction.editReply({
       embeds: embed,
-      components: elementalsButton,
     });
   }
 
   async handleInteraction(interaction) {
-    if (interaction.type === 2) {
-      const id = this.getInput(interaction);
-      this.createEmbed(interaction, id);
-    }
-
-    // if (interaction.type === 3) {
-    //   const id = this.getElementalsId(interaction);
-    //   this.updateEmbed(interaction, id);
-    // }
+    const id = this.getInput(interaction);
+    this.createEmbed(interaction, id);
   }
 }
