@@ -1,20 +1,18 @@
-export const collectionEmbed = (data) => {
-  const [
-    name,
-    verification,
-    image,
-    supply,
-    listed,
-    royalty,
-    owners,
-    floor,
-    bid,
-    volume,
-    contractLink,
-    socialLinks,
-    marketplaceLinks,
-  ] = data;
-
+export const collectionEmbed = ([
+  name,
+  verification,
+  image,
+  supply,
+  listed,
+  royalty,
+  owners,
+  floor,
+  bid,
+  volume,
+  contractLink,
+  socialLinks,
+  marketplaceLinks,
+]) => {
   return [
     {
       color: 0x0267bc,
@@ -79,10 +77,16 @@ export const collectionEmbed = (data) => {
   ];
 };
 
-export const tokenEmbed = (data) => {
-  const [icon, name, isFlagged, rarity, attribute, link, image, statistic] =
-    data;
-
+export const tokenEmbed = ([
+  icon,
+  name,
+  isFlagged,
+  rarity,
+  attribute,
+  link,
+  image,
+  statistic,
+]) => {
   return [
     {
       color: 0x0267bc,
